@@ -570,16 +570,28 @@
                 
                 currentAdIndex = (currentAdIndex + 1) % adLinks.length;
                 if (currentAdIndex === 0) currentAdIndex = 1; // Skip the blank page
-                adFrame.src = adLinks[currentAdIndex];
                 
-                // Prevent iframe from stealing focus
-                adFrame.contentWindow.blur();
-                window.focus();
+                // Create new iframe to prevent any auto-click behavior
+                const newFrame = document.createElement('iframe');
+                newFrame.id = 'adFrame';
+                newFrame.title = 'Advertisement';
+                newFrame.src = adLinks[currentAdIndex];
+                newFrame.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms');
+                newFrame.setAttribute('tabindex', '-1');
+                
+                // Replace existing iframe
+                adFrame.replaceWith(newFrame);
+                
+                // Update reference
+                adFrame = document.getElementById('adFrame');
             }
             
             // Initialize
             setMaxHeight();
             toggleBtn.style.display = 'block';
+            
+            // Sandbox iframe to prevent unwanted behavior
+            adFrame.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms');
             
             // Event listeners
             toggleBtn.addEventListener('click', toggleIframe);
@@ -595,10 +607,20 @@
             toggleBtn.addEventListener('click', function firstClick() {
                 if (isMinimized) return;
                 
-                adFrame.src = adLinks[0]; // Load blank page first
+                const newFrame = document.createElement('iframe');
+                newFrame.id = 'adFrame';
+                newFrame.title = 'Advertisement';
+                newFrame.src = adLinks[0]; // Load blank page first
+                newFrame.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms');
+                newFrame.setAttribute('tabindex', '-1');
+                
+                // Replace existing iframe
+                adFrame.replaceWith(newFrame);
+                adFrame = document.getElementById('adFrame');
+                
                 setTimeout(() => {
                     currentAdIndex = 1 + Math.floor(Math.random() * (adLinks.length - 1));
-                    adFrame.src = adLinks[currentAdIndex];
+                    rotateAds();
                 }, 100);
                 
                 // Remove this listener after first click
