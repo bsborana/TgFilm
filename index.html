@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinema Loading Experience</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary: #e50914;
+            --secondary: #221f1f;
+            --accent: #f5f5f1;
+            --text: #ffffff;
+            --bg: #000000;
+        }
+
+        /* Loading spinner animation */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Progress bar animation */
+        @keyframes progress {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        /* Skeleton shimmer effect */
+        @keyframes shimmer {
+            0% { background-position: -468px 0; }
+            100% { background-position: 468px 0; }
+        }
+
+        /* Button pulse effect */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .skeleton {
+            background: linear-gradient(to right, #2a2a2a 8%, #333 18%, #2a2a2a 33%);
+            background-size: 800px 104px;
+            animation: shimmer 1.5s infinite linear;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid var(--primary);
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background-color: var(--primary);
+            animation: progress 600s forwards;
+            transform-origin: left;
+        }
+
+        .pulse-effect {
+            animation: pulse 0.5s ease;
+        }
+
+        /* Iframe transition */
+        .iframe-transition {
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Responsive heights */
+        @media (max-width: 640px) {
+            .iframe-maximized {
+                height: 40vh;
+            }
+        }
+        @media (min-width: 641px) and (max-width: 1024px) {
+            .iframe-maximized {
+                height: 45vh;
+            }
+        }
+        @media (min-width: 1025px) {
+            .iframe-maximized {
+                height: 50vh;
+            }
+        }
+    </style>
+</head>
+<body class="bg-black text-white font-sans">
+    <!-- SECTION 1: Movie Loading Interface -->
+    <div class="min-h-screen flex flex-col">
+        <!-- Sticky top progress bar -->
+        <div class="sticky top-0 left-0 right-0 z-50">
+            <div class="progress-bar"></div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="bg-black bg-opacity-90 px-4 py-3 sticky top-0 z-40">
+            <div class="max-w-6xl mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-red-600">CINEMAX</h1>
+                <div class="hidden md:flex space-x-6">
+                    <a href="#" class="text-gray-300 hover:text-white">Movies</a>
+                    <a href="#" class="text-gray-300 hover:text-white">Series</a>
+                    <a href="#" class="text-gray-300 hover:text-white">My List</a>
+                </div>
+                <button class="md:hidden text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <main class="flex-grow">
+            <div class="max-w-6xl mx-auto px-4 py-8">
+                <div class="flex flex-col md:flex-row gap-8">
+
+                    <!-- Movie Info -->
+                    <div class="w-full md:w-2/3 lg:w-3/4">
+                        <div class="flex flex-col gap-4">
+                            <h1 class="text-3xl md:text-4xl font-bold">The Phantom Protocol</h1>
+                            <div class="flex flex-wrap gap-2 items-center">
+                                <span class="bg-gray-800 px-2 py-1 rounded text-xs">HD</span>
+                                <span class="bg-gray-800 px-2 py-1 rounded text-xs">1080p</span>
+                                <span class="bg-gray-800 px-2 py-1 rounded text-xs">English</span>
+                                <span class="bg-gray-800 px-2 py-1 rounded text-xs">Subtitles</span>
+                                <div class="flex items-center ml-2">
+                                    <span class="text-yellow-400">★★★★☆</span>
+                                    <span class="text-sm ml-1">(4.2)</span>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-wrap gap-3 mt-2">
+                                <button id="playBtn" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                                    </svg>
+                                    Play
+                                </button>
+                                <button class="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                                    </svg>
+                                    Add to List
+                                </button>
+                            </div>
+
+                            <div class="mt-4">
+                                <h2 class="text-xl font-semibold mb-2">Synopsis</h2>
+                                <p class="text-gray-300">
+                                    In a world where secret agents are becoming obsolete, a retired operative is forced back into action when a mysterious protocol threatens global security. With cutting-edge technology and old-school tactics, he must uncover the truth before time runs out.
+                                </p>
+                            </div>
+
+                            <div class="mt-4">
+                                <h2 class="text-xl font-semibold mb-2">Tags</h2>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="bg-gray-800 px-3 py-1 rounded-full text-sm">Action</span>
+                                    <span class="bg-gray-800 px-3 py-1 rounded-full text-sm">Thriller</span>
+                                    <span class="bg-gray-800 px-3 py-1 rounded-full text-sm">Espionage</span>
+                                    <span class="bg-gray-800 px-3 py-1 rounded-full text-sm">2023</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Movie Player Loading Section -->
+                <div id="loadingSection" class="mt-12 relative rounded-xl overflow-hidden">
+                    <!-- Blurry background -->
+                    <div class="absolute inset-0 bg-gradient-to-r from-gray-900 to-gray-800 blur-md opacity-70"></div>
+                    
+                    <!-- Player controls overlay -->
+                    <div class="relative bg-black bg-opacity-70 p-4">
+                        <!-- Video placeholder -->
+                        <div class="aspect-video bg-black flex items-center justify-center">
+                            <div class="text-center">
+                                <div class="loading-spinner mb-6 mx-auto"></div>
+                                <h2 class="text-2xl font-bold mb-2">Loading Movie...</h2>
+                                <p id="loadingMessage" class="text-gray-400 mb-4">Connecting to server... Please wait while we load the video</p>
+                                <p class="text-xs text-gray-500">Note: Video loading may take some time depending on server connection</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Player controls -->
+                        <div class="mt-4 px-4 pb-4">
+                            <!-- Progress bar -->
+                            <div class="relative mb-2">
+                                <div class="h-1 bg-gray-700 rounded-full w-full">
+                                    <div id="movieProgress" class="h-full bg-red-600 rounded-full" style="width: 0%"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-gray-400 mt-1">
+                                    <span id="currentTime">0:00</span>
+                                    <span id="durationTime">2:36:00</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Control buttons -->
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center space-x-4">
+                                    <button id="playPauseBtn" class="text-white hover:text-red-500">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                    <button class="text-white hover:text-gray-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                    <span class="text-sm text-white">100%</span>
+                                </div>
+                                
+                                <div class="flex items-center space-x-4">
+                                    <button class="text-white hover:text-gray-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16.33 4.1a1 1 0 00-1.66 1.115l1.318 2.245a1 1 0 001.315.428l1.253-.627a1 1 0 00-.447-1.897l-.17.085-1.05-1.788A1 1 0 0016.33 4.1zM15.19 13.12a1 1 0 001.415-1.415l-.707-.707a1 1 0 00-1.414 1.414l.706.708z" />
+                                        </svg>
+                                    </button>
+                                    <button class="text-white hover:text-gray-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1V4zm1 9a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1H4a1 1 0 01-1-1v-4zm6-9a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1V4zm1 9a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" clip-rule="evenodd" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-gray-900 py-8">
+            <div class="max-w-6xl mx-auto px-4">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <h2 class="text-xl font-bold text-red-600">CINEMAX</h2>
+                        <p class="text-gray-400 text-sm">Your ultimate streaming experience</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <button id="restartBtn" class="text-gray-300 hover:text-white">Restart loading</button>
+                        <button id="reportBtn" class="text-gray-300 hover:text-white">Report issue</button>
+                        <button class="text-gray-300 hover:text-white">Help</button>
+                    </div>
+                </div>
+                <div class="mt-6 text-center text-gray-500 text-sm">
+                    <p>This is a demo interface. No actual content is being streamed.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Fake Modal for Report Issue -->
+    <div id="reportModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
+        <div class="bg-gray-800 rounded-lg max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold">Report Issue</h3>
+                <button id="closeModalBtn" class="text-gray-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <p class="text-gray-300 mb-4">Please describe the issue you're experiencing:</p>
+            <textarea class="w-full bg-gray-700 text-white rounded p-3 mb-4" rows="4"></textarea>
+            <div class="flex justify-end gap-3">
+                <button id="cancelReportBtn" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded">
+                    Cancel
+                </button>
+                <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+                    Submit Report
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // SECTION 1: Movie Loading Interface Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            // Loading messages rotation
+            const loadingMessages = [
+                "Optimizing bitrate for your connection...",
+                "Finding the best CDN server...",
+                "Preparing decryption keys...",
+                "Buffering initial segments...",
+                "Almost ready...",
+                "Finalizing playback parameters..."
+            ];
+            
+            let currentMessageIndex = 0;
+            const loadingMessageEl = document.getElementById('loadingMessage');
+            const timeRemainingEl = document.getElementById('timeRemaining');
+            const playBtn = document.getElementById('playBtn');
+            const restartBtn = document.getElementById('restartBtn');
+            const reportBtn = document.getElementById('reportBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+            const cancelReportBtn = document.getElementById('cancelReportBtn');
+            const reportModal = document.getElementById('reportModal');
+            const serverSelect = document.getElementById('serverSelect');
+            
+            // Rotate loading messages with fade effect
+            const messageInterval = setInterval(() => {
+                loadingMessageEl.style.opacity = 0;
+                setTimeout(() => {
+                    currentMessageIndex = (currentMessageIndex + 1) % loadingMessages.length;
+                    loadingMessageEl.textContent = loadingMessages[currentMessageIndex];
+                    loadingMessageEl.style.opacity = 1;
+                }, 300);
+            }, 10000);
+            
+            // Movie player progress
+            const durationTime = document.getElementById('durationTime');
+            durationTime.textContent = '2:36:00';
+            
+            // Set initial progress to 0
+            document.getElementById('movieProgress').style.width = '0%';
+            document.getElementById('currentTime').textContent = '0:00:00';
+            
+            // Fake loading animation that appears to progress but stays at 0:00:05
+            let fakeProgress = 0;
+            const fakeLoading = setInterval(() => {
+                fakeProgress += 0.1;
+                if (fakeProgress > 5) fakeProgress = 5; // Never goes beyond 5 seconds
+                
+                document.getElementById('movieProgress').style.width = `${(fakeProgress/5)*100}%`;
+                document.getElementById('currentTime').textContent = '0:00:05';
+                
+                // Show loading messages
+                if (fakeProgress % 1 === 0) {
+                    loadingMessageEl.style.opacity = 0;
+                    setTimeout(() => {
+                        currentMessageIndex = (currentMessageIndex + 1) % loadingMessages.length;
+                        loadingMessageEl.textContent = loadingMessages[currentMessageIndex];
+                        loadingMessageEl.style.opacity = 1;
+                    }, 300);
+                }
+            }, 1000);
+            
+            // Play/Pause button interaction
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            playPauseBtn.addEventListener('click', function() {
+                // Always show loading state
+                    const shake = [
+                        { transform: 'translateX(0)' },
+                        { transform: 'translateX(-5px)' },
+                        { transform: 'translateX(5px)' },
+                        { transform: 'translateX(-5px)' },
+                        { transform: 'translateX(5px)' },
+                        { transform: 'translateX(0)' }
+                    ];
+                    
+                    this.animate(shake, {
+                        duration: 500,
+                        iterations: 1
+                    });
+                    
+                    // Show persistent tooltip
+                    let tooltip = this.querySelector('.tooltip');
+                    if (!tooltip) {
+                        tooltip = document.createElement('div');
+                        tooltip.className = 'tooltip absolute bg-gray-800 text-white text-xs py-1 px-2 rounded -mt-10';
+                        tooltip.textContent = 'Still loading... ' + timeRemainingEl.textContent;
+                        this.appendChild(tooltip);
+                        
+                        setTimeout(() => {
+                            if (tooltip) this.removeChild(tooltip);
+                        }, 3000);
+                    }
+                }
+            });
+            
+            // Server select change
+            serverSelect.addEventListener('change', function() {
+                const messages = {
+                    'auto': 'Finding optimal server...',
+                    'server1': 'Connecting to US East server...',
+                    'server2': 'Connecting to EU West server...'
+                };
+                loadingMessageEl.textContent = messages[this.value];
+            });
+            
+            // Restart loading
+            restartBtn.addEventListener('click', function() {
+                if (confirm('Are you sure you want to restart the loading process?')) {
+                    location.reload();
+                }
+            });
+            
+            // Report issue modal
+            reportBtn.addEventListener('click', function() {
+                reportModal.classList.remove('hidden');
+            });
+            
+            closeModalBtn.addEventListener('click', function() {
+                reportModal.classList.add('hidden');
+            });
+            
+            cancelReportBtn.addEventListener('click', function() {
+                reportModal.classList.add('hidden');
+            });
+            
+            // Close modal when clicking outside
+            reportModal.addEventListener('click', function(e) {
+                if (e.target === reportModal) {
+                    reportModal.classList.add('hidden');
+                }
+            });
+
+        });
+    </script>
+</body>
+</html>
