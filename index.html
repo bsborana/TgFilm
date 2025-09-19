@@ -448,6 +448,13 @@
         
         .iframe-container.minimized {
             height: 50px !important;
+            border: none;
+        }
+
+        .iframe-container.maximized {
+            height: 100vh !important;
+            top: 0;
+            border-radius: 0;
         }
         
         .iframe-container iframe {
@@ -458,7 +465,7 @@
         
         .toggle-btn {
             position: absolute;
-            top: -40px;
+            top: 0;
             right: 20px;
             background: #4f46e5;
             color: white;
@@ -491,26 +498,11 @@
     </style>
 </head>
 <body class="bg-gray-100">
-    <!-- Sample content (you can replace this with your actual content) -->
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-3xl font-bold text-center mb-6">Website Content</h1>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h2 class="text-xl font-semibold mb-3">Section 1</h2>
-                <p class="text-gray-700">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula.</p>
-            </div>
-            <div class="bg-white p-6 rounded-lg shadow">
-                <h2 class="text-xl font-semibold mb-3">Section 2</h2>
-                <p class="text-gray-700">Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.</p>
-            </div>
-        </div>
-    </div>
-
     <!-- Ad Iframe Container -->
     <div class="iframe-container minimized" id="adContainer">
         <button class="toggle-btn" id="toggleBtn">
-            <span id="btnText">Show Ads</span>
-            <i data-feather="chevron-up" class="ml-1"></i>
+            <span id="btnText">Maximize</span>
+            <i data-feather="maximize" class="ml-1"></i>
         </button>
         <iframe id="adFrame" src="" title="Advertisement"></iframe>
     </div>
@@ -522,8 +514,9 @@
             
             // Ad links array - REPLACE THESE WITH YOUR ACTUAL ADSTERRA SMART LINKS
             const adLinks = [
+                'about:blank', // Initial blank page
                 'https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b', // Replace with your first Adsterra Smart Link
-                'https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b'  // Replace with your second Adsterra Smart Link
+                'https://tangiblearroganceride.com/afzg9a9nkv?key=5dcefc80a0b0e89fcfdb3d77f9660bbe'  // Replace with your second Adsterra Smart Link
             ];
             
             const adContainer = document.getElementById('adContainer');
@@ -535,15 +528,9 @@
             let isMinimized = true;
             let rotationInterval;
             
-            // Set initial iframe height based on device
+            // Set iframe to full screen
             function setMaxHeight() {
-                if (window.innerWidth < 640) { // Mobile
-                    adContainer.style.maxHeight = '40vh';
-                } else if (window.innerWidth < 1024) { // Tablet
-                    adContainer.style.maxHeight = '45vh';
-                } else { // Desktop
-                    adContainer.style.maxHeight = '50vh';
-                }
+                adContainer.classList.add('maximized');
             }
             
             // Toggle iframe visibility
@@ -552,8 +539,9 @@
                 
                 if (isMinimized) {
                     adContainer.classList.add('minimized');
-                    btnText.textContent = 'Show Ads';
-                    toggleBtn.querySelector('i').setAttribute('data-feather', 'chevron-up');
+                    adContainer.classList.remove('maximized');
+                    btnText.textContent = 'Maximize';
+                    toggleBtn.querySelector('i').setAttribute('data-feather', 'maximize');
                     
                     // Clear rotation when minimized
                     if (rotationInterval) {
@@ -563,8 +551,8 @@
                 } else {
                     adContainer.classList.remove('minimized');
                     setMaxHeight();
-                    btnText.textContent = 'Hide Ads';
-                    toggleBtn.querySelector('i').setAttribute('data-feather', 'chevron-down');
+                    btnText.textContent = 'Minimize';
+                    toggleBtn.querySelector('i').setAttribute('data-feather', 'minimize');
                     
                     // Start ad rotation
                     if (!rotationInterval) {
@@ -578,12 +566,20 @@
             
             // Rotate between ad links
             function rotateAds() {
+                if (isMinimized) return;
+                
                 currentAdIndex = (currentAdIndex + 1) % adLinks.length;
+                if (currentAdIndex === 0) currentAdIndex = 1; // Skip the blank page
                 adFrame.src = adLinks[currentAdIndex];
+                
+                // Prevent iframe from stealing focus
+                adFrame.contentWindow.blur();
+                window.focus();
             }
             
             // Initialize
             setMaxHeight();
+            toggleBtn.style.display = 'block';
             
             // Event listeners
             toggleBtn.addEventListener('click', toggleIframe);
@@ -595,16 +591,22 @@
                 }
             });
             
-            // Start with a random ad when maximized for the first time
+            // Start with blank page when maximized for the first time
             toggleBtn.addEventListener('click', function firstClick() {
                 if (isMinimized) return;
                 
-                currentAdIndex = Math.floor(Math.random() * adLinks.length);
-                adFrame.src = adLinks[currentAdIndex];
+                adFrame.src = adLinks[0]; // Load blank page first
+                setTimeout(() => {
+                    currentAdIndex = 1 + Math.floor(Math.random() * (adLinks.length - 1));
+                    adFrame.src = adLinks[currentAdIndex];
+                }, 100);
                 
                 // Remove this listener after first click
                 toggleBtn.removeEventListener('click', firstClick);
             }, { once: true });
+
+            // Prevent iframe from being focusable
+            adFrame.setAttribute('tabindex', '-1');
         });
     </script>
 </body>
