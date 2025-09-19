@@ -415,3 +415,197 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Responsive Ad Iframe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles */
+        .iframe-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            transition: all 0.3s ease;
+            border-top: 3px solid #4f46e5;
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+            background: white;
+        }
+        
+        .iframe-container.minimized {
+            height: 50px !important;
+        }
+        
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .toggle-btn {
+            position: absolute;
+            top: -40px;
+            right: 20px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            transition: all 0.2s ease;
+            z-index: 1001;
+        }
+        
+        .toggle-btn:hover {
+            background: #4338ca;
+            transform: translateY(-2px);
+        }
+        
+        .toggle-btn:active {
+            transform: translateY(0);
+        }
+        
+        @media (max-width: 768px) {
+            .toggle-btn {
+                right: 10px;
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Sample content (you can replace this with your actual content) -->
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-3xl font-bold text-center mb-6">Website Content</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-3">Section 1</h2>
+                <p class="text-gray-700">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam in dui mauris. Vivamus hendrerit arcu sed erat molestie vehicula.</p>
+            </div>
+            <div class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-xl font-semibold mb-3">Section 2</h2>
+                <p class="text-gray-700">Sed auctor neque eu tellus rhoncus ut eleifend nibh porttitor. Ut in nulla enim. Phasellus molestie magna non est bibendum non venenatis nisl tempor.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ad Iframe Container -->
+    <div class="iframe-container minimized" id="adContainer">
+        <button class="toggle-btn" id="toggleBtn">
+            <span id="btnText">Show Ads</span>
+            <i data-feather="chevron-up" class="ml-1"></i>
+        </button>
+        <iframe id="adFrame" src="" title="Advertisement"></iframe>
+    </div>
+
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            feather.replace();
+            
+            // Ad links array - REPLACE THESE WITH YOUR ACTUAL ADSTERRA SMART LINKS
+            const adLinks = [
+                'https://tangiblearroganceride.com/afzg9a9nkv?key=5dcefc80a0b0e89fcfdb3d77f9660bbe', // Replace with your first Adsterra Smart Link
+                'https://tangiblearroganceride.com/mswpne8xsb?key=6a9cf1265ff02dc0188923179c17c4a7'  // Replace with your second Adsterra Smart Link
+            ];
+            
+            const adContainer = document.getElementById('adContainer');
+            const toggleBtn = document.getElementById('toggleBtn');
+            const btnText = document.getElementById('btnText');
+            const adFrame = document.getElementById('adFrame');
+            
+            let currentAdIndex = 0;
+            let isMinimized = true;
+            let rotationInterval;
+            
+            // Set initial iframe height based on device
+            function setMaxHeight() {
+                if (window.innerWidth < 640) { // Mobile
+                    adContainer.style.maxHeight = '40vh';
+                } else if (window.innerWidth < 1024) { // Tablet
+                    adContainer.style.maxHeight = '45vh';
+                } else { // Desktop
+                    adContainer.style.maxHeight = '50vh';
+                }
+            }
+            
+            // Toggle iframe visibility
+            function toggleIframe() {
+                isMinimized = !isMinimized;
+                
+                if (isMinimized) {
+                    adContainer.classList.add('minimized');
+                    btnText.textContent = 'Show Ads';
+                    toggleBtn.querySelector('i').setAttribute('data-feather', 'chevron-up');
+                    
+                    // Clear rotation when minimized
+                    if (rotationInterval) {
+                        clearInterval(rotationInterval);
+                        rotationInterval = null;
+                    }
+                } else {
+                    adContainer.classList.remove('minimized');
+                    setMaxHeight();
+                    btnText.textContent = 'Hide Ads';
+                    toggleBtn.querySelector('i').setAttribute('data-feather', 'chevron-down');
+                    
+                    // Start ad rotation
+                    if (!rotationInterval) {
+                        rotateAds();
+                        rotationInterval = setInterval(rotateAds, 90000); // 90 seconds
+                    }
+                }
+                
+                feather.replace();
+            }
+            
+            // Rotate between ad links
+            function rotateAds() {
+                currentAdIndex = (currentAdIndex + 1) % adLinks.length;
+                adFrame.src = adLinks[currentAdIndex];
+            }
+            
+            // Initialize
+            setMaxHeight();
+            
+            // Event listeners
+            toggleBtn.addEventListener('click', toggleIframe);
+            
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (!isMinimized) {
+                    setMaxHeight();
+                }
+            });
+            
+            // Start with a random ad when maximized for the first time
+            toggleBtn.addEventListener('click', function firstClick() {
+                if (isMinimized) return;
+                
+                currentAdIndex = Math.floor(Math.random() * adLinks.length);
+                adFrame.src = adLinks[currentAdIndex];
+                
+                // Remove this listener after first click
+                toggleBtn.removeEventListener('click', firstClick);
+            }, { once: true });
+        });
+    </script>
+</body>
+</html>
