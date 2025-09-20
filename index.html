@@ -3,72 +3,26 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sticky iframe — Minimal</title>
+  <title>Sticky iframe — Mobile Desktop Mode</title>
   <style>
     :root{ --bar-height:92px; --accent:#ffb400; --z:99999; }
     html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:#fff;color:#111;}
-    /* container fills page but no content shown */
     main{min-height:100vh;}
 
-    /* Sticky window container */
-    .sticky-window{
-      position:fixed;
-      left:12px;
-      right:12px;
-      bottom:12px;
-      max-width:1320px;
-      margin:0 auto;
-      height:var(--bar-height);
-      z-index:var(--z);
-      transition:height .28s ease;
-      pointer-events:auto;
-    }
-
-    .window-frame{
-      border-radius:10px;
-      overflow:visible;
-      box-shadow:0 8px 28px rgba(0,0,0,0.4);
-      background:linear-gradient(180deg,#0b0b0b,#050505);
-      color:#fff;
-      border:1px solid rgba(255,255,255,0.04);
-      display:flex;
-      flex-direction:column;
-      height:100%;
-    }
-
-    .titlebar{
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:8px 10px;
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
-      user-select:none;
-    }
+    /* Sticky window (footer) */
+    .sticky-window{ position:fixed; left:12px; right:12px; bottom:12px; max-width:1320px; margin:0 auto; height:var(--bar-height); z-index:var(--z); transition:height .28s ease; pointer-events:auto; }
+    .window-frame{ border-radius:10px; overflow:visible; box-shadow:0 8px 28px rgba(0,0,0,0.4); background:linear-gradient(180deg,#0b0b0b,#050505); color:#fff; border:1px solid rgba(255,255,255,0.04); display:flex; flex-direction:column; height:100%; }
+    .titlebar{ display:flex; align-items:center; gap:10px; padding:8px 10px; background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); user-select:none; }
     .title{ color:#eaeaea; font-size:13px; margin-right:auto; padding-left:6px; }
-
-    .tbtn{
-      width:36px;height:28px;border-radius:6px;border:0;background:rgba(255,255,255,0.04);color:#fff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
-    }
+    .tbtn{ width:36px;height:28px;border-radius:6px;border:0;background:rgba(255,255,255,0.04);color:#fff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center; }
     .tbtn.primary{ background:linear-gradient(90deg,var(--accent),#ff8a00); color:#111; font-weight:700; }
-    .tbtn.small{ padding:6px 10px; border-radius:8px; width:auto; }
+    .content{ height: calc(var(--bar-height) - 44px); transition:height .28s ease, transform .20s ease, opacity .18s ease; position:relative; overflow:hidden; background:#000; }
+    .ad-iframe{ width:100%; height:100%; border:0; display:block; transform:translateY(0); transition:transform .28s ease, opacity .18s ease; will-change:transform,opacity; }
 
-    .content{
-      height: calc(var(--bar-height) - 44px);
-      transition:height .28s ease, transform .20s ease, opacity .18s ease;
-      position:relative;
-      overflow:hidden;
-      background:#000;
-    }
-    .ad-iframe{
-      width:100%; height:100%; border:0; display:block; transform:translateY(0); transition:transform .28s ease, opacity .18s ease; will-change:transform,opacity;
-    }
-
-    /* Minimized state */
     .minimized{ height:44px !important; }
     .minimized .content{ height:0 !important; }
     .minimized .ad-iframe{ transform: translateY(-12px); opacity:0; pointer-events:none; }
 
-    /* Maximized */
     .maximized{ height:420px !important; }
     .maximized .content{ height: calc(420px - 44px) !important; }
     @media (max-width:900px){
@@ -77,28 +31,47 @@
       :root{ --bar-height:86px; }
     }
 
-    /* Mobile modal fallback */
-    .modal{
-      position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:calc(var(--z)+10);
-      display:flex; align-items:center; justify-content:center; visibility:hidden; opacity:0; transition:opacity .18s ease;
-    }
+    /* Modal fallback */
+    .modal{ position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:calc(var(--z)+20); display:flex; align-items:center; justify-content:center; visibility:hidden; opacity:0; transition:opacity .18s ease; padding:12px; box-sizing:border-box; }
     .modal.open{ visibility:visible; opacity:1; }
     .modal-inner{ width:100%; max-width:1100px; height:88vh; background:#000; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; }
     .modal-top{ padding:8px 10px; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); color:#fff; }
-    .modal-iframe{ flex:1 1 auto; width:100%; border:0; }
+    .modal-controls{ display:flex; gap:8px; align-items:center; }
+    .modal-iframe{ flex:1 1 auto; width:100%; border:0; background:#000; }
+
+    /* Desktop-mode container inside modal: fixed desktop width */
+    .desktop-wrap{
+      width:980px; /* desktop viewport to emulate */
+      height:100%;
+      transform-origin: top left;
+      background:#000;
+      overflow:auto; /* enable panning if scaled down */
+      margin:0 auto;
+    }
+    .desktop-iframe{ width:980px; height:100%; border:0; display:block; }
+
+    /* Controls layout small tweaks */
+    .segmented{ display:inline-flex; background:rgba(255,255,255,0.03); border-radius:8px; padding:4px; gap:6px; }
+    .segmented button{ background:transparent; color:#fff; border:0; padding:6px 10px; border-radius:6px; cursor:pointer; }
+    .segmented button.active{ background:rgba(255,255,255,0.06); font-weight:600; }
+
+    @media (max-width:420px){
+      .desktop-wrap{ width:900px; } /* slightly smaller desktop width on very small screens */
+      .desktop-iframe{ width:900px; }
+    }
   </style>
 </head>
 <body>
   <main></main>
 
-  <!-- Sticky window (minimal, no extra page content) -->
+  <!-- Sticky window -->
   <div id="stickyWindow" class="sticky-window" aria-label="Sticky ad window">
     <div id="windowFrame" class="window-frame">
       <div class="titlebar">
         <div class="title">Advertisement</div>
-        <button id="minBtn" class="tbtn" title="Minimize" aria-pressed="false">—</button>
-        <button id="maxBtn" class="tbtn" title="Maximize" aria-pressed="false">▢</button>
-        <button id="openBtn" class="tbtn primary" title="Open in window">Open</button>
+        <button id="minBtn" class="tbtn" title="Minimize">—</button>
+        <button id="maxBtn" class="tbtn" title="Maximize">▢</button>
+        <button id="openBtn" class="tbtn primary" title="Open">Open</button>
       </div>
 
       <div id="content" class="content" aria-hidden="false">
@@ -111,21 +84,33 @@
     </div>
   </div>
 
-  <!-- Modal fallback -->
+  <!-- Modal with Normal / Desktop Mode switch -->
   <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal-inner">
+    <div class="modal-inner" role="document">
       <div class="modal-top">
         <div style="color:#fff">Advertisement</div>
-        <div style="display:flex;gap:8px">
-          <button id="modalMin" class="tbtn">Min</button>
-          <button id="modalClose" class="tbtn">Close</button>
+        <div class="modal-controls">
+          <div class="segmented" role="tablist" aria-label="View mode">
+            <button id="normalModeBtn" class="active" role="tab" aria-selected="true">Normal</button>
+            <button id="desktopModeBtn" role="tab" aria-selected="false">Desktop mode</button>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button id="modalMin" class="tbtn">Min</button>
+            <button id="modalClose" class="tbtn">Close</button>
+          </div>
         </div>
       </div>
-      <iframe id="modalIframe" class="modal-iframe"
-        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-        referrerpolicy="no-referrer"
-        src=""
-      ></iframe>
+
+      <!-- Normal responsive iframe -->
+      <iframe id="modalIframe" class="modal-iframe" sandbox="allow-scripts allow-same-origin allow-popups allow-forms" referrerpolicy="no-referrer" src=""></iframe>
+
+      <!-- Desktop-mode container (hidden by default) -->
+      <div id="desktopWrap" style="display:none; height:100%;">
+        <div class="desktop-wrap" id="desktopWrapInner">
+          <iframe id="desktopIframe" class="desktop-iframe" sandbox="allow-scripts allow-same-origin allow-popups allow-forms" referrerpolicy="no-referrer" src=""></iframe>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -137,6 +122,7 @@
     const RELOAD_MS = 90_000;
     const MOBILE_FALLBACK_TIMEOUT = 3000;
 
+    // Elements
     const stickyWindow = document.getElementById('stickyWindow');
     const windowFrame = document.getElementById('windowFrame');
     const minBtn = document.getElementById('minBtn');
@@ -147,6 +133,12 @@
 
     const modal = document.getElementById('modal');
     const modalIframe = document.getElementById('modalIframe');
+    const desktopWrap = document.getElementById('desktopWrap');
+    const desktopWrapInner = document.getElementById('desktopWrapInner');
+    const desktopIframe = document.getElementById('desktopIframe');
+
+    const normalModeBtn = document.getElementById('normalModeBtn');
+    const desktopModeBtn = document.getElementById('desktopModeBtn');
     const modalClose = document.getElementById('modalClose');
     const modalMin = document.getElementById('modalMin');
 
@@ -158,6 +150,7 @@
 
     function isMobile(){ return /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent); }
 
+    // Auto-reload loop for sticky iframe
     function startReload(){
       stopReload();
       reloadTimer = setInterval(() => {
@@ -169,119 +162,121 @@
         } catch(e){
           adIframe.src = AD_URL + (AD_URL.includes('?') ? '&' : '?') + '_ts=' + Date.now();
         }
-        if(modal.classList.contains('open')){
-          try {
-            const mcur = modalIframe.src || AD_URL;
-            const mu = new URL(mcur, location.href);
-            mu.searchParams.set('_ts', Date.now());
-            modalIframe.src = mu.toString();
-          } catch(e){
-            modalIframe.src = AD_URL + (AD_URL.includes('?') ? '&' : '?') + '_ts=' + Date.now();
-          }
-        }
       }, RELOAD_MS);
     }
     function stopReload(){ if(reloadTimer){ clearInterval(reloadTimer); reloadTimer = null; } }
-
     startReload();
 
+    // detect sticky iframe load
     adIframe.addEventListener('load', ()=> { iframeLoaded = true; });
 
-    setTimeout(()=> {
-      if(!iframeLoaded && isMobile()){
-        modalIframe.src = AD_URL;
-      }
-    }, MOBILE_FALLBACK_TIMEOUT);
+    // If mobile and sticky iframe not loaded quickly, prefill modal if user opens it
+    setTimeout(()=> { if(!iframeLoaded && isMobile()){ modalIframe.src = AD_URL; desktopIframe.src = AD_URL; } }, MOBILE_FALLBACK_TIMEOUT);
 
-    // Minimize toggle
-    minBtn.addEventListener('click', () => {
+    // Minimize / Maximize handlers
+    minBtn.addEventListener('click', ()=> {
       isMinimized = !isMinimized;
-      if(isMinimized){
-        windowFrame.classList.add('minimized');
-        minBtn.setAttribute('aria-pressed','true');
-      } else {
-        windowFrame.classList.remove('minimized');
-        minBtn.setAttribute('aria-pressed','false');
-      }
+      if(isMinimized){ windowFrame.classList.add('minimized'); minBtn.setAttribute('aria-pressed','true'); } else { windowFrame.classList.remove('minimized'); minBtn.setAttribute('aria-pressed','false'); }
     });
-
-    // Maximize toggle
-    maxBtn.addEventListener('click', () => {
+    maxBtn.addEventListener('click', ()=> {
       isMaximized = !isMaximized;
-      if(isMaximized){
-        stickyWindow.classList.add('maximized');
-        maxBtn.setAttribute('aria-pressed','true');
-      } else {
-        stickyWindow.classList.remove('maximized');
-        maxBtn.setAttribute('aria-pressed','false');
-      }
+      if(isMaximized){ stickyWindow.classList.add('maximized'); maxBtn.setAttribute('aria-pressed','true'); } else { stickyWindow.classList.remove('maximized'); maxBtn.setAttribute('aria-pressed','false'); }
     });
 
-    // Open: desktop window toggle; mobile modal
-    openBtn.addEventListener('click', () => {
+    // Open button behavior
+    openBtn.addEventListener('click', ()=> {
       if(!isMobile()){
         const name = 'stickyAd_app_v1';
         if(!externalWin || externalWin.closed){
           externalWin = window.open(AD_URL, name, 'noopener,noreferrer,toolbar=yes,scrollbars=yes,resizable=yes,width=980,height=700');
           openBtn.textContent = 'Opened';
           openBtn.setAttribute('aria-pressed','true');
-          const poll = setInterval(()=> {
-            if(!externalWin || externalWin.closed){
-              clearInterval(poll);
-              externalWin = null;
-              openBtn.textContent = 'Open';
-              openBtn.setAttribute('aria-pressed','false');
-            }
-          },700);
+          const poll = setInterval(()=> { if(!externalWin || externalWin.closed){ clearInterval(poll); externalWin = null; openBtn.textContent = 'Open'; openBtn.setAttribute('aria-pressed','false'); } },700);
         } else {
-          try { externalWin.close(); } catch(e){}
+          try{ externalWin.close(); } catch(e){}
           externalWin = null;
           openBtn.textContent = 'Open';
           openBtn.setAttribute('aria-pressed','false');
         }
       } else {
+        // Mobile: open modal (default Normal mode)
         modal.classList.add('open');
         modal.setAttribute('aria-hidden','false');
+        // ensure sources set
         if(!modalIframe.src) modalIframe.src = AD_URL;
+        if(!desktopIframe.src) desktopIframe.src = AD_URL;
+        // make sure Normal mode visible
+        showNormalMode();
+        // compute desktop scale if desktop mode active
+        computeDesktopScale();
       }
     });
 
     // Modal controls
-    modalClose.addEventListener('click', ()=> {
-      modal.classList.remove('open');
-      modal.setAttribute('aria-hidden','true');
-    });
-    modalMin.addEventListener('click', ()=> {
-      modal.classList.remove('open');
-      modal.setAttribute('aria-hidden','true');
-      if(!isMinimized){
-        isMinimized = true;
-        windowFrame.classList.add('minimized');
-        minBtn.setAttribute('aria-pressed','true');
-      }
-    });
+    modalClose.addEventListener('click', ()=> { modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); });
+    modalMin.addEventListener('click', ()=> { modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); if(!isMinimized){ isMinimized = true; windowFrame.classList.add('minimized'); minBtn.setAttribute('aria-pressed','true'); } });
     modal.addEventListener('click', (ev)=> { if(ev.target === modal){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); } });
 
-    // ESC behavior
+    // Mode switching (Normal vs Desktop)
+    normalModeBtn.addEventListener('click', ()=> { showNormalMode(); });
+    desktopModeBtn.addEventListener('click', ()=> { showDesktopMode(); });
+
+    function showNormalMode(){
+      normalModeBtn.classList.add('active'); normalModeBtn.setAttribute('aria-selected','true');
+      desktopModeBtn.classList.remove('active'); desktopModeBtn.setAttribute('aria-selected','false');
+      modalIframe.style.display = 'block';
+      desktopWrap.style.display = 'none';
+    }
+    function showDesktopMode(){
+      normalModeBtn.classList.remove('active'); normalModeBtn.setAttribute('aria-selected','false');
+      desktopModeBtn.classList.add('active'); desktopModeBtn.setAttribute('aria-selected','true');
+      modalIframe.style.display = 'none';
+      desktopWrap.style.display = 'block';
+      // compute scale to fit desktopWrapInner into modal-inner
+      computeDesktopScale();
+    }
+
+    // Compute scale so desktopWrapInner fits inside modal-inner viewport
+    function computeDesktopScale(){
+      // wait for layout
+      requestAnimationFrame(()=> {
+        try {
+          const wrap = desktopWrapInner;
+          const modalInner = wrap.closest('.modal-inner');
+          if(!modalInner) return;
+          const availableW = modalInner.clientWidth;
+          const availableH = modalInner.clientHeight;
+          const targetW = wrap.clientWidth; // 980
+          const targetH = wrap.clientHeight;
+          // scale based on width primarily, but ensure height fits too
+          const scaleW = availableW / targetW;
+          const scaleH = availableH / targetH;
+          const scale = Math.min(scaleW, scaleH, 1); // don't upscale above 1
+          wrap.style.transform = 'scale(' + scale + ')';
+          // center by adding top margin if scaled
+          const scaledH = targetH * scale;
+          wrap.style.marginTop = ((availableH - scaledH) / 2) + 'px';
+        } catch(e){}
+      });
+    }
+
+    // recompute on resize/orientation change while modal open
+    window.addEventListener('resize', ()=> { if(modal.classList.contains('open') && desktopWrap.style.display === 'block') computeDesktopScale(); });
+    window.addEventListener('orientationchange', ()=> { if(modal.classList.contains('open') && desktopWrap.style.display === 'block') setTimeout(computeDesktopScale, 250); });
+
+    // ESC to close modal or external window
     document.addEventListener('keydown', (e)=> {
       if(e.key === 'Escape'){
-        if(modal.classList.contains('open')){
-          modal.classList.remove('open');
-          modal.setAttribute('aria-hidden','true');
-        } else if(externalWin && !externalWin.closed){
-          try { externalWin.close(); } catch(e){}
-          externalWin = null;
-          openBtn.textContent = 'Open';
-          openBtn.setAttribute('aria-pressed','false');
-        } else if(stickyWindow.classList.contains('maximized')){
-          stickyWindow.classList.remove('maximized');
-          maxBtn.setAttribute('aria-pressed','false');
-        }
+        if(modal.classList.contains('open')){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); }
+        else if(externalWin && !externalWin.closed){ try{ externalWin.close(); } catch(e){} externalWin = null; openBtn.textContent = 'Open'; openBtn.setAttribute('aria-pressed','false'); }
+        else if(stickyWindow.classList.contains('maximized')){ stickyWindow.classList.remove('maximized'); maxBtn.setAttribute('aria-pressed','false'); }
       }
     });
 
+    // best-effort: close external window on unload
     window.addEventListener('beforeunload', ()=> { try { if(externalWin && !externalWin.closed) externalWin.close(); } catch(e){} });
 
+    // small API
     window.StickyAd = {
       minimize(){ if(!isMinimized) minBtn.click(); },
       restore(){ if(isMinimized) minBtn.click(); },
