@@ -430,66 +430,114 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Iframe Fullscreen Toggle + Ad Rotation</title>
+<title>Footer-sticky Minimized + Fullscreen Maximize iframe (Ad Rotation)</title>
 <style>
   :root{
     --border-width:3px;
     --border-radius:12px;
-    --bg:#f3f6fb;
-    --panel-bg:#fff;
+    --bg:#f6f8fb;
+    --panel-bg:#ffffff;
     --accent:#0b76ef;
-    --btn-color:#fff;
+    --btn-color:#ffffff;
     --btn-bg:#0b76ef;
-    --btn-padding:10px 12px;
+    --btn-padding:10px 14px;
     --btn-radius:10px;
-    --transition-time:360ms;
-    --minimized-height:48px;
+    --transition-time:320ms;
+    --minimized-height:56px; /* visible area in footer when minimized */
+    --minimized-width:320px; /* default width when minimized (responsive below) */
   }
 
-  html,body{height:100%;margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;}
+  html,body{height:100%;margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;color:#0b2540;}
 
-  /* container kept minimal (no visible text content) */
-  .wrap{width:100%;height:auto;box-sizing:border-box;}
+  /* page content placeholder to show this integrates with any page
+     you can remove the demo content below; iframe UI works independently */
+  main{min-height:100vh;padding:24px 16px 120px;box-sizing:border-box;}
+  h1{margin:6px 0 12px;font-size:20px;}
+  p{color:#334155;line-height:1.45;margin:6px 0 12px;}
 
-  .iframe-holder{position:relative;width:100%;display:flex;justify-content:center;align-items:flex-start;}
-
-  /* iframe panel - minimized by default */
-  .iframe-panel{
-    width:100%;
-    background:var(--panel-bg);
-    border:var(--border-width) solid rgba(11,118,239,0.12);
-    border-radius:var(--border-radius);
-    box-shadow:0 8px 24px rgba(12,24,50,0.06);
-    overflow:hidden;
-    transition:all var(--transition-time) cubic-bezier(.2,.9,.3,1);
-    box-sizing:border-box;
-    height:var(--minimized-height);
+  /* IFRAME WRAPPER: not part of page flow when minimized (fixed to bottom)
+     and becomes fullscreen fixed when maximized. This prevents it jumping to header/footer.
+  */
+  .iframe-wrapper{
+    position:fixed;
+    z-index:9998;
+    right:18px;
+    bottom:18px;
     display:flex;
     align-items:center;
+    justify-content:center;
+    transition: all var(--transition-time) cubic-bezier(.2,.9,.3,1);
+    pointer-events:auto;
   }
 
-  .iframe-panel iframe{width:100%;height:100%;border:0;display:block;background:#fff;}
+  /* Minimized state: small rounded panel in bottom area (footer-like) */
+  .iframe-wrapper.minimized{
+    width:var(--minimized-width);
+    height:var(--minimized-height);
+    border-radius:14px;
+    box-shadow:0 10px 30px rgba(11,118,239,0.12);
+    background:var(--panel-bg);
+    border:var(--border-width) solid rgba(11,118,239,0.08);
+    overflow:hidden;
+    right:16px;
+    bottom:16px;
+  }
 
-  /* fullscreen state */
-  .iframe-panel.fullscreen{
-    position:fixed;
-    inset:0;
+  /* On very small screens, stretch a bit to the full width minus margins */
+  @media (max-width:420px){
+    .iframe-wrapper.minimized{
+      left:12px;
+      right:12px;
+      width:auto;
+      height:var(--minimized-height);
+    }
+  }
+
+  /* Fullscreen state: cover entire viewport (top-level overlay) */
+  .iframe-wrapper.fullscreen{
+    top:0;
+    left:0;
+    right:0;
+    bottom:0;
     width:100%;
     height:100vh;
     border-radius:0;
-    margin:0;
-    z-index:9999;
-    box-shadow:none;
-    border:0;
+    background:transparent;
+    display:flex;
+    align-items:stretch;
+    justify-content:center;
+    z-index:99999;
   }
 
-  /* Toggle button - contains icon + text; placed so it can be fixed in fullscreen */
+  /* The actual panel that visually contains iframe when minimized (keeps border) */
+  .iframe-panel{
+    width:100%;
+    height:100%;
+    box-sizing:border-box;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:height var(--transition-time) ease, width var(--transition-time) ease;
+  }
+
+  /* iframe element - full size of panel */
+  .iframe-panel iframe{
+    width:100%;
+    height:100%;
+    border:0;
+    display:block;
+    background:#fff;
+  }
+
+  /* Toggle button with icon + text; placed so that when minimized it sits inside wrapper,
+     and when fullscreen it is positioned fixed top-right for easy minimize.
+  */
   .toggle-btn{
-    position:absolute;
-    right:12px;
-    top:50%;
-    transform:translateY(-50%);
-    z-index:20;
+    position:relative;
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
     background:var(--btn-bg);
     color:var(--btn-color);
     border:0;
@@ -497,125 +545,131 @@
     border-radius:var(--btn-radius);
     cursor:pointer;
     font-weight:700;
-    box-shadow:0 8px 18px rgba(11,118,239,0.18);
-    transition:transform 140ms ease,opacity 140ms ease,background-color 140ms;
-    user-select:none;
+    box-shadow:0 8px 20px rgba(11,118,239,0.18);
+    transition:transform 140ms ease, opacity 120ms ease;
     -webkit-tap-highlight-color:transparent;
     min-height:44px;
-    display:inline-flex;
-    gap:8px;
-    align-items:center;
-    justify-content:center;
-    touch-action:manipulation;
-    white-space:nowrap;
+    min-width:44px;
+    user-select:none;
   }
 
-  /* When iframe is fullscreen, button becomes fixed on top-right */
-  .iframe-panel.fullscreen + .toggle-btn,
-  .iframe-panel.fullscreen ~ .toggle-btn{
+  /* In minimized mode, show button at right inside wrapper (overlayed) */
+  .iframe-wrapper.minimized .toggle-btn{
+    position:absolute;
+    right:8px;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:10;
+  }
+
+  /* In fullscreen mode, move button to top-right corner and keep visible */
+  .iframe-wrapper.fullscreen .toggle-btn{
     position:fixed;
     top:14px;
     right:14px;
     transform:none;
-    z-index:10001;
+    z-index:100001;
+    border-radius:10px;
   }
 
-  /* Icon sizing */
-  .toggle-btn svg{width:18px;height:18px;display:block;flex-shrink:0;fill:currentColor;}
+  /* Button label and icon styles */
+  .toggle-btn .icon{width:18px;height:18px;display:inline-block;flex-shrink:0;fill:currentColor;}
+  .toggle-btn .label{font-size:14px;line-height:1;white-space:nowrap;}
 
-  /* Hide textual label on very small screens if needed, but we will show text per request */
   @media (max-width:420px){
-    .toggle-btn{ right:10px;padding:10px; }
-    /* keep label visible for clarity but it will wrap if necessary */
+    .toggle-btn .label{font-size:13px;}
+    .iframe-wrapper.fullscreen .toggle-btn{right:10px;top:10px;}
   }
 
-  /* overlay for UX when fullscreen (click to minimize) */
-  .overlay{display:none;}
-  .iframe-panel.fullscreen ~ .overlay{
+  /* Overlay (dim) shown only when fullscreen; placed under button but above iframe for click-to-minimize */
+  .fs-overlay{
+    display:none;
+  }
+  .iframe-wrapper.fullscreen ~ .fs-overlay{
     display:block;
     position:fixed;
     inset:0;
     background:rgba(0,0,0,0.22);
-    z-index:9998;
-    transition:opacity var(--transition-time);
+    z-index:99990;
+    transition:opacity var(--transition-time) ease;
   }
-
-  /* focus style */
-  .toggle-btn:focus{outline:3px solid rgba(11,118,239,0.18);outline-offset:2px;}
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="iframe-holder">
-      <!-- iframe panel (starts minimized) -->
-      <div id="iframePanel" class="iframe-panel" role="region" aria-label="Ad iframe panel" aria-expanded="false">
-        <iframe id="adIframe" src="about:blank" title="Ad frame" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
-      </div>
+  <main>
+    <h1 style="opacity:.15">Demo content (remove on your site)</h1>
+    <p style="opacity:.15">Ye sirf page content dikhane ke liye hai. Iframe widget bottom-right (minimized) par rahega irrespective of page header/footer.</p>
+  </main>
 
-      <!-- Toggle button with icon + text. Text updates for both states. -->
-      <button id="toggleBtn" class="toggle-btn" aria-controls="adIframe" aria-pressed="false" aria-label="Open Fullscreen">
-        <!-- Maximize icon (shown when minimized) -->
-        <svg id="iconMax" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M7 14H5v4h4v-2H7v-2zm0-4h2V8h2V5H5v5h2V6zm10 8h-2v2h-4v-4h2v2h4v-0zm-2-12v2h2v4h2V5h-4z"/>
-        </svg>
-        <!-- Minimize icon (shown when fullscreen) -->
-        <svg id="iconMin" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="display:none">
-          <path d="M3 13h2v-2H3v2zm4 0h10v-2H7v2zm10 8h2v-2h-2v2zM3 5h2V3H3v2zm16 0h2V3h-2v2zM7 21h10v-2H7v2z"/>
-        </svg>
-        <!-- Text label: will show "Maximize" or "Minimize" -->
-        <span id="btnText">Maximize</span>
-      </button>
-
-      <!-- overlay (click to minimize when fullscreen) -->
-      <div id="overlay" class="overlay" aria-hidden="true"></div>
+  <!-- IFRAME WRAPPER: starts minimized (class 'minimized'). When maximized we toggle to 'fullscreen'. -->
+  <div id="iframeWrapper" class="iframe-wrapper minimized" role="region" aria-label="Ad iframe container" aria-expanded="false">
+    <div id="iframePanel" class="iframe-panel" aria-hidden="false">
+      <iframe id="adIframe" src="about:blank" title="Ad iframe" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
     </div>
+
+    <!-- Toggle button with SVG icons + text. Text changes on state. -->
+    <button id="toggleBtn" class="toggle-btn" aria-controls="adIframe" aria-pressed="false" aria-label="Maximize">
+      <!-- Maximize icon (shown when minimized) -->
+      <svg id="iconMax" class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M7 14H5v4h4v-2H7v-2zm0-4h2V8h2V5H5v5h2V6zm10 8h-2v2h-4v-4h2v2h4v-0zm-2-12v2h2v4h2V5h-4z"/>
+      </svg>
+      <!-- Minimize icon (shown when fullscreen) -->
+      <svg id="iconMin" class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="display:none">
+        <path d="M3 13h2v-2H3v2zm4 0h10v-2H7v2zm10 8h2v-2h-2v2zM3 5h2V3H3v2zm16 0h2V3h-2v2zM7 21h10v-2H7v2z"/>
+      </svg>
+      <span id="btnLabel" class="label">Maximize</span>
+    </button>
   </div>
+
+  <!-- fullscreen overlay (click to minimize). Placed after wrapper so CSS sibling selector works. -->
+  <div id="fsOverlay" class="fs-overlay" aria-hidden="true"></div>
 
 <script>
 /*
-  Single-file implementation:
-  - Starts minimized (only button area visible)
-  - Button shows icon + text ("Maximize" when minimized, "Minimize" when fullscreen)
-  - Maximize => fullscreen (100vh), Minimize => collapsed to button area
-  - Rotate links every 90s by changing iframe.src (cache-buster appended)
-  - Rotation runs while tab visible; paused when tab hidden
-  - Keyboard accessible: Enter/Space toggle, Escape to minimize
-  - Replace placeholders in links[] with your Adsterra Smart Links
+  Footer-sticky minimized + fullscreen maximize iframe widget
+  - Starts minimized (fixed to bottom-right / footer area)
+  - Maximize makes iframe cover full viewport (100vh) and button moves to top-right
+  - Minimize collapses back to footer-sticky small panel
+  - Ad links rotate every 90s by changing iframe.src with cache-buster
+  - Rotation pauses when tab hidden and resumes when visible
+  - Icons + text update on toggle
+  - Place your Adsterra links in the `links` array below
 */
 
-/* ---------------- CONFIGURE LINKS HERE ---------------- */
+/* ---------------- CONFIGURE YOUR LINKS HERE ---------------- */
 const links = [
-  "https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b", // paste Adsterra Smart Link 1
+  "https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b", // paste Adsterra Smart Link 1 (use https)
   "https://tangiblearroganceride.com/afzg9a9nkv?key=5dcefc80a0b0e89fcfdb3d77f9660bbe"  // paste Adsterra Smart Link 2
 ];
 const ROTATION_MS = 90 * 1000; // 90 seconds
-/* ----------------------------------------------------- */
+/* ---------------------------------------------------------- */
 
-let currentIndex = 0;
-let rotationTimer = null;
-let isFullscreen = false;
-
-const iframePanel = document.getElementById('iframePanel');
-const adIframe = document.getElementById('adIframe');
+const wrapper = document.getElementById('iframeWrapper');
+const panel = document.getElementById('iframePanel');
+const iframe = document.getElementById('adIframe');
 const toggleBtn = document.getElementById('toggleBtn');
-const overlay = document.getElementById('overlay');
 const iconMax = document.getElementById('iconMax');
 const iconMin = document.getElementById('iconMin');
-const btnText = document.getElementById('btnText');
+const btnLabel = document.getElementById('btnLabel');
+const fsOverlay = document.getElementById('fsOverlay');
 
-/* Load current link with cache-buster to force reload */
+let isFullscreen = false;
+let currentIndex = 0;
+let rotationTimer = null;
+
+/* Load current link into iframe with cache-buster to force reload each time */
 function loadCurrentLink(){
   if (!links || links.length === 0){
-    adIframe.src = "about:blank";
+    iframe.src = "about:blank";
     return;
   }
   const url = links[currentIndex];
   const cb = "cb=" + Date.now();
   const sep = url.includes('?') ? '&' : '?';
-  adIframe.src = url + sep + cb;
+  iframe.src = url + sep + cb;
 }
 
-/* Rotation controls */
+/* Start rotation loop */
 function startRotation(){
   stopRotation();
   rotationTimer = setInterval(() => {
@@ -623,6 +677,8 @@ function startRotation(){
     loadCurrentLink();
   }, ROTATION_MS);
 }
+
+/* Stop rotation loop */
 function stopRotation(){
   if (rotationTimer){
     clearInterval(rotationTimer);
@@ -630,95 +686,102 @@ function stopRotation(){
   }
 }
 
-/* Update button text/icon and panel classes */
-function updateUI(){
-  if (isFullscreen){
-    iframePanel.classList.add('fullscreen');
-    overlay.style.display = 'block';
-    overlay.style.opacity = '1';
-    toggleBtn.setAttribute('aria-pressed','true');
-    toggleBtn.setAttribute('aria-label','Minimize');
-    iframePanel.setAttribute('aria-expanded','true');
-    iconMax.style.display = 'none';
-    iconMin.style.display = 'block';
-    btnText.textContent = 'Minimize';
+/* Apply UI for minimized state: footer-sticky small panel */
+function applyMinimized(){
+  isFullscreen = false;
+  wrapper.classList.remove('fullscreen');
+  wrapper.classList.add('minimized');
+  wrapper.setAttribute('aria-expanded','false');
+  toggleBtn.setAttribute('aria-pressed','false');
+  toggleBtn.setAttribute('aria-label','Maximize');
+  iconMax.style.display = 'block';
+  iconMin.style.display = 'none';
+  btnLabel.textContent = 'Maximize';
+  // ensure overlay hidden
+  fsOverlay.style.display = 'none';
+  // ensure wrapper sits above page content but not full screen (CSS handles fixed bottom placement)
+}
+
+/* Apply UI for fullscreen state: cover viewport */
+function applyFullscreen(){
+  isFullscreen = true;
+  wrapper.classList.remove('minimized');
+  wrapper.classList.add('fullscreen');
+  wrapper.setAttribute('aria-expanded','true');
+  toggleBtn.setAttribute('aria-pressed','true');
+  toggleBtn.setAttribute('aria-label','Minimize');
+  iconMax.style.display = 'none';
+  iconMin.style.display = 'block';
+  btnLabel.textContent = 'Minimize';
+  // show overlay under the button (overlay click minimizes)
+  fsOverlay.style.display = 'block';
+  fsOverlay.style.opacity = '1';
+}
+
+/* Toggle action */
+function toggle(){
+  if (isFullscreen) {
+    applyMinimized();
   } else {
-    iframePanel.classList.remove('fullscreen');
-    overlay.style.opacity = '0';
-    setTimeout(()=>{ if (!isFullscreen) overlay.style.display = 'none'; }, 320);
-    toggleBtn.setAttribute('aria-pressed','false');
-    toggleBtn.setAttribute('aria-label','Maximize');
-    iframePanel.setAttribute('aria-expanded','false');
-    iconMax.style.display = 'block';
-    iconMin.style.display = 'none';
-    btnText.textContent = 'Maximize';
-    // ensure minimized height applied explicitly for consistent rendering
-    iframePanel.style.height = getComputedStyle(document.documentElement).getPropertyValue('--minimized-height') || "48px";
+    applyFullscreen();
   }
 }
 
-/* Toggle fullscreen state */
-function toggleFullscreen(){
-  isFullscreen = !isFullscreen;
-  updateUI();
-}
-
-/* Event listeners */
+/* Button events (click + keyboard) */
 toggleBtn.addEventListener('click', function(e){
   e.preventDefault();
-  toggleFullscreen();
+  toggle();
 });
 toggleBtn.addEventListener('keydown', function(e){
-  if (e.key === 'Enter' || e.key === ' '){
+  if (e.key === 'Enter' || e.key === ' ') {
     e.preventDefault();
-    toggleFullscreen();
-  }
-});
-document.addEventListener('keydown', function(e){
-  if (e.key === 'Escape' && isFullscreen){
-    isFullscreen = false;
-    updateUI();
-  }
-});
-overlay.addEventListener('click', function(){
-  if (isFullscreen){
-    isFullscreen = false;
-    updateUI();
+    toggle();
   }
 });
 
-/* Pause rotation when tab not visible; resume when visible */
+/* Click on overlay minimizes */
+fsOverlay.addEventListener('click', function(){
+  if (isFullscreen) applyMinimized();
+});
+
+/* Escape key to minimize */
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape' && isFullscreen) applyMinimized();
+});
+
+/* Pause/resume rotation based on page visibility (interpreting "user page par hai") */
 document.addEventListener('visibilitychange', function(){
-  if (document.visibilityState === 'visible'){
+  if (document.visibilityState === 'visible') {
     if (!rotationTimer) startRotation();
   } else {
     stopRotation();
   }
 });
 
-/* Keep minimized height consistent on resize */
-window.addEventListener('resize', function(){
-  if (!isFullscreen){
-    iframePanel.style.height = getComputedStyle(document.documentElement).getPropertyValue('--minimized-height') || "48px";
-  }
-});
+/* Responsive: ensure minimized width adapts on small screens (CSS handles it).
+   We ensure wrapper remains fixed bottom by CSS to avoid moving into header/footer.
+*/
 
 /* Initialize */
 function init(){
+  // Defensive checks for links
   if (!links || links.length === 0){
-    console.warn("No links in links array. Paste your Adsterra Smart Links into the links array.");
-    adIframe.src = "about:blank";
+    console.warn("No links provided in links array. Please paste Adsterra Smart Links into the links array.");
+    iframe.src = "about:blank";
   } else {
     currentIndex = 0;
     loadCurrentLink();
     startRotation();
   }
-  // start minimized
-  isFullscreen = false;
-  updateUI();
-  iframePanel.style.height = getComputedStyle(document.documentElement).getPropertyValue('--minimized-height') || "48px";
+
+  // Start minimized and position in page footer area (CSS fixed bottom)
+  applyMinimized();
+
+  // Ensure iframe is not focus-trapped
+  iframe.setAttribute('aria-hidden','false');
 }
 
+/* Kick off after DOM ready */
 if (document.readyState === 'loading'){
   document.addEventListener('DOMContentLoaded', init);
 } else {
