@@ -332,47 +332,333 @@
 
 
 
-<!-- iframe markup (already present) -->
-<iframe id="adIframe" class="ad-iframe"
-  sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
-  referrerpolicy="no-referrer"
-  src="https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b"
-></iframe>
 
-<script>
-(function(){
-  const AD_URL = 'https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b';
-  const iframe = document.getElementById('adIframe');
 
-  // Detect successful load
-  let loaded = false;
-  iframe.addEventListener('load', ()=> { loaded = true; console.log('iframe loaded'); });
+<!doctype html>
+<html lang="hi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sticky iframe — Min/Max + Hide/Unhide + Mobile fallback</title>
+  <style>
+    :root{ --bar-height:92px; --accent:#ffb400; --z:99999; }
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:#fff;color:#111;}
+    main{min-height:100vh;padding:20px;}
 
-  // If load not fired in time, try mobile fallback (open in new tab/window)
-  setTimeout(()=>{
-    if(loaded) return;
-    // Extra check: inspect document inside iframe may throw if cross-origin
-    try {
-      // This will throw for cross-origin; ignore
-      const doc = iframe.contentDocument;
-      if(doc) loaded = true;
-    } catch(e){ /* cross-origin likely, continue to fallback */ }
+    /* Sticky window */
+    .sticky-window{ position:fixed; left:12px; right:12px; bottom:12px; max-width:1320px; margin:0 auto; height:var(--bar-height); z-index:var(--z); transition:height .28s ease, transform .28s ease; }
+    .hidden{ transform: translateY(140%); pointer-events:none; opacity:0; transition:transform .28s ease, opacity .2s ease; }
 
-    if(!loaded){
-      // On mobile: attempt to open in new tab/window (will be blocked unless user gesture)
-      const isMobile = /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
-      if(isMobile){
-        // Show a visible fallback button to the user so they can open it (preferred over auto-popup)
-        const btn = document.createElement('button');
-        btn.textContent = 'Open Ad (tap if not loading)';
-        btn.style.cssText = 'position:fixed;bottom:120px;right:12px;z-index:999999;padding:10px 14px;background:#ffb400;border-radius:8px;border:0';
-        btn.onclick = ()=> window.open(AD_URL, '_blank', 'noopener');
-        document.body.appendChild(btn);
-      } else {
-        // Desktop try direct open once (user gesture preferred)
-        try { window.open(AD_URL, '_blank', 'noopener'); } catch(e){ console.warn('popup blocked'); }
-      }
+    .window-frame{ border-radius:10px; overflow:visible; box-shadow:0 8px 28px rgba(0,0,0,0.4); background:linear-gradient(180deg,#0b0b0b,#050505); color:#fff; border:1px solid rgba(255,255,255,0.04); display:flex; flex-direction:column; height:100%; }
+    .titlebar{ display:flex; align-items:center; gap:10px; padding:8px 10px; user-select:none; background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); }
+    .title{ font-size:13px; color:#eaeaea; margin-right:auto; padding-left:6px; }
+    .tbtn{ width:36px; height:28px; border-radius:6px; border:0; background:rgba(255,255,255,0.04); color:#fff; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
+    .tbtn.primary{ background:linear-gradient(90deg,var(--accent),#ff8a00); color:#111; font-weight:700; }
+    .tbtn.small{ width:auto; padding:6px 10px; border-radius:8px; }
+
+    .content{ height: calc(var(--bar-height) - 44px); transition:height .28s ease, transform .20s ease, opacity .18s ease; position:relative; overflow:hidden; background:#000; }
+    .ad-iframe{ width:100%; height:100%; border:0; display:block; transform:translateY(0); transition:transform .28s ease, opacity .18s ease; will-change:transform,opacity; }
+
+    /* minimized: only titlebar visible */
+    .minimized{ height:44px !important; }
+    .minimized .content{ height:0 !important; }
+    .minimized .ad-iframe{ transform: translateY(-12px); opacity:0; pointer-events:none; }
+
+    /* maximized */
+    .maximized{ height:420px !important; }
+    .maximized .content{ height: calc(420px - 44px) !important; }
+    @media (max-width:900px){
+      .maximized{ height:72vh !important; max-height:92vh; }
+      .maximized .content{ height: calc(72vh - 44px) !important; }
+      :root{ --bar-height:86px; }
     }
-  }, 3000);
-})();
-</script>
+
+    /* Unhide tray button (appears when hidden) */
+    .tray-btn{ position:fixed; right:12px; bottom:12px; z-index:calc(var(--z)+20); background:var(--accent); color:#111; border:0; padding:10px 12px; border-radius:8px; box-shadow:0 6px 20px rgba(0,0,0,0.35); display:none; }
+    .tray-btn.visible{ display:block; }
+
+    /* Modal fallback for mobile when open fallback button pressed */
+    .modal{ position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:calc(var(--z)+10); display:flex; align-items:center; justify-content:center; visibility:hidden; opacity:0; transition:opacity .18s ease; }
+    .modal.open{ visibility:visible; opacity:1; }
+    .modal-inner{ width:100%; max-width:1100px; height:88vh; background:#000; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; }
+    .modal-top{ padding:8px 10px; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); color:#fff; }
+    .modal-iframe{ flex:1 1 auto; width:100%; border:0; }
+
+    /* mobile small adjustments */
+    @media (max-width:600px){
+      .tbtn{ width:34px; height:26px; }
+      .tbtn.small{ padding:6px 8px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h2>Demo: Sticky iframe with Min/Max + Hide/Unhide + Mobile fallback</h2>
+    <p>Page content here. The sticky window below supports minimize, maximize, hide (tray unhide) and shows a mobile fallback button if iframe doesn't load quickly.</p>
+    <div style="height:1400px;background:linear-gradient(#fff,#f3f3f3);margin-top:12px;border-radius:8px;"></div>
+  </main>
+
+  <!-- Sticky window -->
+  <div id="stickyWindow" class="sticky-window" aria-label="Sticky ad window">
+    <div id="windowFrame" class="window-frame">
+      <div class="titlebar">
+        <div class="title">Advertisement</div>
+        <button id="minBtn" class="tbtn" title="Minimize" aria-pressed="false">—</button>
+        <button id="maxBtn" class="tbtn" title="Maximize" aria-pressed="false">▢</button>
+        <button id="openBtn" class="tbtn primary" title="Open in window">Open</button>
+        <button id="hideBtn" class="tbtn small" title="Hide" aria-pressed="false">Hide</button>
+      </div>
+
+      <div id="content" class="content" aria-hidden="false">
+        <iframe id="adIframe" class="ad-iframe" title="Ad content"
+          sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+          referrerpolicy="no-referrer"
+          src="https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b"
+        ></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tray button to unhide -->
+  <button id="trayBtn" class="tray-btn" aria-hidden="true">Show Ad</button>
+
+  <!-- Modal fallback -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="modal-inner">
+      <div class="modal-top">
+        <div>Advertisement</div>
+        <div style="display:flex;gap:8px">
+          <button id="modalMin" class="tbtn">Min</button>
+          <button id="modalClose" class="tbtn">Close</button>
+        </div>
+      </div>
+      <iframe id="modalIframe" class="modal-iframe"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+        referrerpolicy="no-referrer"
+        src=""
+      ></iframe>
+    </div>
+  </div>
+
+  <script>
+  (function(){
+    'use strict';
+    const AD_URL = 'https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b';
+    const RELOAD_MS = 90_000;
+    const IFRAME_FALLBACK_TIMEOUT = 3000; // ms to wait for iframe load on mobile
+
+    // Elements
+    const stickyWindow = document.getElementById('stickyWindow');
+    const windowFrame = document.getElementById('windowFrame');
+    const minBtn = document.getElementById('minBtn');
+    const maxBtn = document.getElementById('maxBtn');
+    const openBtn = document.getElementById('openBtn');
+    const hideBtn = document.getElementById('hideBtn');
+    const content = document.getElementById('content');
+    const adIframe = document.getElementById('adIframe');
+
+    const trayBtn = document.getElementById('trayBtn');
+
+    const modal = document.getElementById('modal');
+    const modalIframe = document.getElementById('modalIframe');
+    const modalClose = document.getElementById('modalClose');
+    const modalMin = document.getElementById('modalMin');
+
+    // State
+    let isMinimized = false;
+    let isMaximized = false;
+    let isHidden = false;
+    let externalWin = null;
+    let reloadTimer = null;
+    let iframeLoaded = false;
+    let fallbackShown = false;
+
+    function isMobile(){ return /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent); }
+
+    // Start reload loop immediately (ad loads immediately from src attribute)
+    function startReloadLoop(){
+      stopReload();
+      reloadTimer = setInterval(()=> {
+        try {
+          const url = new URL(adIframe.src || AD_URL, location.href);
+          url.searchParams.set('_ts', Date.now());
+          adIframe.src = url.toString();
+        } catch(e){
+          adIframe.src = AD_URL + (AD_URL.includes('?') ? '&' : '?') + '_ts=' + Date.now();
+        }
+        // also refresh modal iframe if open
+        if(modal.classList.contains('open')){
+          try {
+            const murl = new URL(modalIframe.src || AD_URL, location.href);
+            murl.searchParams.set('_ts', Date.now());
+            modalIframe.src = murl.toString();
+          } catch(e){
+            modalIframe.src = AD_URL + (AD_URL.includes('?') ? '&' : '?') + '_ts=' + Date.now();
+          }
+        }
+      }, RELOAD_MS);
+    }
+    function stopReload(){ if(reloadTimer){ clearInterval(reloadTimer); reloadTimer = null; } }
+
+    startReloadLoop();
+
+    // Iframe load detection
+    adIframe.addEventListener('load', ()=> {
+      iframeLoaded = true;
+    });
+
+    // If on mobile and iframe doesn't fire load quickly, show fallback controls (open button + visible note)
+    setTimeout(()=> {
+      if(!iframeLoaded && isMobile()){
+        showFallback();
+      }
+    }, IFRAME_FALLBACK_TIMEOUT);
+
+    function showFallback(){
+      if(fallbackShown) return;
+      fallbackShown = true;
+      // load modal iframe src for user-open action
+      modalIframe.src = AD_URL;
+      // create a small persistent floating button near sticky window to open in browser tab
+      const openFallback = document.createElement('button');
+      openFallback.textContent = 'Open Ad (tap if not loading)';
+      openFallback.style.cssText = 'position:fixed;right:12px;bottom:84px;z-index:999999;padding:10px 12px;border-radius:8px;border:0;background:var(--accent);color:#111;font-weight:700';
+      openFallback.addEventListener('click', ()=> {
+        // open in new tab (user gesture)
+        window.open(AD_URL, '_blank', 'noopener');
+      });
+      document.body.appendChild(openFallback);
+    }
+
+    // Minimize
+    minBtn.addEventListener('click', ()=>{
+      isMinimized = !isMinimized;
+      if(isMinimized){
+        windowFrame.classList.add('minimized');
+        minBtn.setAttribute('aria-pressed','true');
+      } else {
+        windowFrame.classList.remove('minimized');
+        minBtn.setAttribute('aria-pressed','false');
+      }
+    });
+
+    // Maximize
+    maxBtn.addEventListener('click', ()=>{
+      isMaximized = !isMaximized;
+      if(isMaximized){
+        stickyWindow.classList.add('maximized');
+        maxBtn.setAttribute('aria-pressed','true');
+      } else {
+        stickyWindow.classList.remove('maximized');
+        maxBtn.setAttribute('aria-pressed','false');
+      }
+      // ensure iframe is loaded (we keep iframe loaded even if minimized)
+      if(!iframeLoaded){
+        // try to (re)assign to force load
+        try { adIframe.src = AD_URL + (AD_URL.includes('?') ? '&' : '?') + '_ts=' + Date.now(); } catch(e){}
+      }
+    });
+
+    // Hide (move to tray)
+    hideBtn.addEventListener('click', ()=>{
+      isHidden = true;
+      stickyWindow.classList.add('hidden');
+      trayBtn.classList.add('visible');
+      trayBtn.setAttribute('aria-hidden','false');
+    });
+
+    // Tray unhide
+    trayBtn.addEventListener('click', ()=>{
+      isHidden = false;
+      stickyWindow.classList.remove('hidden');
+      trayBtn.classList.remove('visible');
+      trayBtn.setAttribute('aria-hidden','true');
+    });
+
+    // Open behavior: desktop -> named window toggle; mobile -> modal open
+    openBtn.addEventListener('click', ()=>{
+      if(!isMobile()){
+        // Desktop window toggle
+        const name = 'stickyAd_app_v1';
+        if(!externalWin || externalWin.closed){
+          externalWin = window.open(AD_URL, name, 'noopener,noreferrer,toolbar=yes,scrollbars=yes,resizable=yes,width=980,height=700');
+          openBtn.textContent = 'Opened';
+          openBtn.setAttribute('aria-pressed','true');
+          const poll = setInterval(()=> {
+            if(!externalWin || externalWin.closed){
+              clearInterval(poll);
+              externalWin = null;
+              openBtn.textContent = 'Open';
+              openBtn.setAttribute('aria-pressed','false');
+            }
+          },700);
+        } else {
+          try{ externalWin.close(); } catch(e){}
+          externalWin = null;
+          openBtn.textContent = 'Open';
+          openBtn.setAttribute('aria-pressed','false');
+        }
+      } else {
+        // Mobile: open modal fallback (user gesture)
+        modal.classList.add('open');
+        modal.setAttribute('aria-hidden','false');
+        // ensure modal iframe has src
+        if(!modalIframe.src) modalIframe.src = AD_URL;
+      }
+    });
+
+    // Modal controls
+    modalClose.addEventListener('click', ()=> {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+    });
+    modalMin.addEventListener('click', ()=> {
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+      if(!isMinimized){
+        isMinimized = true;
+        windowFrame.classList.add('minimized');
+        minBtn.setAttribute('aria-pressed','true');
+      }
+    });
+
+    modal.addEventListener('click',(ev)=>{ if(ev.target===modal){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); } });
+
+    // Keyboard accessibility
+    document.addEventListener('keydown',(e)=>{
+      if(e.key === 'Escape'){
+        if(modal.classList.contains('open')){
+          modal.classList.remove('open'); modal.setAttribute('aria-hidden','true');
+        } else if(externalWin && !externalWin.closed){
+          try{ externalWin.close(); } catch(e){}
+          externalWin = null;
+          openBtn.textContent = 'Open';
+          openBtn.setAttribute('aria-pressed','false');
+        } else if(stickyWindow.classList.contains('maximized')){
+          stickyWindow.classList.remove('maximized');
+          maxBtn.setAttribute('aria-pressed','false');
+        }
+      }
+    });
+
+    // Close external window on unload
+    window.addEventListener('beforeunload', ()=> {
+      try { if(externalWin && !externalWin.closed) externalWin.close(); } catch(e){}
+    });
+
+    // Small API
+    window.StickyAdControls = {
+      minimize(){ if(!isMinimized) minBtn.click(); },
+      restore(){ if(isMinimized) minBtn.click(); },
+      maximize(){ if(!isMaximized) maxBtn.click(); },
+      unmaximize(){ if(isMaximized) maxBtn.click(); },
+      hide(){ if(!isHidden) hideBtn.click(); },
+      unhide(){ if(isHidden) trayBtn.click(); },
+      openExternal(){ openBtn.click(); },
+      forceReload(){ try { adIframe.src = AD_URL + (AD_URL.includes('?') ? '&' : '?') + '_ts=' + Date.now(); } catch(e){} }
+    };
+
+  })();
+  </script>
+</body>
+</html>
