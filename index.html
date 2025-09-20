@@ -429,35 +429,33 @@
 <html lang="hi">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Footer-sticky Minimized + Fullscreen Maximize iframe (Ad Rotation)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<title>Footer-sticky iframe (Minimize / Fullscreen) + Ad Rotation</title>
 <style>
   :root{
     --border-width:3px;
     --border-radius:12px;
-    --bg:#f6f8fb;
+    --bg:#ffffff;
     --panel-bg:#ffffff;
     --accent:#0b76ef;
     --btn-color:#ffffff;
     --btn-bg:#0b76ef;
     --btn-padding:10px 14px;
     --btn-radius:10px;
-    --transition-time:320ms;
-    --minimized-height:56px; /* visible area in footer when minimized */
-    --minimized-width:320px; /* default width when minimized (responsive below) */
+    --transition-time:280ms;
+    --minimized-height:56px;
+    --minimized-width:360px;
   }
 
-  html,body{height:100%;margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;color:#0b2540;}
+  html,body{
+    height:100%;
+    margin:0;
+    background:var(--bg);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;
+    -webkit-font-smoothing:antialiased;
+    -webkit-overflow-scrolling:touch;
+  }
 
-  /* page content placeholder to show this integrates with any page
-     you can remove the demo content below; iframe UI works independently */
-  main{min-height:100vh;padding:24px 16px 120px;box-sizing:border-box;}
-  h1{margin:6px 0 12px;font-size:20px;}
-  p{color:#334155;line-height:1.45;margin:6px 0 12px;}
-
-  /* IFRAME WRAPPER: not part of page flow when minimized (fixed to bottom)
-     and becomes fullscreen fixed when maximized. This prevents it jumping to header/footer.
-  */
   .iframe-wrapper{
     position:fixed;
     z-index:9998;
@@ -468,9 +466,9 @@
     justify-content:center;
     transition: all var(--transition-time) cubic-bezier(.2,.9,.3,1);
     pointer-events:auto;
+    touch-action:manipulation;
   }
 
-  /* Minimized state: small rounded panel in bottom area (footer-like) */
   .iframe-wrapper.minimized{
     width:var(--minimized-width);
     height:var(--minimized-height);
@@ -483,17 +481,17 @@
     bottom:16px;
   }
 
-  /* On very small screens, stretch a bit to the full width minus margins */
-  @media (max-width:420px){
+  @media (max-width:520px){
     .iframe-wrapper.minimized{
       left:12px;
       right:12px;
       width:auto;
       height:var(--minimized-height);
+      border-radius:12px;
+      bottom:12px;
     }
   }
 
-  /* Fullscreen state: cover entire viewport (top-level overlay) */
   .iframe-wrapper.fullscreen{
     top:0;
     left:0;
@@ -509,7 +507,6 @@
     z-index:99999;
   }
 
-  /* The actual panel that visually contains iframe when minimized (keeps border) */
   .iframe-panel{
     width:100%;
     height:100%;
@@ -519,9 +516,9 @@
     align-items:center;
     justify-content:center;
     transition:height var(--transition-time) ease, width var(--transition-time) ease;
+    background:transparent;
   }
 
-  /* iframe element - full size of panel */
   .iframe-panel iframe{
     width:100%;
     height:100%;
@@ -530,9 +527,6 @@
     background:#fff;
   }
 
-  /* Toggle button with icon + text; placed so that when minimized it sits inside wrapper,
-     and when fullscreen it is positioned fixed top-right for easy minimize.
-  */
   .toggle-btn{
     position:relative;
     display:inline-flex;
@@ -549,11 +543,9 @@
     transition:transform 140ms ease, opacity 120ms ease;
     -webkit-tap-highlight-color:transparent;
     min-height:44px;
-    min-width:44px;
     user-select:none;
   }
 
-  /* In minimized mode, show button at right inside wrapper (overlayed) */
   .iframe-wrapper.minimized .toggle-btn{
     position:absolute;
     right:8px;
@@ -562,29 +554,23 @@
     z-index:10;
   }
 
-  /* In fullscreen mode, move button to top-right corner and keep visible */
   .iframe-wrapper.fullscreen .toggle-btn{
     position:fixed;
-    top:14px;
-    right:14px;
+    top:12px;
+    right:12px;
     transform:none;
     z-index:100001;
-    border-radius:10px;
   }
 
-  /* Button label and icon styles */
   .toggle-btn .icon{width:18px;height:18px;display:inline-block;flex-shrink:0;fill:currentColor;}
-  .toggle-btn .label{font-size:14px;line-height:1;white-space:nowrap;}
+  .toggle-btn .label{font-size:14px;line-height:1;white-space:nowrap;color:inherit}
 
   @media (max-width:420px){
     .toggle-btn .label{font-size:13px;}
     .iframe-wrapper.fullscreen .toggle-btn{right:10px;top:10px;}
   }
 
-  /* Overlay (dim) shown only when fullscreen; placed under button but above iframe for click-to-minimize */
-  .fs-overlay{
-    display:none;
-  }
+  .fs-overlay{display:none;}
   .iframe-wrapper.fullscreen ~ .fs-overlay{
     display:block;
     position:fixed;
@@ -592,28 +578,22 @@
     background:rgba(0,0,0,0.22);
     z-index:99990;
     transition:opacity var(--transition-time) ease;
+    -webkit-tap-highlight-color:transparent;
   }
+
+  .toggle-btn:focus{outline:3px solid rgba(11,118,239,0.18);outline-offset:2px;}
 </style>
 </head>
 <body>
-  <main>
-    <h1 style="opacity:.15">Demo content (remove on your site)</h1>
-    <p style="opacity:.15">Ye sirf page content dikhane ke liye hai. Iframe widget bottom-right (minimized) par rahega irrespective of page header/footer.</p>
-  </main>
-
-  <!-- IFRAME WRAPPER: starts minimized (class 'minimized'). When maximized we toggle to 'fullscreen'. -->
   <div id="iframeWrapper" class="iframe-wrapper minimized" role="region" aria-label="Ad iframe container" aria-expanded="false">
     <div id="iframePanel" class="iframe-panel" aria-hidden="false">
-      <iframe id="adIframe" src="about:blank" title="Ad iframe" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+      <iframe id="adIframe" src="about:blank" title="Ad iframe"></iframe>
     </div>
 
-    <!-- Toggle button with SVG icons + text. Text changes on state. -->
     <button id="toggleBtn" class="toggle-btn" aria-controls="adIframe" aria-pressed="false" aria-label="Maximize">
-      <!-- Maximize icon (shown when minimized) -->
       <svg id="iconMax" class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path d="M7 14H5v4h4v-2H7v-2zm0-4h2V8h2V5H5v5h2V6zm10 8h-2v2h-4v-4h2v2h4v-0zm-2-12v2h2v4h2V5h-4z"/>
       </svg>
-      <!-- Minimize icon (shown when fullscreen) -->
       <svg id="iconMin" class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="display:none">
         <path d="M3 13h2v-2H3v2zm4 0h10v-2H7v2zm10 8h2v-2h-2v2zM3 5h2V3H3v2zm16 0h2V3h-2v2zM7 21h10v-2H7v2z"/>
       </svg>
@@ -621,31 +601,23 @@
     </button>
   </div>
 
-  <!-- fullscreen overlay (click to minimize). Placed after wrapper so CSS sibling selector works. -->
   <div id="fsOverlay" class="fs-overlay" aria-hidden="true"></div>
 
 <script>
 /*
-  Footer-sticky minimized + fullscreen maximize iframe widget
-  - Starts minimized (fixed to bottom-right / footer area)
-  - Maximize makes iframe cover full viewport (100vh) and button moves to top-right
-  - Minimize collapses back to footer-sticky small panel
-  - Ad links rotate every 90s by changing iframe.src with cache-buster
-  - Rotation pauses when tab hidden and resumes when visible
-  - Icons + text update on toggle
-  - Place your Adsterra links in the `links` array below
+  Inserted Adsterra Smart Links and full widget behavior.
+  Links rotate every 90 seconds with cache-buster.
+  Rotation pauses when tab hidden and resumes when visible.
+  For mobile compatibility sandbox attribute was removed.
 */
 
-/* ---------------- CONFIGURE YOUR LINKS HERE ---------------- */
 const links = [
-  "https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b", // paste Adsterra Smart Link 1 (use https)
-  "https://tangiblearroganceride.com/afzg9a9nkv?key=5dcefc80a0b0e89fcfdb3d77f9660bbe"  // paste Adsterra Smart Link 2
+  "https://tangiblearroganceride.com/afzg9a9nkv?key=5dcefc80a0b0e89fcfdb3d77f9660bbe",
+  "https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b"
 ];
-const ROTATION_MS = 90 * 1000; // 90 seconds
-/* ---------------------------------------------------------- */
+const ROTATION_MS = 90 * 1000;
 
 const wrapper = document.getElementById('iframeWrapper');
-const panel = document.getElementById('iframePanel');
 const iframe = document.getElementById('adIframe');
 const toggleBtn = document.getElementById('toggleBtn');
 const iconMax = document.getElementById('iconMax');
@@ -657,7 +629,6 @@ let isFullscreen = false;
 let currentIndex = 0;
 let rotationTimer = null;
 
-/* Load current link into iframe with cache-buster to force reload each time */
 function loadCurrentLink(){
   if (!links || links.length === 0){
     iframe.src = "about:blank";
@@ -669,7 +640,6 @@ function loadCurrentLink(){
   iframe.src = url + sep + cb;
 }
 
-/* Start rotation loop */
 function startRotation(){
   stopRotation();
   rotationTimer = setInterval(() => {
@@ -678,7 +648,6 @@ function startRotation(){
   }, ROTATION_MS);
 }
 
-/* Stop rotation loop */
 function stopRotation(){
   if (rotationTimer){
     clearInterval(rotationTimer);
@@ -686,7 +655,6 @@ function stopRotation(){
   }
 }
 
-/* Apply UI for minimized state: footer-sticky small panel */
 function applyMinimized(){
   isFullscreen = false;
   wrapper.classList.remove('fullscreen');
@@ -697,12 +665,12 @@ function applyMinimized(){
   iconMax.style.display = 'block';
   iconMin.style.display = 'none';
   btnLabel.textContent = 'Maximize';
-  // ensure overlay hidden
   fsOverlay.style.display = 'none';
-  // ensure wrapper sits above page content but not full screen (CSS handles fixed bottom placement)
+  wrapper.style.right = '';
+  wrapper.style.left = '';
+  wrapper.style.bottom = '';
 }
 
-/* Apply UI for fullscreen state: cover viewport */
 function applyFullscreen(){
   isFullscreen = true;
   wrapper.classList.remove('minimized');
@@ -713,12 +681,10 @@ function applyFullscreen(){
   iconMax.style.display = 'none';
   iconMin.style.display = 'block';
   btnLabel.textContent = 'Minimize';
-  // show overlay under the button (overlay click minimizes)
   fsOverlay.style.display = 'block';
   fsOverlay.style.opacity = '1';
 }
 
-/* Toggle action */
 function toggle(){
   if (isFullscreen) {
     applyMinimized();
@@ -727,7 +693,6 @@ function toggle(){
   }
 }
 
-/* Button events (click + keyboard) */
 toggleBtn.addEventListener('click', function(e){
   e.preventDefault();
   toggle();
@@ -739,17 +704,14 @@ toggleBtn.addEventListener('keydown', function(e){
   }
 });
 
-/* Click on overlay minimizes */
 fsOverlay.addEventListener('click', function(){
   if (isFullscreen) applyMinimized();
 });
 
-/* Escape key to minimize */
 document.addEventListener('keydown', function(e){
   if (e.key === 'Escape' && isFullscreen) applyMinimized();
 });
 
-/* Pause/resume rotation based on page visibility (interpreting "user page par hai") */
 document.addEventListener('visibilitychange', function(){
   if (document.visibilityState === 'visible') {
     if (!rotationTimer) startRotation();
@@ -758,30 +720,28 @@ document.addEventListener('visibilitychange', function(){
   }
 });
 
-/* Responsive: ensure minimized width adapts on small screens (CSS handles it).
-   We ensure wrapper remains fixed bottom by CSS to avoid moving into header/footer.
-*/
+let firstUserTouchHandled = false;
+function onFirstUserGesture(){
+  if (firstUserTouchHandled) return;
+  firstUserTouchHandled = true;
+  loadCurrentLink();
+}
+window.addEventListener('touchstart', onFirstUserGesture, { once: true, passive: true });
+window.addEventListener('click', onFirstUserGesture, { once: true, passive: true });
 
-/* Initialize */
 function init(){
-  // Defensive checks for links
   if (!links || links.length === 0){
-    console.warn("No links provided in links array. Please paste Adsterra Smart Links into the links array.");
+    console.warn("No links provided in links array. Paste Adsterra Smart Links into the links array.");
     iframe.src = "about:blank";
   } else {
     currentIndex = 0;
     loadCurrentLink();
     startRotation();
   }
-
-  // Start minimized and position in page footer area (CSS fixed bottom)
   applyMinimized();
-
-  // Ensure iframe is not focus-trapped
-  iframe.setAttribute('aria-hidden','false');
+  iframe.style.pointerEvents = 'auto';
 }
 
-/* Kick off after DOM ready */
 if (document.readyState === 'loading'){
   document.addEventListener('DOMContentLoaded', init);
 } else {
