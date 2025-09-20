@@ -82,20 +82,7 @@
       :root{ --bar-height:86px; }
     }
 
-    /* Modal fallback for mobile */
-    .modal{ position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:calc(var(--z)+10); display:flex; align-items:center; justify-content:center; visibility:hidden; opacity:0; transition:opacity .18s ease; }
-    .modal.open{ visibility:visible; opacity:1; }
-    .modal-inner{ width:100%; max-width:1100px; height:88vh; background:#000; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; }
-    .modal-top{ padding:8px 10px; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); color:#fff; }
-    .modal-iframe{ flex:1 1 auto; width:100%; border:0; }
-  </style>
-</head>
-<body>
-  <main>
-    <h2>Demo: Sticky iframe (Immediate load)</h2>
-    <p>यहाँ page content है. नीचे वाला sticky window minimized/maximized behavior दिखाता है।</p>
-    <div style="height:1400px;background:linear-gradient(#fff,#f3f3f3);margin-top:12px;border-radius:8px;"></div>
-  </main>
+
 
   <!-- Sticky window -->
   <div id="stickyWindow" class="sticky-window" aria-label="Sticky ad window">
