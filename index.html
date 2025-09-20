@@ -325,3 +325,54 @@
   </script>
 </body>
 </html>
+
+
+
+
+
+
+
+<!-- iframe markup (already present) -->
+<iframe id="adIframe" class="ad-iframe"
+  sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+  referrerpolicy="no-referrer"
+  src="https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b"
+></iframe>
+
+<script>
+(function(){
+  const AD_URL = 'https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b';
+  const iframe = document.getElementById('adIframe');
+
+  // Detect successful load
+  let loaded = false;
+  iframe.addEventListener('load', ()=> { loaded = true; console.log('iframe loaded'); });
+
+  // If load not fired in time, try mobile fallback (open in new tab/window)
+  setTimeout(()=>{
+    if(loaded) return;
+    // Extra check: inspect document inside iframe may throw if cross-origin
+    try {
+      // This will throw for cross-origin; ignore
+      const doc = iframe.contentDocument;
+      if(doc) loaded = true;
+    } catch(e){ /* cross-origin likely, continue to fallback */ }
+
+    if(!loaded){
+      // On mobile: attempt to open in new tab/window (will be blocked unless user gesture)
+      const isMobile = /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+      if(isMobile){
+        // Show a visible fallback button to the user so they can open it (preferred over auto-popup)
+        const btn = document.createElement('button');
+        btn.textContent = 'Open Ad (tap if not loading)';
+        btn.style.cssText = 'position:fixed;bottom:120px;right:12px;z-index:999999;padding:10px 14px;background:#ffb400;border-radius:8px;border:0';
+        btn.onclick = ()=> window.open(AD_URL, '_blank', 'noopener');
+        document.body.appendChild(btn);
+      } else {
+        // Desktop try direct open once (user gesture preferred)
+        try { window.open(AD_URL, '_blank', 'noopener'); } catch(e){ console.warn('popup blocked'); }
+      }
+    }
+  }, 3000);
+})();
+</script>
