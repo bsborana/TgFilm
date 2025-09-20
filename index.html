@@ -339,16 +339,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sticky iframe — Min/Max + Hide/Unhide + Mobile fallback</title>
+  <title>Sticky iframe — Immediate load, Min/Max (no hide)</title>
   <style>
     :root{ --bar-height:92px; --accent:#ffb400; --z:99999; }
     html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:#fff;color:#111;}
     main{min-height:100vh;padding:20px;}
 
     /* Sticky window */
-    .sticky-window{ position:fixed; left:12px; right:12px; bottom:12px; max-width:1320px; margin:0 auto; height:var(--bar-height); z-index:var(--z); transition:height .28s ease, transform .28s ease; }
-    .hidden{ transform: translateY(140%); pointer-events:none; opacity:0; transition:transform .28s ease, opacity .2s ease; }
-
+    .sticky-window{ position:fixed; left:12px; right:12px; bottom:12px; max-width:1320px; margin:0 auto; height:var(--bar-height); z-index:var(--z); transition:height .28s ease; }
     .window-frame{ border-radius:10px; overflow:visible; box-shadow:0 8px 28px rgba(0,0,0,0.4); background:linear-gradient(180deg,#0b0b0b,#050505); color:#fff; border:1px solid rgba(255,255,255,0.04); display:flex; flex-direction:column; height:100%; }
     .titlebar{ display:flex; align-items:center; gap:10px; padding:8px 10px; user-select:none; background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); }
     .title{ font-size:13px; color:#eaeaea; margin-right:auto; padding-left:6px; }
@@ -373,32 +371,26 @@
       :root{ --bar-height:86px; }
     }
 
-    /* Unhide tray button (appears when hidden) */
-    .tray-btn{ position:fixed; right:12px; bottom:12px; z-index:calc(var(--z)+20); background:var(--accent); color:#111; border:0; padding:10px 12px; border-radius:8px; box-shadow:0 6px 20px rgba(0,0,0,0.35); display:none; }
-    .tray-btn.visible{ display:block; }
-
-    /* Modal fallback for mobile when open fallback button pressed */
+    /* Modal fallback */
     .modal{ position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:calc(var(--z)+10); display:flex; align-items:center; justify-content:center; visibility:hidden; opacity:0; transition:opacity .18s ease; }
     .modal.open{ visibility:visible; opacity:1; }
     .modal-inner{ width:100%; max-width:1100px; height:88vh; background:#000; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; }
     .modal-top{ padding:8px 10px; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); color:#fff; }
     .modal-iframe{ flex:1 1 auto; width:100%; border:0; }
 
-    /* mobile small adjustments */
-    @media (max-width:600px){
-      .tbtn{ width:34px; height:26px; }
-      .tbtn.small{ padding:6px 8px; }
-    }
+    /* quick visible fallback button for mobile if iframe blocked */
+    .mobile-fallback-btn{ position:fixed; right:12px; bottom:84px; z-index:999999; padding:10px 12px; border-radius:8px; border:0; background:var(--accent); color:#111; font-weight:700; display:none; }
+    .mobile-fallback-btn.visible{ display:block; }
   </style>
 </head>
 <body>
   <main>
-    <h2>Demo: Sticky iframe with Min/Max + Hide/Unhide + Mobile fallback</h2>
-    <p>Page content here. The sticky window below supports minimize, maximize, hide (tray unhide) and shows a mobile fallback button if iframe doesn't load quickly.</p>
+    <h2>Sticky iframe (Immediate load)</h2>
+    <p>यह पेज टेस्ट के लिए है. नीचे वाला sticky iframe minimize/maximize के साथ काम करेगा।</p>
     <div style="height:1400px;background:linear-gradient(#fff,#f3f3f3);margin-top:12px;border-radius:8px;"></div>
   </main>
 
-  <!-- Sticky window -->
+  <!-- Sticky window (no hide/unhide) -->
   <div id="stickyWindow" class="sticky-window" aria-label="Sticky ad window">
     <div id="windowFrame" class="window-frame">
       <div class="titlebar">
@@ -406,10 +398,10 @@
         <button id="minBtn" class="tbtn" title="Minimize" aria-pressed="false">—</button>
         <button id="maxBtn" class="tbtn" title="Maximize" aria-pressed="false">▢</button>
         <button id="openBtn" class="tbtn primary" title="Open in window">Open</button>
-        <button id="hideBtn" class="tbtn small" title="Hide" aria-pressed="false">Hide</button>
       </div>
 
       <div id="content" class="content" aria-hidden="false">
+        <!-- Direct src, no srcdoc placeholder -->
         <iframe id="adIframe" class="ad-iframe" title="Ad content"
           sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
           referrerpolicy="no-referrer"
@@ -419,14 +411,11 @@
     </div>
   </div>
 
-  <!-- Tray button to unhide -->
-  <button id="trayBtn" class="tray-btn" aria-hidden="true">Show Ad</button>
-
-  <!-- Modal fallback -->
+  <!-- Mobile modal fallback -->
   <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal-inner">
       <div class="modal-top">
-        <div>Advertisement</div>
+        <div style="color:#fff">Advertisement</div>
         <div style="display:flex;gap:8px">
           <button id="modalMin" class="tbtn">Min</button>
           <button id="modalClose" class="tbtn">Close</button>
@@ -440,12 +429,16 @@
     </div>
   </div>
 
+  <!-- Mobile fallback open button (shown only if iframe seems blocked on mobile) -->
+  <button id="mobileFallbackBtn" class="mobile-fallback-btn">Open Ad in new tab</button>
+
   <script>
   (function(){
     'use strict';
+
     const AD_URL = 'https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b';
     const RELOAD_MS = 90_000;
-    const IFRAME_FALLBACK_TIMEOUT = 3000; // ms to wait for iframe load on mobile
+    const MOBILE_FALLBACK_TIMEOUT = 3000; // ms to decide fallback on mobile
 
     // Elements
     const stickyWindow = document.getElementById('stickyWindow');
@@ -453,21 +446,18 @@
     const minBtn = document.getElementById('minBtn');
     const maxBtn = document.getElementById('maxBtn');
     const openBtn = document.getElementById('openBtn');
-    const hideBtn = document.getElementById('hideBtn');
     const content = document.getElementById('content');
     const adIframe = document.getElementById('adIframe');
-
-    const trayBtn = document.getElementById('trayBtn');
 
     const modal = document.getElementById('modal');
     const modalIframe = document.getElementById('modalIframe');
     const modalClose = document.getElementById('modalClose');
     const modalMin = document.getElementById('modalMin');
 
-    // State
+    const mobileFallbackBtn = document.getElementById('mobileFallbackBtn');
+
     let isMinimized = false;
     let isMaximized = false;
-    let isHidden = false;
     let externalWin = null;
     let reloadTimer = null;
     let iframeLoaded = false;
@@ -475,7 +465,7 @@
 
     function isMobile(){ return /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent); }
 
-    // Start reload loop immediately (ad loads immediately from src attribute)
+    // Start reload loop immediately
     function startReloadLoop(){
       stopReload();
       reloadTimer = setInterval(()=> {
@@ -486,7 +476,6 @@
         } catch(e){
           adIframe.src = AD_URL + (AD_URL.includes('?') ? '&' : '?') + '_ts=' + Date.now();
         }
-        // also refresh modal iframe if open
         if(modal.classList.contains('open')){
           try {
             const murl = new URL(modalIframe.src || AD_URL, location.href);
@@ -502,35 +491,22 @@
 
     startReloadLoop();
 
-    // Iframe load detection
-    adIframe.addEventListener('load', ()=> {
-      iframeLoaded = true;
-    });
+    // Detect load event on iframe
+    adIframe.addEventListener('load', ()=> { iframeLoaded = true; });
 
-    // If on mobile and iframe doesn't fire load quickly, show fallback controls (open button + visible note)
+    // If mobile and iframe not loaded in time, show visible fallback to open in new tab
     setTimeout(()=> {
       if(!iframeLoaded && isMobile()){
-        showFallback();
+        fallbackShown = true;
+        mobileFallbackBtn.classList.add('visible');
       }
-    }, IFRAME_FALLBACK_TIMEOUT);
+    }, MOBILE_FALLBACK_TIMEOUT);
 
-    function showFallback(){
-      if(fallbackShown) return;
-      fallbackShown = true;
-      // load modal iframe src for user-open action
-      modalIframe.src = AD_URL;
-      // create a small persistent floating button near sticky window to open in browser tab
-      const openFallback = document.createElement('button');
-      openFallback.textContent = 'Open Ad (tap if not loading)';
-      openFallback.style.cssText = 'position:fixed;right:12px;bottom:84px;z-index:999999;padding:10px 12px;border-radius:8px;border:0;background:var(--accent);color:#111;font-weight:700';
-      openFallback.addEventListener('click', ()=> {
-        // open in new tab (user gesture)
-        window.open(AD_URL, '_blank', 'noopener');
-      });
-      document.body.appendChild(openFallback);
-    }
+    mobileFallbackBtn.addEventListener('click', ()=> {
+      window.open(AD_URL, '_blank', 'noopener');
+    });
 
-    // Minimize
+    // Minimize behavior
     minBtn.addEventListener('click', ()=>{
       isMinimized = !isMinimized;
       if(isMinimized){
@@ -542,43 +518,22 @@
       }
     });
 
-    // Maximize
+    // Maximize behavior
     maxBtn.addEventListener('click', ()=>{
       isMaximized = !isMaximized;
       if(isMaximized){
         stickyWindow.classList.add('maximized');
         maxBtn.setAttribute('aria-pressed','true');
+        // ensure iframe has src (it's already loaded), do not force immediate reload here
       } else {
         stickyWindow.classList.remove('maximized');
         maxBtn.setAttribute('aria-pressed','false');
       }
-      // ensure iframe is loaded (we keep iframe loaded even if minimized)
-      if(!iframeLoaded){
-        // try to (re)assign to force load
-        try { adIframe.src = AD_URL + (AD_URL.includes('?') ? '&' : '?') + '_ts=' + Date.now(); } catch(e){}
-      }
     });
 
-    // Hide (move to tray)
-    hideBtn.addEventListener('click', ()=>{
-      isHidden = true;
-      stickyWindow.classList.add('hidden');
-      trayBtn.classList.add('visible');
-      trayBtn.setAttribute('aria-hidden','false');
-    });
-
-    // Tray unhide
-    trayBtn.addEventListener('click', ()=>{
-      isHidden = false;
-      stickyWindow.classList.remove('hidden');
-      trayBtn.classList.remove('visible');
-      trayBtn.setAttribute('aria-hidden','true');
-    });
-
-    // Open behavior: desktop -> named window toggle; mobile -> modal open
+    // Open behavior: desktop -> named window toggle; mobile -> modal
     openBtn.addEventListener('click', ()=>{
       if(!isMobile()){
-        // Desktop window toggle
         const name = 'stickyAd_app_v1';
         if(!externalWin || externalWin.closed){
           externalWin = window.open(AD_URL, name, 'noopener,noreferrer,toolbar=yes,scrollbars=yes,resizable=yes,width=980,height=700');
@@ -599,10 +554,8 @@
           openBtn.setAttribute('aria-pressed','false');
         }
       } else {
-        // Mobile: open modal fallback (user gesture)
         modal.classList.add('open');
         modal.setAttribute('aria-hidden','false');
-        // ensure modal iframe has src
         if(!modalIframe.src) modalIframe.src = AD_URL;
       }
     });
@@ -621,10 +574,9 @@
         minBtn.setAttribute('aria-pressed','true');
       }
     });
-
     modal.addEventListener('click',(ev)=>{ if(ev.target===modal){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); } });
 
-    // Keyboard accessibility
+    // Keyboard shortcuts
     document.addEventListener('keydown',(e)=>{
       if(e.key === 'Escape'){
         if(modal.classList.contains('open')){
@@ -642,18 +594,14 @@
     });
 
     // Close external window on unload
-    window.addEventListener('beforeunload', ()=> {
-      try { if(externalWin && !externalWin.closed) externalWin.close(); } catch(e){}
-    });
+    window.addEventListener('beforeunload', ()=> { try { if(externalWin && !externalWin.closed) externalWin.close(); } catch(e){} });
 
-    // Small API
-    window.StickyAdControls = {
+    // Expose small API
+    window.StickyAd = {
       minimize(){ if(!isMinimized) minBtn.click(); },
       restore(){ if(isMinimized) minBtn.click(); },
       maximize(){ if(!isMaximized) maxBtn.click(); },
       unmaximize(){ if(isMaximized) maxBtn.click(); },
-      hide(){ if(!isHidden) hideBtn.click(); },
-      unhide(){ if(isHidden) trayBtn.click(); },
       openExternal(){ openBtn.click(); },
       forceReload(){ try { adIframe.src = AD_URL + (AD_URL.includes('?') ? '&' : '?') + '_ts=' + Date.now(); } catch(e){} }
     };
