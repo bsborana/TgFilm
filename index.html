@@ -423,213 +423,307 @@
 
 
 
-<!DOCTYPE html>
-<html lang="en">
+
+
+<!doctype html>
+<html lang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Responsive Ad Iframe</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        /* Custom styles */
-        .iframe-container {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            transition: all 0.3s ease;
-            border-top: 3px solid #4f46e5;
-            border-radius: 8px 8px 0 0;
-            overflow: hidden;
-            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
-            background: white;
-        }
-        
-        .iframe-container.minimized {
-            height: 50px !important;
-            border: none;
-        }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Iframe Fullscreen Toggle + Ad Rotation</title>
+<style>
+  :root{
+    --border-width:3px;
+    --border-radius:12px;
+    --bg:#f3f6fb;
+    --panel-bg:#fff;
+    --accent:#0b76ef;
+    --btn-color:#fff;
+    --btn-bg:#0b76ef;
+    --btn-padding:10px 12px;
+    --btn-radius:10px;
+    --transition-time:360ms;
+    --minimized-height:48px;
+  }
 
-        .iframe-container.maximized {
-            height: 100vh !important;
-            top: 0;
-            border-radius: 0;
-        }
-        
-        .iframe-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-        
-        .toggle-btn {
-            position: absolute;
-            top: 0;
-            right: 20px;
-            background: #4f46e5;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            transition: all 0.2s ease;
-            z-index: 1001;
-        }
-        
-        .toggle-btn:hover {
-            background: #4338ca;
-            transform: translateY(-2px);
-        }
-        
-        .toggle-btn:active {
-            transform: translateY(0);
-        }
-        
-        @media (max-width: 768px) {
-            .toggle-btn {
-                right: 10px;
-                padding: 8px 12px;
-                font-size: 14px;
-            }
-        }
-    </style>
+  html,body{height:100%;margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial;}
+
+  /* container kept minimal (no visible text content) */
+  .wrap{width:100%;height:auto;box-sizing:border-box;}
+
+  .iframe-holder{position:relative;width:100%;display:flex;justify-content:center;align-items:flex-start;}
+
+  /* iframe panel - minimized by default */
+  .iframe-panel{
+    width:100%;
+    background:var(--panel-bg);
+    border:var(--border-width) solid rgba(11,118,239,0.12);
+    border-radius:var(--border-radius);
+    box-shadow:0 8px 24px rgba(12,24,50,0.06);
+    overflow:hidden;
+    transition:all var(--transition-time) cubic-bezier(.2,.9,.3,1);
+    box-sizing:border-box;
+    height:var(--minimized-height);
+    display:flex;
+    align-items:center;
+  }
+
+  .iframe-panel iframe{width:100%;height:100%;border:0;display:block;background:#fff;}
+
+  /* fullscreen state */
+  .iframe-panel.fullscreen{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100vh;
+    border-radius:0;
+    margin:0;
+    z-index:9999;
+    box-shadow:none;
+    border:0;
+  }
+
+  /* Toggle button - contains icon + text; placed so it can be fixed in fullscreen */
+  .toggle-btn{
+    position:absolute;
+    right:12px;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:20;
+    background:var(--btn-bg);
+    color:var(--btn-color);
+    border:0;
+    padding:var(--btn-padding);
+    border-radius:var(--btn-radius);
+    cursor:pointer;
+    font-weight:700;
+    box-shadow:0 8px 18px rgba(11,118,239,0.18);
+    transition:transform 140ms ease,opacity 140ms ease,background-color 140ms;
+    user-select:none;
+    -webkit-tap-highlight-color:transparent;
+    min-height:44px;
+    display:inline-flex;
+    gap:8px;
+    align-items:center;
+    justify-content:center;
+    touch-action:manipulation;
+    white-space:nowrap;
+  }
+
+  /* When iframe is fullscreen, button becomes fixed on top-right */
+  .iframe-panel.fullscreen + .toggle-btn,
+  .iframe-panel.fullscreen ~ .toggle-btn{
+    position:fixed;
+    top:14px;
+    right:14px;
+    transform:none;
+    z-index:10001;
+  }
+
+  /* Icon sizing */
+  .toggle-btn svg{width:18px;height:18px;display:block;flex-shrink:0;fill:currentColor;}
+
+  /* Hide textual label on very small screens if needed, but we will show text per request */
+  @media (max-width:420px){
+    .toggle-btn{ right:10px;padding:10px; }
+    /* keep label visible for clarity but it will wrap if necessary */
+  }
+
+  /* overlay for UX when fullscreen (click to minimize) */
+  .overlay{display:none;}
+  .iframe-panel.fullscreen ~ .overlay{
+    display:block;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.22);
+    z-index:9998;
+    transition:opacity var(--transition-time);
+  }
+
+  /* focus style */
+  .toggle-btn:focus{outline:3px solid rgba(11,118,239,0.18);outline-offset:2px;}
+</style>
 </head>
-<body class="bg-gray-100">
-    <!-- Ad Iframe Container -->
-    <div class="iframe-container minimized" id="adContainer">
-        <button class="toggle-btn" id="toggleBtn">
-            <span id="btnText">Maximize</span>
-            <i data-feather="maximize" class="ml-1"></i>
-        </button>
-        <iframe id="adFrame" src="" title="Advertisement"></iframe>
+<body>
+  <div class="wrap">
+    <div class="iframe-holder">
+      <!-- iframe panel (starts minimized) -->
+      <div id="iframePanel" class="iframe-panel" role="region" aria-label="Ad iframe panel" aria-expanded="false">
+        <iframe id="adIframe" src="about:blank" title="Ad frame" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+      </div>
+
+      <!-- Toggle button with icon + text. Text updates for both states. -->
+      <button id="toggleBtn" class="toggle-btn" aria-controls="adIframe" aria-pressed="false" aria-label="Open Fullscreen">
+        <!-- Maximize icon (shown when minimized) -->
+        <svg id="iconMax" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M7 14H5v4h4v-2H7v-2zm0-4h2V8h2V5H5v5h2V6zm10 8h-2v2h-4v-4h2v2h4v-0zm-2-12v2h2v4h2V5h-4z"/>
+        </svg>
+        <!-- Minimize icon (shown when fullscreen) -->
+        <svg id="iconMin" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="display:none">
+          <path d="M3 13h2v-2H3v2zm4 0h10v-2H7v2zm10 8h2v-2h-2v2zM3 5h2V3H3v2zm16 0h2V3h-2v2zM7 21h10v-2H7v2z"/>
+        </svg>
+        <!-- Text label: will show "Maximize" or "Minimize" -->
+        <span id="btnText">Maximize</span>
+      </button>
+
+      <!-- overlay (click to minimize when fullscreen) -->
+      <div id="overlay" class="overlay" aria-hidden="true"></div>
     </div>
+  </div>
 
-    <script src="https://unpkg.com/feather-icons"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            feather.replace();
-            
-            // Ad links array - REPLACE THESE WITH YOUR ACTUAL ADSTERRA SMART LINKS
-            const adLinks = [
-                'about:blank', // Initial blank page
-                'https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b', // Replace with your first Adsterra Smart Link
-                'https://tangiblearroganceride.com/afzg9a9nkv?key=5dcefc80a0b0e89fcfdb3d77f9660bbe'  // Replace with your second Adsterra Smart Link
-            ];
-            
-            const adContainer = document.getElementById('adContainer');
-            const toggleBtn = document.getElementById('toggleBtn');
-            const btnText = document.getElementById('btnText');
-            const adFrame = document.getElementById('adFrame');
-            
-            let currentAdIndex = 0;
-            let isMinimized = true;
-            let rotationInterval;
-            
-            // Set iframe to full screen
-            function setMaxHeight() {
-                adContainer.classList.add('maximized');
-            }
-            
-            // Toggle iframe visibility
-            function toggleIframe() {
-                isMinimized = !isMinimized;
-                
-                if (isMinimized) {
-                    adContainer.classList.add('minimized');
-                    adContainer.classList.remove('maximized');
-                    btnText.textContent = 'Maximize';
-                    toggleBtn.querySelector('i').setAttribute('data-feather', 'maximize');
-                    
-                    // Clear rotation when minimized
-                    if (rotationInterval) {
-                        clearInterval(rotationInterval);
-                        rotationInterval = null;
-                    }
-                } else {
-                    adContainer.classList.remove('minimized');
-                    setMaxHeight();
-                    btnText.textContent = 'Minimize';
-                    toggleBtn.querySelector('i').setAttribute('data-feather', 'minimize');
-                    
-                    // Start ad rotation
-                    if (!rotationInterval) {
-                        rotateAds();
-                        rotationInterval = setInterval(rotateAds, 90000); // 90 seconds
-                    }
-                }
-                
-                feather.replace();
-            }
-            
-            // Rotate between ad links
-            function rotateAds() {
-                if (isMinimized) return;
-                
-                currentAdIndex = (currentAdIndex + 1) % adLinks.length;
-                if (currentAdIndex === 0) currentAdIndex = 1; // Skip the blank page
-                
-                // Create new iframe to prevent any auto-click behavior
-                const newFrame = document.createElement('iframe');
-                newFrame.id = 'adFrame';
-                newFrame.title = 'Advertisement';
-                newFrame.src = adLinks[currentAdIndex];
-                newFrame.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms');
-                newFrame.setAttribute('tabindex', '-1');
-                
-                // Replace existing iframe
-                adFrame.replaceWith(newFrame);
-                
-                // Update reference
-                adFrame = document.getElementById('adFrame');
-            }
-            
-            // Initialize
-            setMaxHeight();
-            toggleBtn.style.display = 'block';
-            
-            // Sandbox iframe to prevent unwanted behavior
-            adFrame.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms');
-            
-            // Event listeners
-            toggleBtn.addEventListener('click', toggleIframe);
-            
-            // Handle window resize
-            window.addEventListener('resize', function() {
-                if (!isMinimized) {
-                    setMaxHeight();
-                }
-            });
-            
-            // Start with blank page when maximized for the first time
-            toggleBtn.addEventListener('click', function firstClick() {
-                if (isMinimized) return;
-                
-                const newFrame = document.createElement('iframe');
-                newFrame.id = 'adFrame';
-                newFrame.title = 'Advertisement';
-                newFrame.src = adLinks[0]; // Load blank page first
-                newFrame.setAttribute('sandbox', 'allow-same-origin allow-scripts allow-popups allow-forms');
-                newFrame.setAttribute('tabindex', '-1');
-                
-                // Replace existing iframe
-                adFrame.replaceWith(newFrame);
-                adFrame = document.getElementById('adFrame');
-                
-                setTimeout(() => {
-                    currentAdIndex = 1 + Math.floor(Math.random() * (adLinks.length - 1));
-                    rotateAds();
-                }, 100);
-                
-                // Remove this listener after first click
-                toggleBtn.removeEventListener('click', firstClick);
-            }, { once: true });
+<script>
+/*
+  Single-file implementation:
+  - Starts minimized (only button area visible)
+  - Button shows icon + text ("Maximize" when minimized, "Minimize" when fullscreen)
+  - Maximize => fullscreen (100vh), Minimize => collapsed to button area
+  - Rotate links every 90s by changing iframe.src (cache-buster appended)
+  - Rotation runs while tab visible; paused when tab hidden
+  - Keyboard accessible: Enter/Space toggle, Escape to minimize
+  - Replace placeholders in links[] with your Adsterra Smart Links
+*/
 
-            // Prevent iframe from being focusable
-            adFrame.setAttribute('tabindex', '-1');
-        });
-    </script>
+/* ---------------- CONFIGURE LINKS HERE ---------------- */
+const links = [
+  "https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b", // paste Adsterra Smart Link 1
+  "https://tangiblearroganceride.com/afzg9a9nkv?key=5dcefc80a0b0e89fcfdb3d77f9660bbe"  // paste Adsterra Smart Link 2
+];
+const ROTATION_MS = 90 * 1000; // 90 seconds
+/* ----------------------------------------------------- */
+
+let currentIndex = 0;
+let rotationTimer = null;
+let isFullscreen = false;
+
+const iframePanel = document.getElementById('iframePanel');
+const adIframe = document.getElementById('adIframe');
+const toggleBtn = document.getElementById('toggleBtn');
+const overlay = document.getElementById('overlay');
+const iconMax = document.getElementById('iconMax');
+const iconMin = document.getElementById('iconMin');
+const btnText = document.getElementById('btnText');
+
+/* Load current link with cache-buster to force reload */
+function loadCurrentLink(){
+  if (!links || links.length === 0){
+    adIframe.src = "about:blank";
+    return;
+  }
+  const url = links[currentIndex];
+  const cb = "cb=" + Date.now();
+  const sep = url.includes('?') ? '&' : '?';
+  adIframe.src = url + sep + cb;
+}
+
+/* Rotation controls */
+function startRotation(){
+  stopRotation();
+  rotationTimer = setInterval(() => {
+    currentIndex = (currentIndex + 1) % links.length;
+    loadCurrentLink();
+  }, ROTATION_MS);
+}
+function stopRotation(){
+  if (rotationTimer){
+    clearInterval(rotationTimer);
+    rotationTimer = null;
+  }
+}
+
+/* Update button text/icon and panel classes */
+function updateUI(){
+  if (isFullscreen){
+    iframePanel.classList.add('fullscreen');
+    overlay.style.display = 'block';
+    overlay.style.opacity = '1';
+    toggleBtn.setAttribute('aria-pressed','true');
+    toggleBtn.setAttribute('aria-label','Minimize');
+    iframePanel.setAttribute('aria-expanded','true');
+    iconMax.style.display = 'none';
+    iconMin.style.display = 'block';
+    btnText.textContent = 'Minimize';
+  } else {
+    iframePanel.classList.remove('fullscreen');
+    overlay.style.opacity = '0';
+    setTimeout(()=>{ if (!isFullscreen) overlay.style.display = 'none'; }, 320);
+    toggleBtn.setAttribute('aria-pressed','false');
+    toggleBtn.setAttribute('aria-label','Maximize');
+    iframePanel.setAttribute('aria-expanded','false');
+    iconMax.style.display = 'block';
+    iconMin.style.display = 'none';
+    btnText.textContent = 'Maximize';
+    // ensure minimized height applied explicitly for consistent rendering
+    iframePanel.style.height = getComputedStyle(document.documentElement).getPropertyValue('--minimized-height') || "48px";
+  }
+}
+
+/* Toggle fullscreen state */
+function toggleFullscreen(){
+  isFullscreen = !isFullscreen;
+  updateUI();
+}
+
+/* Event listeners */
+toggleBtn.addEventListener('click', function(e){
+  e.preventDefault();
+  toggleFullscreen();
+});
+toggleBtn.addEventListener('keydown', function(e){
+  if (e.key === 'Enter' || e.key === ' '){
+    e.preventDefault();
+    toggleFullscreen();
+  }
+});
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape' && isFullscreen){
+    isFullscreen = false;
+    updateUI();
+  }
+});
+overlay.addEventListener('click', function(){
+  if (isFullscreen){
+    isFullscreen = false;
+    updateUI();
+  }
+});
+
+/* Pause rotation when tab not visible; resume when visible */
+document.addEventListener('visibilitychange', function(){
+  if (document.visibilityState === 'visible'){
+    if (!rotationTimer) startRotation();
+  } else {
+    stopRotation();
+  }
+});
+
+/* Keep minimized height consistent on resize */
+window.addEventListener('resize', function(){
+  if (!isFullscreen){
+    iframePanel.style.height = getComputedStyle(document.documentElement).getPropertyValue('--minimized-height') || "48px";
+  }
+});
+
+/* Initialize */
+function init(){
+  if (!links || links.length === 0){
+    console.warn("No links in links array. Paste your Adsterra Smart Links into the links array.");
+    adIframe.src = "about:blank";
+  } else {
+    currentIndex = 0;
+    loadCurrentLink();
+    startRotation();
+  }
+  // start minimized
+  isFullscreen = false;
+  updateUI();
+  iframePanel.style.height = getComputedStyle(document.documentElement).getPropertyValue('--minimized-height') || "48px";
+}
+
+if (document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
 </body>
 </html>
