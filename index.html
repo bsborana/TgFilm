@@ -3,148 +3,135 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sticky Ad Frame — Window Controls</title>
+  <title>Sticky iframe — Immediate load, Window controls</title>
   <style>
     :root{
-      --bar-height: 92px;
-      --bg: #0f1115;
-      --accent: #ffb400;
-      --btn-bg: rgba(255,255,255,0.04);
-      --btn-color: #fff;
-      --z: 99999;
+      --bar-height:92px;
+      --accent:#ffb400;
+      --z:99999;
     }
-    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;color:#eaeaea;background:#fafafa;}
+    html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial;background:#fff;color:#111;}
     main{min-height:100vh;padding:20px;}
 
-    /* Sticky 'window' container at footer */
+    /* Sticky window container */
     .sticky-window{
       position:fixed;
       left:12px;
       right:12px;
       bottom:12px;
-      height: var(--bar-height);
       max-width:1320px;
       margin:0 auto;
-      display:flex;
-      flex-direction:column;
-      align-items:stretch;
-      box-sizing:border-box;
+      height:var(--bar-height);
       z-index:var(--z);
-      transition: transform .28s ease, height .28s ease;
-      pointer-events:auto;
+      transition:height .28s ease;
     }
-
     .window-frame{
-      background: linear-gradient(180deg, rgba(10,10,10,0.95), rgba(6,6,6,0.98));
       border-radius:10px;
-      box-shadow: 0 8px 28px rgba(0,0,0,0.5);
-      overflow:hidden;
+      overflow:visible;
+      box-shadow:0 8px 28px rgba(0,0,0,0.4);
+      background:linear-gradient(180deg,#0b0b0b,#050505);
+      color:#fff;
       border:1px solid rgba(255,255,255,0.04);
       display:flex;
       flex-direction:column;
       height:100%;
     }
-
-    /* Titlebar with controls (minimize, maximize, open) */
     .titlebar{
       display:flex;
       align-items:center;
       gap:10px;
       padding:8px 10px;
-      background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
       user-select:none;
-      -webkit-user-select:none;
-      cursor:default;
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
     }
-    .title{
-      color:#ddd;
-      font-size:13px;
-      margin-right:auto;
-      padding-left:6px;
-    }
-    .tbtn{
-      width:36px;height:28px;border-radius:6px;border:0;background:var(--btn-bg);color:var(--btn-color);display:inline-flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;
-    }
+    .title{font-size:13px;color:#eaeaea;margin-right:auto;padding-left:6px;}
+    .tbtn{width:36px;height:28px;border-radius:6px;border:0;background:rgba(255,255,255,0.04);color:#fff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
     .tbtn.primary{background:linear-gradient(90deg,var(--accent),#ff8a00);color:#111;font-weight:700}
-    .tbtn.toggle.active{outline:2px solid rgba(255,255,255,0.06)}
 
-    /* Frame content (iframe) */
+    /* Content area that holds iframe */
     .content{
-      flex:1 1 auto;
-      min-height:0; /* allows proper flex with iframe */
+      height: calc(var(--bar-height) - 44px);
+      transition:height .28s ease, transform .20s ease, opacity .18s ease;
+      position:relative;
+      overflow:hidden;
+      background:#000;
     }
+
+    /* iframe is always loaded but we hide/show content visually.
+       When minimized we keep iframe rendered (so it's loaded) but moved/clipped out of view. */
     .ad-iframe{
-      width:100%;height:100%;border:0;display:block;background:#000;
+      width:100%;
+      height:100%;
+      border:0;
+      display:block;
+      transform:translateY(0);
+      transition:transform .28s ease, opacity .18s ease;
+      will-change:transform,opacity;
     }
 
-    /* Minimized state: only titlebar visible and small */
-    .minimized{ height:44px !important; }
-    .minimized .content{ display:none; }
+    /* MINIMIZED: only titlebar visible; content container height = 0, iframe visually translated up (hidden) but still loaded */
+    .minimized .content{ height:0 !important; }
+    .minimized .ad-iframe{ transform: translateY(-12px); opacity:0; pointer-events:none; }
 
-    /* Maximized state: taller bar (like expanded) */
-    .maximized{ height:380px !important; }
+    /* MAXIMIZED: make window taller to show full content */
+    .maximized{ height:420px !important; }
+    .maximized .content{ height: calc(420px - 44px) !important; }
     @media (max-width:900px){
-      .sticky-window{ left:8px; right:8px; bottom:8px; }
-      .maximized{ height:68vh !important; max-height:92vh; }
+      .maximized{ height:72vh !important; max-height:92vh; }
+      .maximized .content{ height: calc(72vh - 44px) !important; }
       :root{ --bar-height:86px; }
     }
-    @media (max-width:600px){
-      .sticky-window{ left:6px; right:6px; bottom:6px; }
-      .title{ font-size:12px; }
-      .tbtn{ width:34px;height:26px;font-size:12px; }
-    }
 
-    /* Modal fallback (for mobile 'open in app' view) */
-    .modal{
-      position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index: calc(var(--z) + 10); display:flex; align-items:center; justify-content:center; visibility:hidden; opacity:0; transition:opacity .18s ease;
-    }
+    /* Modal fallback for mobile */
+    .modal{ position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:calc(var(--z)+10); display:flex; align-items:center; justify-content:center; visibility:hidden; opacity:0; transition:opacity .18s ease; }
     .modal.open{ visibility:visible; opacity:1; }
     .modal-inner{ width:100%; max-width:1100px; height:88vh; background:#000; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; }
-    .modal-top{ padding:8px 10px; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); }
+    .modal-top{ padding:8px 10px; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); color:#fff; }
     .modal-iframe{ flex:1 1 auto; width:100%; border:0; }
-
   </style>
 </head>
 <body>
   <main>
-    <h2>Demo: Sticky iframe with Window Controls</h2>
-    <p>यहाँ page content है. नीचे जो sticky window है उसे minimize / maximize की तरह behave करेगा. External open button desktop में नया window/toggle करेगा, mobile पर full-screen modal खुलता है.</p>
-    <div style="height:1400px;background:linear-gradient(#fff,#f1f1f1);margin-top:12px;border-radius:8px;"></div>
+    <h2>Demo: Sticky iframe (Immediate load)</h2>
+    <p>यहाँ page content है. नीचे वाला sticky window minimized/maximized behavior दिखाता है।</p>
+    <div style="height:1400px;background:linear-gradient(#fff,#f3f3f3);margin-top:12px;border-radius:8px;"></div>
   </main>
 
-  <!-- Sticky window container -->
-  <div id="stickyWindow" class="sticky-window" style="height: var(--bar-height);">
-    <div class="window-frame" role="region" aria-label="Sticky ad window">
-      <div class="titlebar" id="titlebar">
+  <!-- Sticky window -->
+  <div id="stickyWindow" class="sticky-window" aria-label="Sticky ad window">
+    <div id="windowFrame" class="window-frame">
+      <div class="titlebar">
         <div class="title">Advertisement</div>
         <button id="minBtn" class="tbtn" title="Minimize" aria-pressed="false">—</button>
         <button id="maxBtn" class="tbtn" title="Maximize" aria-pressed="false">▢</button>
         <button id="openBtn" class="tbtn primary" title="Open in window">Open</button>
       </div>
 
-      <div class="content">
+      <div id="content" class="content" aria-hidden="false">
+        <!-- iframe loads immediately -->
         <iframe id="adIframe" class="ad-iframe" title="Ad content"
           sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
           referrerpolicy="no-referrer"
-          srcdoc="<style>html,body{margin:0;height:100%;background:#000}</style><div style='display:flex;align-items:center;justify-content:center;height:100%;color:#888;font-size:13px'>Loading ad…</div>"
+          src="https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b"
         ></iframe>
       </div>
     </div>
   </div>
 
-  <!-- Mobile modal fallback -->
+  <!-- Modal fallback -->
   <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
-    <div class="modal-inner" role="document">
+    <div class="modal-inner">
       <div class="modal-top">
-        <div style="color:#fff">Advertisement</div>
+        <div>Advertisement</div>
         <div style="display:flex;gap:8px">
           <button id="modalMin" class="tbtn">Min</button>
           <button id="modalClose" class="tbtn">Close</button>
         </div>
       </div>
-      <iframe id="modalIframe" class="modal-iframe" sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
+      <iframe id="modalIframe" class="modal-iframe"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
         referrerpolicy="no-referrer"
-        srcdoc="<style>html,body{margin:0;height:100%;background:#000}</style><div style='display:flex;align-items:center;justify-content:center;height:100%;color:#888;font-size:13px'>Loading ad…</div>"
+        src="https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b"
       ></iframe>
     </div>
   </div>
@@ -153,16 +140,17 @@
   (function(){
     'use strict';
 
-    // ========== Configuration ==========
+    // Config
     const AD_URL = 'https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b';
     const RELOAD_MS = 90_000;
-    const LAZY_OFFSET = 400;
 
-    // ========== Elements ==========
+    // Elements
     const stickyWindow = document.getElementById('stickyWindow');
+    const windowFrame = document.getElementById('windowFrame');
     const minBtn = document.getElementById('minBtn');
     const maxBtn = document.getElementById('maxBtn');
     const openBtn = document.getElementById('openBtn');
+    const content = document.getElementById('content');
     const adIframe = document.getElementById('adIframe');
 
     const modal = document.getElementById('modal');
@@ -170,134 +158,83 @@
     const modalClose = document.getElementById('modalClose');
     const modalMin = document.getElementById('modalMin');
 
-    // ========== State ==========
-    let isLoaded = false;
-    let reloadTimer = null;
-    let iframeVisible = true;
-    let externalWin = null;
+    // State
     let isMinimized = false;
     let isMaximized = false;
+    let externalWin = null;
+    let reloadTimer = null;
 
-    // ========== Helpers ==========
-    function isMobile(){ return /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent); }
-
-    // Lazy load when near viewport
-    const lazyObs = new IntersectionObserver(entries=>{
-      for(const e of entries){
-        if(e.isIntersecting){
-          loadIframes();
-          lazyObs.disconnect();
-          break;
-        }
-      }
-    }, {root:null, rootMargin: LAZY_OFFSET + 'px'});
-
-    lazyObs.observe(stickyWindow);
-
-    function loadIframes(){
-      if(isLoaded) return;
-      adIframe.src = AD_URL;
-      modalIframe.src = AD_URL;
-      isLoaded = true;
-      startReloadLoop();
+    function isMobile(){
+      return /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
     }
 
-    // Visibility / Intersection Observer for the sticky window
-    const io = new IntersectionObserver(entries=>{
-      for(const e of entries){
-        iframeVisible = e.intersectionRatio > 0;
-        manageReload();
-      }
-    }, {threshold:[0,0.01,0.5,1]});
-    io.observe(stickyWindow);
-    document.addEventListener('visibilitychange', manageReload, false);
-
-    function manageReload(){
-      if(!isLoaded) return;
-      const pageVisible = document.visibilityState === 'visible';
-      if(pageVisible && iframeVisible && !isMinimized){
-        resumeReload();
-      } else {
-        pauseReload();
-      }
-    }
-
-    // Reload management
+    // Immediately loaded iframes: adIframe and modalIframe already have src preset in markup.
+    // Start reload loop immediately (user asked content to be loaded even while minimized).
     function startReloadLoop(){
       stopReload();
-      reloadTimer = setInterval(()=>{
-        if(document.visibilityState === 'visible' && iframeVisible && !isMinimized){
-          reloadAdIframe();
+      reloadTimer = setInterval(()=> {
+        // Append timestamp to avoid cache
+        try {
+          const url = new URL(adIframe.src || AD_URL, location.href);
+          url.searchParams.set('_ts', Date.now());
+          adIframe.src = url.toString();
+        } catch(e){
+          adIframe.src = AD_URL + (AD_URL.includes('?') ? '&' : '?') + '_ts=' + Date.now();
+        }
+
+        try {
+          const murl = new URL(modalIframe.src || AD_URL, location.href);
+          murl.searchParams.set('_ts', Date.now());
+          modalIframe.src = murl.toString();
+        } catch(e){
+          modalIframe.src = AD_URL + (AD_URL.includes('?') ? '&' : '?') + '_ts=' + Date.now();
         }
       }, RELOAD_MS);
     }
     function stopReload(){ if(reloadTimer){ clearInterval(reloadTimer); reloadTimer = null; } }
-    function pauseReload(){ stopReload(); }
-    function resumeReload(){ if(!reloadTimer) startReloadLoop(); }
 
-    function reloadAdIframe(){
-      try {
-        const cur = adIframe.src || adIframe.getAttribute('src') || AD_URL;
-        const url = new URL(cur, location.href);
-        url.searchParams.set('_ts', Date.now());
-        adIframe.src = url.toString();
-      } catch(e){
-        adIframe.src = AD_URL + (AD_URL.includes('?') ? '&' : '?') + '_ts=' + Date.now();
-      }
-    }
+    // Start immediately
+    startReloadLoop();
 
-    function reloadModalIframe(){
-      try {
-        const cur = modalIframe.src || modalIframe.getAttribute('src') || AD_URL;
-        const url = new URL(cur, location.href);
-        url.searchParams.set('_ts', Date.now());
-        modalIframe.src = url.toString();
-      } catch(e){
-        modalIframe.src = AD_URL + (AD_URL.includes('?') ? '&' : '?') + '_ts=' + Date.now();
-      }
-    }
-
-    // ========== Window-style controls ==========
+    // Minimize: only titlebar visible; content hidden visually but iframe remains loaded
     minBtn.addEventListener('click', ()=>{
       isMinimized = !isMinimized;
       if(isMinimized){
-        stickyWindow.classList.add('minimized');
+        windowFrame.classList.add('minimized');
         minBtn.setAttribute('aria-pressed','true');
-        // when minimized pause reloads
-        pauseReload();
       } else {
-        stickyWindow.classList.remove('minimized');
+        windowFrame.classList.remove('minimized');
         minBtn.setAttribute('aria-pressed','false');
-        manageReload();
       }
     });
 
+    // Maximize: expand height to show full content
     maxBtn.addEventListener('click', ()=>{
       isMaximized = !isMaximized;
       if(isMaximized){
         stickyWindow.classList.add('maximized');
-        maxBtn.classList.add('toggle','active');
         maxBtn.setAttribute('aria-pressed','true');
+        // Ensure iframe has fully loaded src (it is already loaded). Optionally force a repaint:
+        // reassign src to itself only to ensure any deferred content loads (rarely necessary)
+        try {
+          const u = new URL(adIframe.src || AD_URL, location.href);
+          // do not append ts on maximize (avoid immediate reload) — keep as-is
+          adIframe.src = u.toString();
+        } catch(e){}
       } else {
         stickyWindow.classList.remove('maximized');
-        maxBtn.classList.remove('toggle','active');
         maxBtn.setAttribute('aria-pressed','false');
       }
-      // ensure iframe loaded on expand
-      loadIframes();
-      manageReload();
     });
 
-    // External open behavior: desktop -> window.open toggle; mobile -> modal open
+    // Open behavior: desktop -> named window toggle; mobile -> modal open
     openBtn.addEventListener('click', ()=>{
       if(!isMobile()){
-        // Desktop: toggle named window
         const name = 'stickyAd_app_v1';
         if(!externalWin || externalWin.closed){
           externalWin = window.open(AD_URL, name, 'noopener,noreferrer,toolbar=yes,scrollbars=yes,resizable=yes,width=980,height=700');
           openBtn.textContent = 'Opened';
           openBtn.setAttribute('aria-pressed','true');
-          // poll to detect close
           const poll = setInterval(()=> {
             if(!externalWin || externalWin.closed){
               clearInterval(poll);
@@ -313,12 +250,17 @@
           openBtn.setAttribute('aria-pressed','false');
         }
       } else {
-        // Mobile: open modal fallback
         modal.classList.add('open');
         modal.setAttribute('aria-hidden','false');
-        loadIframes();
-        // ensure modal iframe uses up-to-date src
-        reloadModalIframe();
+        // ensure modal iframe loaded (already has src)
+        try {
+          const url = new URL(modalIframe.src || AD_URL, location.href);
+          // refresh modal iframe to latest if needed
+          url.searchParams.set('_ts', Date.now());
+          modalIframe.src = url.toString();
+        } catch(e){
+          modalIframe.src = AD_URL + (AD_URL.includes('?') ? '&' : '?') + '_ts=' + Date.now();
+        }
       }
     });
 
@@ -327,58 +269,56 @@
       modal.classList.remove('open');
       modal.setAttribute('aria-hidden','true');
     });
-    modalMin.addEventListener('click', ()=>{
-      // minimize modal: just close modal and minimize sticky window
+    modalMin.addEventListener('click', ()=> {
+      // minimize modal: close modal and minimize sticky window (iframe already loaded)
       modal.classList.remove('open');
       modal.setAttribute('aria-hidden','true');
       if(!isMinimized){
         isMinimized = true;
-        stickyWindow.classList.add('minimized');
+        windowFrame.classList.add('minimized');
         minBtn.setAttribute('aria-pressed','true');
-        pauseReload();
       }
     });
+    modal.addEventListener('click',(ev)=>{ if(ev.target===modal){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); } });
 
-    // Close modal by tapping backdrop
-    modal.addEventListener('click', (ev)=>{
-      if(ev.target === modal){
-        modal.classList.remove('open');
-        modal.setAttribute('aria-hidden','true');
-      }
-    });
-
-    // Keyboard accessibility: Esc closes modal or external window
-    document.addEventListener('keydown', (e)=>{
+    // Keyboard accessibility
+    document.addEventListener('keydown',(e)=>{
       if(e.key === 'Escape'){
         if(modal.classList.contains('open')){
-          modal.classList.remove('open');
-          modal.setAttribute('aria-hidden','true');
+          modal.classList.remove('open'); modal.setAttribute('aria-hidden','true');
         } else if(externalWin && !externalWin.closed){
           try{ externalWin.close(); } catch(e){}
           externalWin = null;
           openBtn.textContent = 'Open';
           openBtn.setAttribute('aria-pressed','false');
-        } else if(isMaximized){
-          isMaximized = false;
+        } else if(stickyWindow.classList.contains('maximized')){
           stickyWindow.classList.remove('maximized');
-          maxBtn.classList.remove('toggle','active');
           maxBtn.setAttribute('aria-pressed','false');
         }
       }
     });
 
-    // Ensure reload behavior starts/stops sensibly after initial load
-    setTimeout(()=> { if(isLoaded) manageReload(); }, 600);
+    // Best-effort: close external window on page unload
+    window.addEventListener('beforeunload', ()=> {
+      try { if(externalWin && !externalWin.closed) externalWin.close(); } catch(e){}
+    });
 
-    // Expose simple API if you want to control programmatically
-    window.StickyAdWindow = {
-      load(){ loadIframes(); },
-      minimize(){ if(!isMinimized){ minBtn.click(); } },
-      restore(){ if(isMinimized){ minBtn.click(); } },
-      maximize(){ if(!isMaximized){ maxBtn.click(); } },
-      unmaximize(){ if(isMaximized){ maxBtn.click(); } },
+    // Expose small API
+    window.StickyAdImmediate = {
+      minimize(){ if(!isMinimized) minBtn.click(); },
+      restore(){ if(isMinimized) minBtn.click(); },
+      maximize(){ if(!isMaximized) maxBtn.click(); },
+      unmaximize(){ if(isMaximized) maxBtn.click(); },
       openExternal(){ openBtn.click(); },
-      forceReload(){ if(isLoaded) reloadAdIframe(); else loadIframes(); }
+      forceReload(){ // immediate reload
+        try {
+          const url = new URL(adIframe.src || AD_URL, location.href);
+          url.searchParams.set('_ts', Date.now());
+          adIframe.src = url.toString();
+        } catch(e){
+          adIframe.src = AD_URL + (AD_URL.includes('?') ? '&' : '?') + '_ts=' + Date.now();
+        }
+      }
     };
 
   })();
