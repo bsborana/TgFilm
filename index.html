@@ -528,22 +528,59 @@
 
 
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sticky & Responsive Iframe</title>
 <style>
-  .sticky-iframe {
-    position: fixed;   /* hamesha screen par chipka rahega */
-    top: 0;
-    left: 0;
-    width: 100vw;      /* poori screen ki width */
-    height: 100vh;     /* poori screen ki height */
-    border: none;
+  /* Body और HTML को पूरी ऊँचाई दें */
+  body, html {
+    height: 100%;
     margin: 0;
     padding: 0;
-    z-index: 9999;     /* sabse upar rahega */
+    overflow: hidden; /* iframe के बाहर स्क्रॉलिंग को रोकता है */
+  }
+
+  /* iframe कंटेनर को Sticky बनाने के लिए */
+  .iframe-container {
+    position: -webkit-sticky; /* Safari के लिए */
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 100vh; /* Viewport की 100% ऊँचाई */
+  }
+
+  /* iframe को Responsive बनाने के लिए */
+  .responsive-iframe {
+    width: 100%;
+    height: 100%;
+    border: none; /* iframe का बॉर्डर हटाने के लिए */
   }
 </style>
+</head>
+<body>
 
-<iframe 
-  class="sticky-iframe" 
-  src="https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b"   <!-- yahan apna link daalein -->
-  allowfullscreen>
-</iframe>
+<div style="height: 50px; background: #f0f0f0; text-align: center; padding: 20px;">
+  <h1>पेज का हेडर</h1>
+  <p>नीचे iframe है जो स्क्रॉल करने पर भी चिपका रहेगा।</p>
+</div>
+
+<div class="iframe-container">
+  <iframe
+    class="responsive-iframe"
+    src="https://www.wikipedia.org"
+    title="Example Iframe"
+    loading="lazy">
+  </iframe>
+</div>
+
+<div style="height: 1000px; background: #ccc; padding: 20px;">
+  <h2>पेज का बाकी कंटेंट</h2>
+  <p>आप इस कंटेंट को स्क्रॉल कर सकते हैं, लेकिन iframe ऊपर चिपका रहेगा (यदि कंटेनर की स्टाइल बदली जाए)।</p>
+  <p>नोट: मौजूदा CSS के साथ, iframe पूरी स्क्रीन लेगा और यह कंटेंट दिखाई नहीं देगा।</p>
+</div>
+
+</body>
+</html>
