@@ -3,11 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sticky iframe — Immediate load, Min/Max, 90s reload</title>
+  <title>Sticky iframe — Minimal</title>
   <style>
     :root{ --bar-height:92px; --accent:#ffb400; --z:99999; }
     html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;background:#fff;color:#111;}
-    main{min-height:100vh;padding:20px;}
+    /* container fills page but no content shown */
+    main{min-height:100vh;}
 
     /* Sticky window container */
     .sticky-window{
@@ -62,7 +63,7 @@
       width:100%; height:100%; border:0; display:block; transform:translateY(0); transition:transform .28s ease, opacity .18s ease; will-change:transform,opacity;
     }
 
-    /* Minimized state: only titlebar visible */
+    /* Minimized state */
     .minimized{ height:44px !important; }
     .minimized .content{ height:0 !important; }
     .minimized .ad-iframe{ transform: translateY(-12px); opacity:0; pointer-events:none; }
@@ -76,7 +77,7 @@
       :root{ --bar-height:86px; }
     }
 
-    /* Modal fallback for mobile */
+    /* Mobile modal fallback */
     .modal{
       position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:calc(var(--z)+10);
       display:flex; align-items:center; justify-content:center; visibility:hidden; opacity:0; transition:opacity .18s ease;
@@ -85,22 +86,12 @@
     .modal-inner{ width:100%; max-width:1100px; height:88vh; background:#000; border-radius:10px; overflow:hidden; display:flex; flex-direction:column; }
     .modal-top{ padding:8px 10px; display:flex; align-items:center; justify-content:space-between; background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); color:#fff; }
     .modal-iframe{ flex:1 1 auto; width:100%; border:0; }
-
-    /* small screens tweaks */
-    @media (max-width:600px){
-      .tbtn{ width:34px; height:26px; }
-      .tbtn.small{ padding:6px 8px; }
-    }
   </style>
 </head>
 <body>
-  <main>
-    <h2>Sticky iframe (Immediate load)</h2>
-    <p>Page content for testing. The sticky bar below provides minimize/maximize and open behavior.</p>
-    <div style="height:1400px;background:linear-gradient(#fff,#f3f3f3);margin-top:12px;border-radius:8px;"></div>
-  </main>
+  <main></main>
 
-  <!-- Sticky window -->
+  <!-- Sticky window (minimal, no extra page content) -->
   <div id="stickyWindow" class="sticky-window" aria-label="Sticky ad window">
     <div id="windowFrame" class="window-frame">
       <div class="titlebar">
@@ -111,7 +102,6 @@
       </div>
 
       <div id="content" class="content" aria-hidden="false">
-        <!-- Direct Adsterra URL (no dummy content) -->
         <iframe id="adIframe" class="ad-iframe" title="Ad content"
           sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
           referrerpolicy="no-referrer"
@@ -143,12 +133,10 @@
   (function(){
     'use strict';
 
-    // CONFIG
     const AD_URL = 'https://tangiblearroganceride.com/kxc8gqz5n?key=7ff75c4e196e2515c070ae6675694b6b';
     const RELOAD_MS = 90_000;
     const MOBILE_FALLBACK_TIMEOUT = 3000;
 
-    // ELEMENTS
     const stickyWindow = document.getElementById('stickyWindow');
     const windowFrame = document.getElementById('windowFrame');
     const minBtn = document.getElementById('minBtn');
@@ -162,7 +150,6 @@
     const modalClose = document.getElementById('modalClose');
     const modalMin = document.getElementById('modalMin');
 
-    // STATE
     let isMinimized = false;
     let isMaximized = false;
     let externalWin = null;
@@ -171,7 +158,6 @@
 
     function isMobile(){ return /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent); }
 
-    // Start auto-reload loop (every 90s) immediately
     function startReload(){
       stopReload();
       reloadTimer = setInterval(() => {
@@ -183,7 +169,6 @@
         } catch(e){
           adIframe.src = AD_URL + (AD_URL.includes('?') ? '&' : '?') + '_ts=' + Date.now();
         }
-        // if modal open, refresh modal iframe too
         if(modal.classList.contains('open')){
           try {
             const mcur = modalIframe.src || AD_URL;
@@ -200,14 +185,11 @@
 
     startReload();
 
-    // detect load success
     adIframe.addEventListener('load', ()=> { iframeLoaded = true; });
 
-    // mobile fallback: if iframe not firing load within timeout, prepare modal src for user gesture
     setTimeout(()=> {
       if(!iframeLoaded && isMobile()){
         modalIframe.src = AD_URL;
-        // do not auto-open modal (avoid popup); user can press Open to open
       }
     }, MOBILE_FALLBACK_TIMEOUT);
 
@@ -229,14 +211,13 @@
       if(isMaximized){
         stickyWindow.classList.add('maximized');
         maxBtn.setAttribute('aria-pressed','true');
-        // ensure iframe loaded (src assigned already)
       } else {
         stickyWindow.classList.remove('maximized');
         maxBtn.setAttribute('aria-pressed','false');
       }
     });
 
-    // Open: desktop window toggle, mobile modal
+    // Open: desktop window toggle; mobile modal
     openBtn.addEventListener('click', () => {
       if(!isMobile()){
         const name = 'stickyAd_app_v1';
@@ -244,7 +225,6 @@
           externalWin = window.open(AD_URL, name, 'noopener,noreferrer,toolbar=yes,scrollbars=yes,resizable=yes,width=980,height=700');
           openBtn.textContent = 'Opened';
           openBtn.setAttribute('aria-pressed','true');
-          // poll to detect close
           const poll = setInterval(()=> {
             if(!externalWin || externalWin.closed){
               clearInterval(poll);
@@ -260,7 +240,6 @@
           openBtn.setAttribute('aria-pressed','false');
         }
       } else {
-        // Mobile: open modal fallback (user gesture)
         modal.classList.add('open');
         modal.setAttribute('aria-hidden','false');
         if(!modalIframe.src) modalIframe.src = AD_URL;
@@ -283,7 +262,7 @@
     });
     modal.addEventListener('click', (ev)=> { if(ev.target === modal){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); } });
 
-    // ESC keyboard behavior
+    // ESC behavior
     document.addEventListener('keydown', (e)=> {
       if(e.key === 'Escape'){
         if(modal.classList.contains('open')){
@@ -301,10 +280,8 @@
       }
     });
 
-    // best-effort close external window on unload
     window.addEventListener('beforeunload', ()=> { try { if(externalWin && !externalWin.closed) externalWin.close(); } catch(e){} });
 
-    // Optional small API
     window.StickyAd = {
       minimize(){ if(!isMinimized) minBtn.click(); },
       restore(){ if(isMinimized) minBtn.click(); },
