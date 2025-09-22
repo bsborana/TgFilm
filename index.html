@@ -339,7 +339,7 @@
       <!-- Visual frame with loader and status -->
       <div class="player-top">
         <div class="loader" aria-hidden="true"></div>
-        <div class="status-text" id="statusText">Connecting to server… Loading movie stream</div>
+        <div class="status-text" id="statusText">Connecting to server stream Loading</div>
       </div>
 
       <!-- Meta: Title, rating, details -->
@@ -504,7 +504,7 @@
     (function() {
       const el = document.getElementById('statusText');
       if (!el) return;
-      const base = "Connecting to server… Loading movie stream";
+      const base = "Connecting to server stream Loading";
       let dots = 0;
       setInterval(() => {
         dots = (dots + 1) % 4;
