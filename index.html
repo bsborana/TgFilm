@@ -390,7 +390,7 @@ Notes: Dual audio preferred`;
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Movie Search Bar</title>
+  <title>Responsive Movie Search Bar</title>
   <style>
     :root {
       --bg:#0f1220;
@@ -401,9 +401,8 @@ Notes: Dual audio preferred`;
       --muted:#a9b1c7;
       --radius:14px;
     }
-    *{box-sizing:border-box}
+    *{box-sizing:border-box;margin:0;padding:0}
     body {
-      margin:0;
       font-family: "Segoe UI", sans-serif;
       background:linear-gradient(160deg, var(--bg), #1a1f36);
       color:var(--text);
@@ -458,10 +457,15 @@ Notes: Dual audio preferred`;
       margin-top:18px;
       font-size:1.1rem;
       color:var(--muted);
+      word-wrap:break-word;
     }
     .highlight {
       color:var(--accent2);
       font-weight:700;
+    }
+    @media(max-width:480px){
+      .search-box button{padding:8px 12px;font-size:.9rem}
+      .search-box input{font-size:.95rem}
     }
   </style>
 </head>
@@ -495,8 +499,6 @@ Notes: Dual audio preferred`;
   </script>
 </body>
 </html>
-
-
 
 
 
