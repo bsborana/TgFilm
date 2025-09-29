@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +9,7 @@
     * {margin:0; padding:0; box-sizing:border-box; font-family: 'Segoe UI', sans-serif;}
 
     body {
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      background: linear-gradient(135deg, #141e30, #243b55);
       color: #fff;
       min-height: 100vh;
       display: flex;
@@ -19,6 +19,7 @@
       padding: 20px;
     }
 
+    /* Top Notice */
     header {
       background: rgba(255,255,255,0.1);
       padding: 12px 20px;
@@ -28,47 +29,53 @@
       font-size: 1rem;
       font-weight: 500;
       backdrop-filter: blur(6px);
+      width: 100%;
+      max-width: 700px;
+      animation: slideDown 1s ease;
     }
 
+    /* Card Section */
     .card {
-      background: rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.12);
       padding: 30px 20px;
-      border-radius: 12px;
-      max-width: 400px;
+      border-radius: 14px;
+      max-width: 420px;
       width: 100%;
       text-align: center;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-      backdrop-filter: blur(8px);
-      animation: fadeIn 1s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+      backdrop-filter: blur(10px);
+      animation: fadeIn 1.2s ease;
     }
 
     .card h2 {
       margin-bottom: 15px;
-      font-size: 1.4rem;
+      font-size: 1.5rem;
     }
 
     .card p {
       margin-bottom: 20px;
       font-size: 1rem;
-      line-height: 1.4;
+      line-height: 1.5;
     }
 
+    /* Telegram Button */
     .btn {
       display: inline-block;
-      padding: 12px 20px;
+      padding: 14px 24px;
       background: #0088cc;
       color: #fff;
       font-size: 1rem;
       font-weight: bold;
-      border-radius: 6px;
+      border-radius: 8px;
       text-decoration: none;
       transition: 0.3s;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
 
     .btn:hover {
       background: #00aaff;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
     }
 
     footer {
@@ -76,33 +83,43 @@
       font-size: 0.8rem;
       opacity: 0.7;
       text-align: center;
-      padding: 10px;
+      padding: 15px;
     }
 
+    /* Animations */
     @keyframes fadeIn {
       from {opacity:0; transform: translateY(20px);}
       to {opacity:1; transform: translateY(0);}
     }
+    @keyframes slideDown {
+      from {opacity:0; transform: translateY(-20px);}
+      to {opacity:1; transform: translateY(0);}
+    }
 
+    /* Responsive */
     @media (max-width:500px){
       .card {padding: 20px 15px;}
       .card h2 {font-size: 1.2rem;}
+      .btn {padding: 12px 18px; font-size: 0.9rem;}
     }
   </style>
 </head>
 <body>
 
+  <!-- Top Notice -->
   <header>
-    📌 इस वेबसाइट को अपने Bookmark में Save कर लें ताकि भविष्य में काम आए।
+    📌 Save this website to your bookmarks so you can use it in the future.
   </header>
 
+  <!-- Main Card -->
   <div class="card">
     <h2>🎬 Movie Suggestion Group</h2>
-    <p>आप इस group में अपनी पसंद की movie suggest कर सकते हैं।  
-       जिस movie की आपको ज़रूरत है, उसे यहाँ बताइए।</p>
+    <p>You can suggest the movie you want in this group.  
+       Join now and share your favorite movie requests!</p>
     <a href="https://t.me/YourGroupLink" target="_blank" class="btn">Join Telegram Group</a>
   </div>
 
+  <!-- Footer -->
   <footer>
     © 2025 Movie Suggestion Portal
   </footer>
