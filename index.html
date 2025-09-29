@@ -385,6 +385,124 @@ Notes: Dual audio preferred`;
 
 
 
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Movie Search Bar</title>
+  <style>
+    :root {
+      --bg:#0f1220;
+      --glass:#1a1f36cc;
+      --accent:#7c5cff;
+      --accent2:#00e0b8;
+      --text:#f0f3ff;
+      --muted:#a9b1c7;
+      --radius:14px;
+    }
+    *{box-sizing:border-box}
+    body {
+      margin:0;
+      font-family: "Segoe UI", sans-serif;
+      background:linear-gradient(160deg, var(--bg), #1a1f36);
+      color:var(--text);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      min-height:100vh;
+      padding:20px;
+    }
+    .search-container {
+      width:100%;
+      max-width:600px;
+      background:var(--glass);
+      backdrop-filter:blur(14px) saturate(1.3);
+      border:1px solid #2a3258;
+      border-radius:var(--radius);
+      padding:24px;
+      box-shadow:0 20px 40px rgba(0,0,0,.35);
+    }
+    .search-box {
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background:#0f1330cc;
+      border:1px solid #28305a;
+      border-radius:var(--radius);
+      padding:10px 14px;
+    }
+    .search-box input {
+      flex:1;
+      border:none;
+      outline:none;
+      background:transparent;
+      color:var(--text);
+      font-size:1rem;
+    }
+    .search-box button {
+      border:none;
+      background:linear-gradient(135deg, var(--accent), var(--accent2));
+      color:#fff;
+      font-weight:600;
+      padding:10px 16px;
+      border-radius:var(--radius);
+      cursor:pointer;
+      transition:transform .15s ease, filter .15s ease;
+    }
+    .search-box button:hover {
+      transform:translateY(-1px);
+      filter:brightness(1.1);
+    }
+    .result {
+      margin-top:18px;
+      font-size:1.1rem;
+      color:var(--muted);
+    }
+    .highlight {
+      color:var(--accent2);
+      font-weight:700;
+    }
+  </style>
+</head>
+<body>
+  <div class="search-container">
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Movie ka naam type karein..." />
+      <button id="searchBtn">Search</button>
+    </div>
+    <div class="result" id="result">Aapka keyword yahan dikhai dega…</div>
+  </div>
+
+  <script>
+    const input = document.getElementById("searchInput");
+    const result = document.getElementById("result");
+    const btn = document.getElementById("searchBtn");
+
+    function showKeyword(){
+      const val = input.value.trim();
+      if(val){
+        result.innerHTML = `Aapne search kiya: <span class="highlight">${val}</span>`;
+      } else {
+        result.textContent = "Aapka keyword yahan dikhai dega…";
+      }
+    }
+
+    // Live update as user types
+    input.addEventListener("input", showKeyword);
+    // Or on button click
+    btn.addEventListener("click", showKeyword);
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
 
 
 
