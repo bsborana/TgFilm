@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8" />Movies Types
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Movie Suggest Portal — Telegram Group</title>
   <meta name="description" content="Responsive UI to suggest movies via our Telegram group. Join and request any movie you want." />
@@ -383,6 +383,80 @@ Notes:`;
 
 
 
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>New Movies — Full Poster Responsive Grid</title>
+  <meta name="description" content="Responsive movie list with full posters, NEW badge, and links." />
+
+  <!-- Fonts (optional) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg: #0b0f14;
+      --card: rgba(255,255,255,0.06);
+      --cardHover: rgba(255,255,255,0.12);
+      --text: #e9eef7;
+      --muted: #b8c0cc;
+      --accent: #00e0a4;
+      --accent2: #ff6b6b;
+      --ring: rgba(0,224,164,0.35);
+      --shadow: 0 10px 30px rgba(0,0,0,0.45);
+      --radius: 16px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% -20%, rgba(0,224,164,0.15), transparent 40%),
+        radial-gradient(1000px 700px at 90% 120%, rgba(255,107,107,0.12), transparent 40%),
+        var(--bg);
+      color: var(--text);
+    }
+
+    /* Layout */
+    .container{
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+    header{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:16px;margin-bottom:20px;
+    }
+    .title{
+      font-size: clamp(22px, 4vw, 32px);
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+    .subtitle{
+      color: var(--muted);
+      font-size: clamp(14px, 2.2vw, 16px);
+    }
+
+    /* Controls */
+    .controls{
+      display:flex;flex-wrap:wrap;gap:10px;
+    }
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:10px 14px;border:1px solid rgba(255,255,255,0.12);
+      border-radius: 999px;color:var(--text);
+      background: rgba(255,255,255,0.06);
+      box-shadow: inset
+
+
+
+
+
+
 
 
 <!DOCTYPE html>
@@ -733,25 +807,22 @@ Notes:`;
 
 
 
-    <!-- RECOMMENDED MOVIES -->
-    <section class="recommended" aria-label="Recommended movies">
-      <div class="section-head">
-        <div class="section-title">Recommended Movies</div>
-        <div class="chip">Other Movies</div>
+        <!-- South Dubbed -->
+        <div class="dl-card">
+          <h3>Movies Types</h3>
+          <div class="btn-row">
+            <a href="#" class="download-btn">Bollywood</a>
+            <a href="#" class="download-btn">Hollywood</a>
+            <a href="#" class="download-btn">South Indian</a>
+            <!-- Optional language variants -->
+            <a href="#" class="download-btn small">Telugu</a>
+            <a href="#" class="download-btn small">English</a>
+            <a href="#" class="download-btn small">Hindi Dub</a>
+          </div>
+        </div>
       </div>
-
-      <div class="movie-grid">
-        <!-- Copy this block to add new posters -->
-        <div class="movie-card">
-          <a href="https://example.com/movie1">
-            <img class="poster" src="https://via.placeholder.com/200x300" alt="Movie 1 Poster" />
-          </a>
-        </div>
-               <div class="movie-card">
-          <a href="https://example.com/movie2">
-            <img class="poster" src="https://via.placeholder.com/200x300" alt="Movie 2 Poster" />
-          </a>
-        </div>
+    </section>
+    
     
 
     <!-- RECOMMENDED MOVIES -->
