@@ -391,467 +391,312 @@ Notes:`;
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Movie Download – Responsive Homepage</title>
-
-  <!--
-    Single-file HTML + CSS + JS
-    Sections:
-    1) Top: Dummy streaming player (buffering, title, details, rating, timeline, controls)
-    2) Middle: Download links (qualities + languages/industries)
-    3) Bottom: Recommended movies (responsive poster grid)
-    Theme: Dark with yellow/orange accents
-    Fully responsive across mobile, tablet, desktop
-  -->
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>TG Movies — Modular OTT-style</title>
+  <link rel="icon" href="favicon.ico" type="image/x-icon"/>
 
   <style>
-    :root {
-      --bg: #0b0b0b;
-      --panel: #121212;
-      --text: #eaeaea;
-      --muted: #b3b3b3;
-      --accent: #ffcc00;
-      --accent-2: #ffaa00;
-      --border: #232323;
-      --danger: #e74c3c;
-      --success: #2ecc71;
-      --focus: #2890ff;
+    :root{
+      --bg:#0a0a0a;--panel:rgba(24,24,24,0.85);--border:#2a2a2a;
+      --text:#f4f4f4;--muted:#a9a9a9;--accent:#ff4d4d;--accent-2:#00bfff;
+      --wrap:1200px;--radius:14px;
     }
+    *{box-sizing:border-box;transition:all .3s ease;}
+    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);}
+    a{text-decoration:none;color:inherit;}
+    img{display:block;max-width:100%;}
+    html{scroll-behavior:smooth;}
+    .wrap{max-width:var(--wrap);margin:0 auto;padding:16px;}
 
-    /* Global reset and base styles */
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif; }
-    a { color: inherit; text-decoration: none; }
-    img { display: block; max-width: 100%; height: auto; }
-    button { font: inherit; }
+    /* Header */
+    .app-header{position:sticky;top:0;z-index:30;background:#111;border-bottom:1px solid var(--border);}
+    .header-inner{max-width:var(--wrap);margin:0 auto;display:flex;align-items:center;gap:16px;justify-content:space-between;padding:12px 16px;}
+    .brand{display:flex;align-items:center;gap:10px;}
+    .brand-logo{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,#1a1a1a,#262626);border:1px solid var(--border);}
+    .brand-name{font-weight:800;font-size:18px;}
+    .tagline{color:var(--muted);font-size:12px;}
+    .nav-links{display:flex;gap:16px;}
+    .nav-links a{font-size:14px;color:var(--muted);position:relative;}
+    .nav-links a:hover{color:var(--accent);}
+    .search-bar{flex:1;max-width:440px;}
+    .search-bar input{width:100%;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:#1a1a1a;color:var(--text);}
 
-    /* Container */
-    .wrap {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 16px;
-    }
+    /* Hero Carousel */
+    .hero{position:relative;height:300px;border-radius:var(--radius);overflow:hidden;margin:16px;}
+    .hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1s ease;}
+    .hero-slide.active{opacity:1;}
+    .hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.7),transparent);}
+    .hero-content{position:absolute;bottom:20px;left:20px;color:#fff;animation:slideUp 1s ease forwards;}
+    .hero-title{font-size:28px;font-weight:700;text-shadow:0 4px 16px rgba(0,0,0,0.5);}
+    .hero-btn{margin-top:10px;padding:10px 16px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;}
+    .hero-btn:hover{background:#ff2f2f;}
+    @keyframes slideUp{from{transform:translateY(40px);opacity:0;}to{transform:translateY(0);opacity:1;}}
 
-    /* SECTION: Dummy Streaming Player */
-    .player {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-    }
+    /* Sections */
+    .panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:16px;}
+    .section-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);}
+    .section-title{font-weight:700;}
+    .chip{padding:6px 10px;border-radius:999px;border:1px solid var(--border);color:var(--muted);font-size:12px;background:#111;}
 
-    /* Player video area (visual frame) */
-    .player-top {
-      position: relative;
-      background: #000;
-      min-height: 220px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    /* Grids & cards */
+    .movie-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;padding:16px;}
+    .movie-card{position:relative;overflow:hidden;border-radius:12px;}
+    .movie-card a{display:block;background:#111;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+    .movie-card a:hover{transform:scale(1.05);border-color:var(--accent);box-shadow:0 12px 30px rgba(255,77,77,0.25),0 6px 18px rgba(92,200,255,0.2);}
+    .poster{width:100%;aspect-ratio:2/3;object-fit:cover;background:#000;}
+    .badge{position:absolute;top:8px;left:8px;background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:4px 8px;border-radius:999px;}
+    .overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent 60%);opacity:0;display:flex;align-items:flex-end;padding:10px;}
+    .movie-card:hover .overlay{opacity:1;}
+    .movie-info h4{margin:0;font-size:14px;font-weight:700;}
+    .movie-info p{margin:2px 0 0;font-size:12px;color:var(--muted);}
+    .meta{display:flex;gap:8px;margin-top:6px;font-size:11px;color:var(--muted);}
 
-    /* Buffering loader */
-    .loader {
-      width: 54px; height: 54px;
-      border: 6px solid #333;
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
+    /* Animated Telegram + Copy buttons */
+    .btn-telegram {
+      display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:50px;
+      background:linear-gradient(135deg,#0088cc,#00bfff);color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+      position:relative;overflow:hidden;box-shadow:0 4px 15px rgba(0,136,204,0.4);
     }
+    .btn-telegram::before {
+      content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;
+      background:linear-gradient(120deg,transparent,rgba(255,255,255,0.4),transparent);transition:all .6s;
+    }
+    .btn-telegram:hover::before{left:100%;}
+    .btn-telegram:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,136,204,0.6);}
+    .copy-box{position:relative;margin-top:16px;}
+    .copy-box textarea{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:#111;color:#fff;font-size:14px;resize:none;min-height:96px;}
+    .btn-copy{position:absolute;top:10px;right:10px;padding:8px 14px;border:none;border-radius:6px;background:linear-gradient(135deg,#ff4d4d,#ff2f2f);color:#fff;font-weight:600;cursor:pointer;overflow:hidden;}
+    .btn-copy::after{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,0.3),transparent);transition:all .6s;}
+    .btn-copy:hover::after{left:100%;}
+    .btn-copy:hover{transform:scale(1.05);}
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    /* Footer */
+    .footer{text-align:center;color:var(--muted);font-size:12px;padding:20px 16px;position:relative;}
+    .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:60px;height:3px;background:var(--accent);border-radius:2px;}
 
-    /* Overlay status text */
-    .status-text {
-      position: absolute;
-      bottom: 12px;
-      left: 50%;
-      transform: translateX(-50%);
-      color: var(--muted);
-      font-size: 14px;
-      background: rgba(0,0,0,0.5);
-      padding: 6px 10px;
-      border-radius: 999px;
-      border: 1px solid #222;
-      backdrop-filter: blur(2px);
-    }
-
-    /* Player meta area (title, details, rating) */
-    .player-meta {
-      padding: 14px 16px;
-      border-top: 1px solid var(--border);
-    }
-
-    .title-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 4px;
-    }
-
-    .movie-title {
-      font-weight: 700;
-      font-size: clamp(18px, 3.8vw, 22px);
-      color: var(--text);
-    }
-
-    .rating {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: #1a1a1a;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-size: 14px;
-      color: var(--accent);
-    }
-
-    .rating .stars {
-      color: var(--accent);
-      letter-spacing: 2px;
-    }
-
-    .details-row {
-      color: var(--muted);
-      font-size: 14px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 6px;
-    }
-
-    .chip {
-      background: #1a1a1a;
-      border: 1px solid var(--border);
-      color: var(--muted);
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 12px;
-    }
-
-    /* Timeline and controls (YouTube-like) */
-    .controls {
-      padding: 10px 16px 14px 16px;
-      border-top: 1px solid var(--border);
-    }
-
-    .timeline {
-      position: relative;
-      height: 8px;
-      background: #1a1a1a;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      overflow: hidden;
-      margin-bottom: 10px;
-    }
-
-    /* Buffered progress (animated) */
-    .buffered {
-      position: absolute;
-      top: 0; left: 0; height: 100%;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      width: 18%;
-      animation: bufferFlow 4s ease-in-out infinite;
-    }
-    @keyframes bufferFlow {
-      0% { width: 12%; }
-      50% { width: 65%; }
-      100% { width: 18%; }
-    }
-
-    /* Control bar */
-    .control-bar {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #1a1a1a;
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 8px 12px;
-      border-radius: 8px;
-      cursor: not-allowed;   /* dummy controls */
-      opacity: 0.9;
-      transition: transform 0.12s ease, border-color 0.12s ease;
-      user-select: none;
-    }
-    .btn:hover { transform: translateY(-1px); border-color: #2a2a2a; }
-
-    .spacer { flex: 1; }
-
-    /* Volume slider (dummy) */
-    .volume-wrap {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #1a1a1a;
-      border: 1px solid var(--border);
-      padding: 8px 12px;
-      border-radius: 8px;
-    }
-    .volume-wrap input[type="range"] {
-      width: 120px;
-      accent-color: var(--accent);
-    }
-
-    /* Download Section */
-    .downloads {
-      margin-top: 18px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    .section-head {
-      padding: 14px 16px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .section-title {
-      font-weight: 700;
-      color: var(--accent);
-      font-size: clamp(16px, 3.6vw, 20px);
-    }
-
-    .dl-groups {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      padding: 16px;
-    }
-    @media (max-width: 900px) {
-      .dl-groups { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 580px) {
-      .dl-groups { grid-template-columns: 1fr; }
-    }
-
-    .dl-card {
-      background: #1a1a1a;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
-    }
-    .dl-card h3 {
-      margin: 0 0 10px;
-      font-size: 16px;
-      color: var(--text);
-    }
-
-    .btn-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .download-btn {
-      display: inline-block;
-      padding: 10px 14px;
-      background: var(--accent);
-      color: #000;
-      border-radius: 8px;
-      font-weight: 700;
-      border: 0;
-      transition: background 0.2s ease, transform 0.12s ease;
-    }
-    .download-btn:hover { background: var(--accent-2); transform: translateY(-1px); }
-    .download-btn.small { font-size: 13px; padding: 8px 12px; }
-
-    /* Recommended Movies */
-    .recommended {
-      margin-top: 18px;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    .recommended .section-head { border-bottom: 1px solid var(--border); }
-
-    .movie-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 14px;
-      padding: 16px;
-    }
-
-    .movie-card a {
-      display: block;
-      background: #1a1a1a;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      overflow: hidden;
-      transition: transform 0.18s ease, border-color 0.18s ease;
-    }
-    .movie-card a:hover { transform: translateY(-2px); border-color: #2a2a2a; }
-
-    .poster {
-      width: 100%;
-      aspect-ratio: 2 / 3; /* Keeps poster proportion */
-      object-fit: cover;
-      background: #0d0d0d;
-    }
-
-    /* Footer (optional) */
-    .footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
-      padding: 20px 16px;
-    }
-
-    /* Accessibility focus */
-    .download-btn:focus,
-    .btn:focus,
-    .movie-card a:focus {
-      outline: 2px solid var(--focus);
-      outline-offset: 2px;
+    @media(max-width:700px){
+      .header-inner{flex-wrap:wrap;}
+      .search-bar{flex:1;width:100%;}
+      .hero{height:220px;}
     }
   </style>
 </head>
 <body>
-  <main class="wrap">
-
-    <!-- DOWNLOAD LINKS -->
-    <section class="downloads" aria-label="Movie download links">
-      <div class="section-head">
-        <div class="section-title">Movies Category</div>
-        <div class="chip">Tags</div>
-      </div>
-
-      <div class="dl-groups">
-        
-
-
-
-        <!-- South Dubbed -->
-        <div class="dl-card">
-          <h3>Movies Types</h3>
-          <div class="btn-row">
-            <a href="#" class="download-btn">Bollywood</a>
-            <a href="#" class="download-btn">Hollywood</a>
-            <a href="#" class="download-btn">South Indian</a>
-            <!-- Optional language variants -->
-            <a href="#" class="download-btn small">Telugu</a>
-            <a href="#" class="download-btn small">English</a>
-            <a href="#" class="download-btn small">Hindi Dub</a>
-          </div>
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-logo" aria-hidden="true"></div>
+        <div>
+          <div class="brand-name">TG Movies</div>
+          <div class="tagline">Watch · Request · Enjoy</div>
         </div>
       </div>
-    </section>
-    
-    
+      <nav class="nav-links">
+        <a href="#new">New</a>
+        <a href="#recommended">Recommended</a>
+        <a href="#request">Request</a>
+      </nav>
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search by title, year, language, or genre..."/>
+      </div>
+    </div>
+  </header>
 
-    <!-- RECOMMENDED MOVIES -->
-    <section class="recommended" aria-label="Recommended movies">
+  <!-- Hero carousel -->
+  <main class="wrap">
+    <section class="hero panel" id="hero"></section>
+
+    <!-- New Movies -->
+    <section id="new" class="section panel">
+      <div class="section-head">
+        <div class="section-title">New Movies</div>
+        <div class="chip">Latest Releases</div>
+      </div>
+      <div class="movie-grid" id="newMovies"></div>
+    </section>
+
+    <!-- Recommended Movies -->
+    <section id="recommended" class="section panel">
       <div class="section-head">
         <div class="section-title">Recommended Movies</div>
-        <div class="chip">Other Movies</div>
+        <div class="chip">Handpicked</div>
+      </div>
+      <div class="movie-grid" id="recommendedMovies"></div>
+    </section>
+
+    <!-- Request section -->
+    <section id="request" class="section panel">
+      <div class="section-head">
+        <div class="section-title">Request a Movie</div>
+        <div class="chip">Telegram Group</div>
       </div>
 
-      <div class="movie-grid">
-        <!-- Copy this block to add new posters -->
+      <div class="form">
+        <p>To request a movie, please follow these steps:</p>
+        <ol>
+          <li>Join our official <strong>Telegram Request Group</strong>.</li>
+          <li>Copy the request format below.</li>
+          <li>Fill in the details (Movie Name, Language, Year).</li>
+          <li>Send it in the group.</li>
+          <li>Our team will upload your movie within <strong>24 hours</strong>.</li>
+        </ol>
 
+        <a href="https://t.me/YourGroupLink" target="_blank" class="btn-telegram" aria-label="Join Telegram Group">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fff" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9.999 15.5l-.5 4.5 2.5-2 4 3 7-18-21 9 5 2 2-1 6-4-5 6z"/>
+          </svg>
+          Join Telegram Group
+        </a>
 
+        <div class="copy-box">
+          <label class="label">Request format</label>
+          <textarea id="requestFormat" readonly>Movie Name:
+Language:
+Year:</textarea>
+          <button onclick="copyFormat()" class="btn-copy">Copy</button>
+        </div>
 
-  <div class="movie-card">
-    <a href="https://example.com/movie1">
-      <img class="poster" src="https://via.placeholder.com/200x300" alt="Movie 1 Poster" />
-      <div class="badge">NEW</div>
-    </a>
-  </div>
-
-
-
-        
-        <div class="movie-card">
-          <a href="https://example.com/movie1">
-            <img class="poster" src="https://via.placeholder.com/200x300" alt="Movie 1 Poster" />
-          </a>
-        </div>
-               <div class="movie-card">
-          <a href="https://example.com/movie2">
-            <img class="poster" src="https://via.placeholder.com/200x300" alt="Movie 2 Poster" />
-          </a>
-        </div>
-               <div class="movie-card">
-          <a href="https://example.com/movie2">
-            <img class="poster" src="https://via.placeholder.com/200x300" alt="Movie 2 Poster" />
-          </a>
-        </div>
-               <div class="movie-card">
-          <a href="https://example.com/movie2">
-            <img class="poster" src="https://via.placeholder.com/200x300" alt="Movie 2 Poster" />
-          </a>
-        </div>
-               <div class="movie-card">
-          <a href="https://example.com/movie2">
-            <img class="poster" src="https://via.placeholder.com/200x300" alt="Movie 2 Poster" />
-          </a>
-        </div>
-               <div class="movie-card">
-          <a href="https://example.com/movie2">
-            <img class="poster" src="https://via.placeholder.com/200x300" alt="Movie 2 Poster" />
-          </a>
-        </div>
-        <div class="movie-card">
-          <a href="https://example.com/movie2">
-            <img class="poster" src="https://via.placeholder.com/200x300" alt="Movie 2 Poster" />
-          </a>
-        </div>
-        <div class="movie-card">
-          <a href="https://example.com/movie3">
-            <img class="poster" src="https://via.placeholder.com/200x300" alt="Movie 3 Poster" />
-          </a>
-        </div>
-        <div class="movie-card">
-          <a href="https://www.joblo.com/movie-posters/">
-            <img class="poster" src="https://www.joblo.com/wp-content/uploads/2024/12/anaconda-poster-400x600.jpg" alt="Movie 4 " />
-          </a>
-        </div>
-        <!-- Add more by duplicating any .movie-card -->
+        <p style="margin-top:16px;font-size:13px;color:var(--muted);">
+          ⭐ Tip: Add this website to your <strong>Bookmarks</strong> so you can easily request movies in the future.
+        </p>
       </div>
     </section>
 
+    <!-- Footer -->
     <footer class="footer">
-      © 2025 Tg Film — Enjoy
+      <p>© 2025 TG Movies — All Rights Reserved</p>
     </footer>
   </main>
 
+  <!-- Scripts -->
   <script>
-    // Tiny UX touches: animate "Connecting..." text with dots
-    (function() {
-      const el = document.getElementById('statusText');
-      if (!el) return;
-      const base = "Connecting to server stream Loading";
-      let dots = 0;
-      setInterval(() => {
-        dots = (dots + 1) % 4;
-        el.textContent = base + ".".repeat(dots);
-      }, 700);
-    })();
+    // =========================
+    // Data (edit this only)
+    // =========================
+    const data = {
+      hero: [
+        { title:"KGF", tagline:"The Blockbuster", img:"https://via.placeholder.com/1200x400?text=KGF+Featured", cta:"#"},
+        { title:"Pushpa", tagline:"The Fire", img:"https://via.placeholder.com/1200x400?text=Pushpa+Featured", cta:"#"},
+        { title:"Avengers", tagline:"Assemble", img:"https://via.placeholder.com/1200x400?text=Avengers+Featured", cta:"#"}
+      ],
+      new: [
+        { title:"KGF", year:"2022", lang:"Hindi", genre:"Action", rating:"8.2",
+          img:"https://via.placeholder.com/200x300?text=KGF", link:"#", isNew:true },
+        { title:"Pushpa", year:"2021", lang:"Telugu", genre:"Action", rating:"8.0",
+          img:"https://via.placeholder.com/200x300?text=Pushpa", link:"#", isNew:true },
+        { title:"Avengers", year:"2019", lang:"English", genre:"Superhero", rating:"8.4",
+          img:"https://via.placeholder.com/200x300?text=Avengers", link:"#", isNew:true }
+      ],
+      recommended: [
+        { title:"Inception", year:"2010", lang:"English", genre:"Sci‑Fi", rating:"8.8",
+          img:"https://via.placeholder.com/200x300?text=Inception", link:"#"},
+        { title:"RRR", year:"2022", lang:"Telugu", genre:"Drama", rating:"8.1",
+          img:"https://via.placeholder.com/200x300?text=RRR", link:"#"},
+        { title:"Dangal", year:"2016", lang:"Hindi", genre:"Sports", rating:"8.4",
+          img:"https://via.placeholder.com/200x300?text=Dangal", link:"#"}
+      ]
+    };
 
-    // Optional: handle prefers-reduced-motion
-    (function() {
-      const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-      const apply = () => {
-        document.documentElement.style.setProperty("--animSpeed", media.matches ? "0s" : "1s");
-      };
-      apply();
-      media.addEventListener?.("change", apply);
-    })();
+    // =========================
+    // Hero carousel render
+    // =========================
+    const heroEl = document.getElementById('hero');
+    data.hero.forEach((h, idx) => {
+      const slide = document.createElement('div');
+      slide.className = 'hero-slide' + (idx===0 ? ' active':'');
+      slide.style.backgroundImage = `url('${h.img}')`;
+      slide.innerHTML = `
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <div class="hero-title">${h.title} — ${h.tagline}</div>
+          <button class="hero-btn" onclick="location.href='${h.cta}'">Watch Now</button>
+        </div>`;
+      heroEl.appendChild(slide);
+    });
+    let currentSlide = 0;
+    const slides = () => document.querySelectorAll('.hero-slide');
+    function showSlide(i){ slides().forEach((s,idx)=>s.classList.toggle('active', idx===i)); }
+    setInterval(()=>{ currentSlide = (currentSlide+1)%slides().length; showSlide(currentSlide); }, 5000);
+
+    // =========================
+    // Card builder + render
+    // =========================
+    function cardHTML(m){
+      return `
+        <div class="movie-card" data-title="${m.title}" data-year="${m.year}" data-lang="${m.lang}" data-genre="${m.genre||''}">
+          <a href="${m.link||'#'}" target="_blank">
+            <img class="poster" loading="lazy" src="${m.img}" alt="${m.title} Poster"/>
+            ${m.isNew ? '<div class="badge">NEW</div>' : ''}
+            <div class="overlay">
+              <div class="movie-info">
+                <h4>${m.title}</h4>
+                <p>${m.year} · ${m.lang}</p>
+                <div class="meta">
+                  ${m.genre ? `<span>🎭 ${m.genre}</span>`:''}
+                  ${m.rating ? `<span>⭐ ${m.rating}</span>`:''}
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>`;
+    }
+    function renderGrid(list, mountId){
+      const mount = document.getElementById(mountId);
+      mount.innerHTML = list.map(cardHTML).join('');
+    }
+    renderGrid(data.new, 'newMovies');
+    renderGrid(data.recommended, 'recommendedMovies');
+
+    // =========================
+    // Search / filter across title, year, language, genre
+    // =========================
+    const searchInput = document.getElementById('searchInput');
+    function filterAll(){
+      const q = (searchInput.value||'').toLowerCase().trim();
+      document.querySelectorAll('.movie-card').forEach(card=>{
+        const title = (card.dataset.title||'').toLowerCase();
+        const year  = (card.dataset.year||'').toLowerCase();
+        const lang  = (card.dataset.lang||'').toLowerCase();
+        const genre = (card.dataset.genre||'').toLowerCase();
+        const match = [title,year,lang,genre].some(v=>v.includes(q));
+        card.style.display = match ? '' : 'none';
+      });
+      showEmptyState();
+    }
+    function showEmptyState(){
+      ['newMovies','recommendedMovies'].forEach(id=>{
+        const grid = document.getElementById(id);
+        const anyVisible = Array.from(grid.children).some(c=>c.style.display!=='none');
+        if(!anyVisible){
+          grid.innerHTML = `<div style="grid-column:1/-1;color:var(--muted);text-align:center;padding:20px;">No results found. Try another title, year, language, or genre.</div>`;
+        }
+      });
+    }
+    searchInput.addEventListener('input', filterAll);
+
+    // =========================
+    // Copy format toast
+    // =========================
+    function copyFormat(){
+      const textarea = document.getElementById("requestFormat");
+      textarea.select();
+      textarea.setSelectionRange(0, 99999);
+      document.execCommand("copy");
+      const toast = document.createElement("div");
+      toast.textContent = "✅ Request format copied!";
+      toast.style.position = "fixed";
+      toast.style.bottom = "20px";
+      toast.style.right = "20px";
+      toast.style.background = "#222";
+      toast.style.color = "#fff";
+      toast.style.padding = "10px 16px";
+      toast.style.borderRadius = "8px";
+      toast.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
+      document.body.appendChild(toast);
+      setTimeout(()=>toast.remove(), 2000);
+    }
   </script>
 </body>
 </html>
