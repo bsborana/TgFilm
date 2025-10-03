@@ -555,77 +555,67 @@ Year:</textarea>
     }
     setInterval(rotateHero, 5000);
 
-    // ===== IMDb Poster Fetch using TMDb /find =====
-    const imdbInput = document.getElementById("imdbId");
-    const fetchBtn = document.getElementById("fetchBtn");
-    const results = document.getElementById("results");
+// ===== Movie Name Search using TMDb =====
+const imdbInput = document.getElementById("imdbId"); // same input box use hoga
+const fetchBtn = document.getElementById("fetchBtn");
+const results = document.getElementById("results");
 
-    function showSkeleton() {
-      results.innerHTML = `
-        <div class="skeleton">
-          <div class="sk-poster"></div>
-          <div>
-            <div class="sk-line" style="width: 60%;"></div><br/>
-            <div class="sk-line" style="width: 40%;"></div>
+function showSkeleton() {
+  results.innerHTML = `
+    <div class="skeleton">
+      <div class="sk-poster"></div>
+      <div>
+        <div class="sk-line" style="width: 60%;"></div><br/>
+        <div class="sk-line" style="width: 40%;"></div>
+      </div>
+    </div>
+  `;
+}
+
+async function searchMovie() {
+  const query = imdbInput.value.trim(); // ab yahan movie name aayega
+  if (!query) {
+    results.innerHTML = `<span style="color:${getComputedStyle(document.body).getPropertyValue('--muted')}">Enter a movie name</span>`;
+    return;
+  }
+  showSkeleton();
+
+  try {
+    const url = `https://api.themoviedb.org/3/search/movie?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("TMDb request failed");
+    const data = await res.json();
+
+    if (!data.results || data.results.length === 0) {
+      results.innerHTML = `<span style="color:#ff9aa2">No results found for "${query}".</span>`;
+      return;
+    }
+
+    const item = data.results[0];
+    const posterUrl = item.poster_path
+      ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
+      : "https://via.placeholder.com/240x360/233040/FFFFFF?text=No+Poster";
+
+    results.innerHTML = `
+      <div style="display:grid; grid-template-columns: 140px 1fr; gap: 12px; align-items:center;">
+        <img src="${posterUrl}" alt="${item.title}" style="width:140px; border-radius:12px; border:1px solid var(--border);" />
+        <div>
+          <div style="font-weight:800; font-size:16px; margin-bottom:6px;">${item.title} (${item.release_date?.slice(0,4) || "N/A"})</div>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <a class="btn btn-ghost" href="https://www.themoviedb.org/movie/${item.id}" target="_blank">Open TMDb</a>
           </div>
         </div>
-      `;
-    }
-    async function fetchPoster() {
-      const imdbId = imdbInput.value.trim();
-      if (!imdbId) {
-        results.innerHTML = `<span style="color:${getComputedStyle(document.body).getPropertyValue('--muted')}">Enter a valid IMDb ID (e.g., tt3896198)</span>`;
-        return;
-      }
-      showSkeleton();
+      </div>
+    `;
+  } catch (err) {
+    results.innerHTML = `<span style="color:#ff9aa2">Error: ${err.message}</span>`;
+  }
+}
 
-      try {
-        if (!TMDB_API_KEY || TMDB_API_KEY.includes("PASTE_")) {
-          throw new Error("Missing TMDb API key");
-        }
-        const url = `https://api.themoviedb.org/3/find/${encodeURIComponent(imdbId)}?api_key=${TMDB_API_KEY}&external_source=imdb_id`;
-        const res = await fetch(url);
-        if (!res.ok) throw new Error("TMDb request failed");
-        const data = await res.json();
-
-        const item =
-          (data.movie_results && data.movie_results[0]) ||
-          (data.tv_results && data.tv_results[0]) ||
-          (data.person_results && data.person_results[0]);
-
-        if (!item) {
-          results.innerHTML = `<span style="color:#ff9aa2">No results found for ${imdbId}.</span>`;
-          return;
-        }
-
-        const posterUrl = item.poster_path
-          ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
-          : "https://via.placeholder.com/240x360/233040/FFFFFF?text=No+Poster";
-
-        const title = item.title || item.name || "Unknown title";
-        const tmdbId = item.id;
-        const isTv = !!item.name && !item.title;
-
-        results.innerHTML = `
-          <div style="display:grid; grid-template-columns: 140px 1fr; gap: 12px; align-items:center;">
-            <img src="${posterUrl}" alt="${title}" style="width:140px; height:auto; border-radius:12px; border:1px solid var(--border);" />
-            <div>
-              <div style="font-weight:800; font-size:16px; margin-bottom:6px;">${title}</div>
-              <div style="display:flex; gap:8px; flex-wrap:wrap;">
-                <a class="btn btn-ghost" href="https://www.imdb.com/title/${imdbId}/" target="_blank" rel="noopener">Open IMDb</a>
-                <a class="btn btn-ghost" href="https://www.themoviedb.org/${isTv ? "tv" : "movie"}/${tmdbId}" target="_blank" rel="noopener">Open TMDb</a>
-              </div>
-            </div>
-          </div>
-        `;
-      } catch (err) {
-        results.innerHTML = `<span style="color:#ff9aa2">Error: ${err.message}. Check your API key or try again.</span>`;
-      }
-    }
-    fetchBtn.addEventListener("click", fetchPoster);
-    imdbInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter") fetchPoster();
-    });
+fetchBtn.addEventListener("click", searchMovie);
+imdbInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") searchMovie();
+});
 
     // ===== Copy request format with toast (guarded) =====
     const copyBtn = document.getElementById("copyBtn");
