@@ -1,312 +1,657 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>TG Movies — Modular OTT-style</title>
-  <link rel="icon" href="favicon.ico" type="image/x-icon"/>
-
   <style>
-    :root{
-      --bg:#0a0a0a;--panel:rgba(24,24,24,0.85);--border:#2a2a2a;
-      --text:#f4f4f4;--muted:#a9a9a9;--accent:#ff4d4d;--accent-2:#00bfff;
-      --wrap:1200px;--radius:14px;
+    :root {
+      --bg: #0b0f14;
+      --bg-elev: #12161d;
+      --text: #e8ecf2;
+      --muted: #9aa4af;
+      --accent: #4cc9f0;
+      --accent-2: #7b2cff;
+      --card: #141a22;
+      --border: #1f2732;
+      --success: #35d073;
+      --danger: #ff5c8a;
+      --warning: #f5c84c;
+      --shadow: 0 10px 30px rgba(0,0,0,0.35);
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --radius-sm: 10px;
+      --transition-fast: 180ms ease;
+      --transition-medium: 280ms ease;
     }
-    *{box-sizing:border-box;transition:all .3s ease;}
-    body{margin:0;font-family:system-ui,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--text);}
-    a{text-decoration:none;color:inherit;}
-    img{display:block;max-width:100%;}
-    html{scroll-behavior:smooth;}
-    .wrap{max-width:var(--wrap);margin:0 auto;padding:16px;}
 
-    /* Header */
-    .app-header{position:sticky;top:0;z-index:30;background:#111;border-bottom:1px solid var(--border);}
-    .header-inner{max-width:var(--wrap);margin:0 auto;display:flex;align-items:center;gap:16px;justify-content:space-between;padding:12px 16px;}
-    .brand{display:flex;align-items:center;gap:10px;}
-    .brand-logo{width:34px;height:34px;border-radius:8px;background:linear-gradient(135deg,#1a1a1a,#262626);border:1px solid var(--border);}
-    .brand-name{font-weight:800;font-size:18px;}
-    .tagline{color:var(--muted);font-size:12px;}
-    .nav-links{display:flex;gap:16px;}
-    .nav-links a{font-size:14px;color:var(--muted);position:relative;}
-    .nav-links a:hover{color:var(--accent);}
-    .search-bar{flex:1;max-width:440px;}
-    .search-bar input{width:100%;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:#1a1a1a;color:var(--text);}
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      line-height: 1.5;
+    }
 
-    /* Hero Carousel */
-    .hero{position:relative;height:300px;border-radius:var(--radius);overflow:hidden;margin:16px;}
-    .hero-slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1s ease;}
-    .hero-slide.active{opacity:1;}
-    .hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.7),transparent);}
-    .hero-content{position:absolute;bottom:20px;left:20px;color:#fff;animation:slideUp 1s ease forwards;}
-    .hero-title{font-size:28px;font-weight:700;text-shadow:0 4px 16px rgba(0,0,0,0.5);}
-    .hero-btn{margin-top:10px;padding:10px 16px;border:none;border-radius:8px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer;}
-    .hero-btn:hover{background:#ff2f2f;}
-    @keyframes slideUp{from{transform:translateY(40px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+    /* Sticky header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: saturate(1.2) blur(8px);
+      background: linear-gradient(180deg, rgba(18, 22, 29, 0.8), rgba(18, 22, 29, 0.6));
+      border-bottom: 1px solid var(--border);
+    }
+    .header-inner {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 16px;
+      align-items: center;
+      padding: 12px 20px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: radial-gradient(circle at 30% 20%, var(--accent), var(--accent-2));
+      box-shadow: var(--shadow);
+    }
+    .brand-text { display: grid; }
+    .brand-name { font-weight: 700; letter-spacing: 0.4px; }
+    .brand-tagline { font-size: 12px; color: var(--muted); }
+
+    nav {
+      display: flex; gap: 18px; justify-content: center;
+    }
+    nav a {
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: 10px;
+      transition: background var(--transition-fast), color var(--transition-fast);
+    }
+    nav a:hover { background: rgba(124, 94, 255, 0.18); color: #fff; }
+
+    .search-wrap {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px 10px;
+      width: 100%;
+      max-width: 360px;
+    }
+    .search-wrap input {
+      flex: 1;
+      background: transparent; border: 0; outline: none;
+      color: var(--text);
+      font-size: 14px;
+    }
+    .search-wrap .hint {
+      color: var(--muted); font-size: 12px;
+    }
+
+    /* Hero carousel */
+    .hero {
+      position: relative;
+      max-width: 1200px;
+      margin: 18px auto 10px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .slides {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 100%;
+      transition: transform var(--transition-medium);
+    }
+    .slide {
+      position: relative;
+      min-height: 320px;
+      background-size: cover;
+      background-position: center;
+    }
+    .slide::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.2), rgba(11,15,20,0.75));
+    }
+    .slide-content {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 24px;
+      gap: 8px;
+    }
+    .slide-title { font-size: 28px; font-weight: 800; text-shadow: 0 4px 24px rgba(0,0,0,0.5); }
+    .slide-tag { color: var(--muted); max-width: 640px; }
+    .slide-actions { display: flex; gap: 12px; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 0; outline: none; cursor: pointer;
+      border-radius: 12px; padding: 10px 14px;
+      font-weight: 700; transition: transform var(--transition-fast), background var(--transition-fast), opacity var(--transition-fast);
+    }
+    .btn-primary { background: linear-gradient(90deg, var(--accent-2), var(--accent)); color: #fff; }
+    .btn-primary:hover { transform: translateY(-1px); opacity: 0.95; }
+    .btn-ghost { background: rgba(255,255,255,0.08); color: var(--text); }
+    .btn-ghost:hover { background: rgba(255,255,255,0.12); }
 
     /* Sections */
-    .panel{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin:16px;}
-    .section-head{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);}
-    .section-title{font-weight:700;}
-    .chip{padding:6px 10px;border-radius:999px;border:1px solid var(--border);color:var(--muted);font-size:12px;background:#111;}
-
-    /* Grids & cards */
-    .movie-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;padding:16px;}
-    .movie-card{position:relative;overflow:hidden;border-radius:12px;}
-    .movie-card a{display:block;background:#111;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
-    .movie-card a:hover{transform:scale(1.05);border-color:var(--accent);box-shadow:0 12px 30px rgba(255,77,77,0.25),0 6px 18px rgba(92,200,255,0.2);}
-    .poster{width:100%;aspect-ratio:2/3;object-fit:cover;background:#000;}
-    .badge{position:absolute;top:8px;left:8px;background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:4px 8px;border-radius:999px;}
-    .overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.8),transparent 60%);opacity:0;display:flex;align-items:flex-end;padding:10px;}
-    .movie-card:hover .overlay{opacity:1;}
-    .movie-info h4{margin:0;font-size:14px;font-weight:700;}
-    .movie-info p{margin:2px 0 0;font-size:12px;color:var(--muted);}
-    .meta{display:flex;gap:8px;margin-top:6px;font-size:11px;color:var(--muted);}
-
-    /* Animated Telegram + Copy buttons */
-    .btn-telegram {
-      display:inline-flex;align-items:center;gap:10px;padding:12px 20px;border-radius:50px;
-      background:linear-gradient(135deg,#0088cc,#00bfff);color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
-      position:relative;overflow:hidden;box-shadow:0 4px 15px rgba(0,136,204,0.4);
+    .section {
+      max-width: 1200px;
+      margin: 18px auto;
+      padding: 0 20px;
     }
-    .btn-telegram::before {
-      content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;
-      background:linear-gradient(120deg,transparent,rgba(255,255,255,0.4),transparent);transition:all .6s;
+    .section-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
     }
-    .btn-telegram:hover::before{left:100%;}
-    .btn-telegram:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,136,204,0.6);}
-    .copy-box{position:relative;margin-top:16px;}
-    .copy-box textarea{width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:#111;color:#fff;font-size:14px;resize:none;min-height:96px;}
-    .btn-copy{position:absolute;top:10px;right:10px;padding:8px 14px;border:none;border-radius:6px;background:linear-gradient(135deg,#ff4d4d,#ff2f2f);color:#fff;font-weight:600;cursor:pointer;overflow:hidden;}
-    .btn-copy::after{content:"";position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,0.3),transparent);transition:all .6s;}
-    .btn-copy:hover::after{left:100%;}
-    .btn-copy:hover{transform:scale(1.05);}
+    .section-title { font-size: 20px; font-weight: 800; }
+    .grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    /* Movie card */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      position: relative;
+      transition: transform var(--transition-medium), box-shadow var(--transition-medium), border-color var(--transition-medium);
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+      border-color: rgba(124, 94, 255, 0.3);
+    }
+    .poster {
+      aspect-ratio: 2/3;
+      width: 100%;
+      background: linear-gradient(135deg, #1c2430, #0f1319);
+      display: grid; place-items: center; color: var(--muted);
+      font-weight: 800; letter-spacing: 1px;
+      background-size: cover; background-position: center;
+    }
+    .card-body { padding: 10px; display: grid; gap: 6px; }
+    .card-title { font-weight: 700; font-size: 14px; }
+    .meta { color: var(--muted); font-size: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+    .rating { color: #ffd166; font-weight: 700; }
+    .badge-new {
+      position: absolute; top: 8px; left: 8px;
+      background: linear-gradient(90deg, #ff7d7d, #ff5c8a);
+      color: #fff; font-size: 11px; font-weight: 800;
+      padding: 6px 8px; border-radius: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .hover-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, transparent, rgba(0,0,0,0.65));
+      opacity: 0; transition: opacity var(--transition-medium);
+      display: flex; align-items: flex-end; justify-content: center;
+      padding: 12px;
+    }
+    .card:hover .hover-overlay { opacity: 1; }
+    .overlay-content {
+      display: flex; gap: 8px;
+    }
+
+    /* IMDb/TMDb fetch tool */
+    .tool {
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: grid; gap: 12px;
+    }
+    .tool-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+    }
+    .tool input {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      padding: 10px;
+      font-size: 14px;
+      outline: none;
+    }
+    .tool .results {
+      display: grid; gap: 10px;
+    }
+    .skeleton {
+      display: grid; grid-template-columns: 120px 1fr; gap: 12px;
+      align-items: center;
+    }
+    .sk-poster, .sk-line {
+      background: linear-gradient(90deg, #19202a 0%, #222a35 50%, #19202a 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.2s infinite;
+      border-radius: 10px;
+    }
+    .sk-poster { width: 120px; height: 180px; }
+    .sk-line { height: 14px; }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    /* Request section */
+    .request {
+      display: grid; gap: 12px;
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+    }
+    .req-steps {
+      display: grid; gap: 6px;
+    }
+    .req-steps li { margin-left: 18px; color: var(--muted); }
+    .req-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .format-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      color: var(--text);
+      font-size: 14px;
+      width: 100%;
+      min-height: 110px;
+      resize: vertical;
+    }
+    .toast {
+      position: fixed; bottom: 18px; right: 18px;
+      background: #0e1912; color: #b5ffd9;
+      border: 1px solid #1e3b2a;
+      padding: 10px 12px; border-radius: 10px;
+      box-shadow: var(--shadow);
+      opacity: 0; transform: translateY(8px);
+      transition: opacity var(--transition-medium), transform var(--transition-medium);
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
 
     /* Footer */
-    .footer{text-align:center;color:var(--muted);font-size:12px;padding:20px 16px;position:relative;}
-    .footer::before{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:60px;height:3px;background:var(--accent);border-radius:2px;}
+    footer {
+      border-top: 1px solid var(--border);
+      margin-top: 24px;
+      padding: 18px 20px;
+      text-align: center;
+      color: var(--muted);
+    }
 
-    @media(max-width:700px){
-      .header-inner{flex-wrap:wrap;}
-      .search-bar{flex:1;width:100%;}
-      .hero{height:220px;}
+    /* Responsive rules */
+    @media (max-width: 820px) {
+      .header-inner { grid-template-columns: auto 1fr; grid-template-rows: auto auto; }
+      nav { justify-content: flex-start; grid-column: span 2; order: 3; }
+      .search-wrap { max-width: none; }
+      .slide-title { font-size: 24px; }
+      .grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+    }
+    @media (max-width: 640px) {
+      .slide { min-height: 260px; }
+      .grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 480px) {
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .slide-title { font-size: 22px; }
+      .brand-tagline { display: none; }
     }
   </style>
 </head>
 <body>
+
   <!-- Header -->
-  <header class="app-header">
+  <header>
     <div class="header-inner">
       <div class="brand">
-        <div class="brand-logo" aria-hidden="true"></div>
-        <div>
+        <div class="logo" aria-hidden="true"></div>
+        <div class="brand-text">
           <div class="brand-name">TG Movies</div>
-          <div class="tagline">Watch · Request · Enjoy</div>
+          <div class="brand-tagline">Stream bold stories. Discover new worlds.</div>
         </div>
       </div>
-      <nav class="nav-links">
-        <a href="#new">New</a>
-        <a href="#recommended">Recommended</a>
-        <a href="#request">Request</a>
+
+      <nav aria-label="Primary">
+        <a href="#new" title="New releases">New</a>
+        <a href="#recommended" title="Recommended picks">Recommended</a>
+        <a href="#request" title="Request a movie">Request</a>
       </nav>
-      <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="Search by title, year, language, or genre..."/>
+
+      <div class="search-wrap" role="search">
+        <input id="search" type="text" placeholder="Search title, year, language, genre…" aria-label="Search movies" />
+        <span class="hint">Enter keywords</span>
       </div>
     </div>
   </header>
 
   <!-- Hero carousel -->
-  <main class="wrap">
-    <section class="hero panel" id="hero"></section>
-
-    <!-- New Movies -->
-    <section id="new" class="section panel">
-      <div class="section-head">
-        <div class="section-title">New Movies</div>
-        <div class="chip">Latest Releases</div>
+  <section class="hero" aria-label="Featured">
+    <div class="slides" id="slides">
+      <div class="slide" style="background-image:url('https://via.placeholder.com/1200x500/1a2230/FFFFFF?text=KGF');">
+        <div class="slide-content">
+          <div class="slide-title">KGF</div>
+          <div class="slide-tag">Power, ambition, and destiny collide in a world ruled by gold.</div>
+          <div class="slide-actions">
+            <button class="btn btn-primary">Watch Now</button>
+            <button class="btn btn-ghost">Add to List</button>
+          </div>
+        </div>
       </div>
-      <div class="movie-grid" id="newMovies"></div>
-    </section>
-
-    <!-- Recommended Movies -->
-    <section id="recommended" class="section panel">
-      <div class="section-head">
-        <div class="section-title">Recommended Movies</div>
-        <div class="chip">Handpicked</div>
+      <div class="slide" style="background-image:url('https://via.placeholder.com/1200x500/1a2230/FFFFFF?text=Pushpa');">
+        <div class="slide-content">
+          <div class="slide-title">Pushpa</div>
+          <div class="slide-tag">A defiant rise from the shadows to the top of the red sanders empire.</div>
+          <div class="slide-actions">
+            <button class="btn btn-primary">Watch Now</button>
+            <button class="btn btn-ghost">Add to List</button>
+          </div>
+        </div>
       </div>
-      <div class="movie-grid" id="recommendedMovies"></div>
-    </section>
-
-    <!-- Request section -->
-    <section id="request" class="section panel">
-      <div class="section-head">
-        <div class="section-title">Request a Movie</div>
-        <div class="chip">Telegram Group</div>
+      <div class="slide" style="background-image:url('https://via.placeholder.com/1200x500/1a2230/FFFFFF?text=Avengers');">
+        <div class="slide-content">
+          <div class="slide-title">Avengers</div>
+          <div class="slide-tag">Earth’s mightiest heroes assemble to face threats beyond imagination.</div>
+          <div class="slide-actions">
+            <button class="btn btn-primary">Watch Now</button>
+            <button class="btn btn-ghost">Add to List</button>
+          </div>
+        </div>
       </div>
+    </div>
+  </section>
 
-      <div class="form">
-        <p>To request a movie, please follow these steps:</p>
-        <ol>
-          <li>Join our official <strong>Telegram Request Group</strong>.</li>
-          <li>Copy the request format below.</li>
-          <li>Fill in the details (Movie Name, Language, Year).</li>
-          <li>Send it in the group.</li>
-          <li>Our team will upload your movie within <strong>24 hours</strong>.</li>
-        </ol>
+  <!-- New Movies -->
+  <section class="section" id="new">
+    <div class="section-header">
+      <div class="section-title">New movies</div>
+    </div>
+    <div class="grid" id="grid-new">
+      <!-- Cards injected by JS -->
+    </div>
+  </section>
 
-        <a href="https://t.me/YourGroupLink" target="_blank" class="btn-telegram" aria-label="Join Telegram Group">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fff" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M9.999 15.5l-.5 4.5 2.5-2 4 3 7-18-21 9 5 2 2-1 6-4-5 6z"/>
-          </svg>
-          Join Telegram Group
-        </a>
+  <!-- Recommended Movies -->
+  <section class="section" id="recommended">
+    <div class="section-header">
+      <div class="section-title">Recommended for you</div>
+    </div>
+    <div class="grid" id="grid-rec">
+      <!-- Cards injected by JS -->
+    </div>
+  </section>
 
-        <div class="copy-box">
-          <label class="label">Request format</label>
-          <textarea id="requestFormat" readonly>Movie Name:
+  <!-- IMDb Poster Fetch Tool -->
+  <section class="section" id="fetch-tool">
+    <div class="section-header">
+      <div class="section-title">IMDb poster fetch</div>
+    </div>
+    <div class="tool">
+      <div class="tool-row">
+        <input id="imdbId" type="text" placeholder="Enter IMDb ID (e.g., tt3896198)" aria-label="IMDb ID" />
+        <button id="fetchBtn" class="btn btn-primary">Fetch Poster</button>
+      </div>
+      <div class="results" id="results">
+        <!-- Loading skeleton or content appears here -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Request Section -->
+  <section class="section" id="request">
+    <div class="section-header">
+      <div class="section-title">Request a movie</div>
+    </div>
+    <div class="request">
+      <ul class="req-steps">
+        <li>Check if the movie already exists using the search above.</li>
+        <li>Join our Telegram group to submit requests.</li>
+        <li>Copy the format below, fill in details, and send on Telegram.</li>
+      </ul>
+      <div class="req-actions">
+        <a href="https://t.me/your_group_link" target="_blank" rel="noopener" class="btn btn-primary">Join on Telegram</a>
+        <button id="copyBtn" class="btn btn-ghost">Copy format</button>
+      </div>
+      <textarea id="formatBox" class="format-box" aria-label="Request format">Movie Name:
 Language:
 Year:</textarea>
-          <button onclick="copyFormat()" class="btn-copy">Copy</button>
-        </div>
+    </div>
+  </section>
 
-        <p style="margin-top:16px;font-size:13px;color:var(--muted);">
-          ⭐ Tip: Add this website to your <strong>Bookmarks</strong> so you can easily request movies in the future.
-        </p>
-      </div>
-    </section>
+  <!-- Footer -->
+  <footer>
+    © 2025 TG Movies — All Rights Reserved.
+  </footer>
 
-    <!-- Footer -->
-    <footer class="footer">
-      <p>© 2025 TG Movies — All Rights Reserved</p>
-    </footer>
-  </main>
+  <div id="toast" class="toast">✅ Request format copied!</div>
 
-  <!-- Scripts -->
   <script>
-    // =========================
-    // Data (edit this only)
-    // =========================
-    const data = {
-      hero: [
-        { title:"KGF", tagline:"The Blockbuster", img:"https://via.placeholder.com/1200x400?text=KGF+Featured", cta:"#"},
-        { title:"Pushpa", tagline:"The Fire", img:"https://via.placeholder.com/1200x400?text=Pushpa+Featured", cta:"#"},
-        { title:"Avengers", tagline:"Assemble", img:"https://via.placeholder.com/1200x400?text=Avengers+Featured", cta:"#"}
-      ],
-      new: [
-        { title:"Sunray: Fallen Soldier (2025)", year:"2025", lang:"Hindi", genre:"Action", rating:"8.2",
-          img:"https://image.tmdb.org/t/p/original/ghLaj5dBrdUsD4wjq3QERcisr5k.jpg", link:"https://telefimo.blogspot.com/2025/10/sunray-fallen-soldier-2025.html", isNew:true },
-        { title:"Junior 2025", year:"2025", lang:"Hindi", genre:"Action", rating:"8.0",
-          img:"https://images.filmibeat.com/webp/ph-big/2025/07/junior1752669243_4.jpg", link:"https://telefimo.blogspot.com/2025/10/junior2025720pamznweb-dlddp51h265.html", isNew:true },
-        { title:"Avengers", year:"2019", lang:"English", genre:"Superhero", rating:"8.4",
-          img:"https://via.placeholder.com/200x300?text=Avengers", link:"#", isNew:true }
-      ],
-      recommended: [
-        { title:"Inception", year:"2010", lang:"English", genre:"Sci‑Fi", rating:"8.8",
-          img:"https://via.placeholder.com/200x300?text=Inception", link:"#"},
-        { title:"RRR", year:"2022", lang:"Telugu", genre:"Drama", rating:"8.1",
-          img:"https://via.placeholder.com/200x300?text=RRR", link:"#"},
-        { title:"Dangal", year:"2016", lang:"Hindi", genre:"Sports", rating:"8.4",
-          img:"https://via.placeholder.com/200x300?text=Dangal", link:"#"}
-      ]
-    };
+    // ===== Config =====
+    const TMDB_API_KEY = "PASTE_YOUR_TMDB_API_KEY_HERE"; // Required for IMDb poster fetch
+    const SHEET_API_URL = "https://sheetdb.io/api/v1/8gisuluuwy7j1"; // TODO: replace with your SheetDB/Sheet.best URL
 
-    // =========================
-    // Hero carousel render
-    // =========================
-    const heroEl = document.getElementById('hero');
-    data.hero.forEach((h, idx) => {
-      const slide = document.createElement('div');
-      slide.className = 'hero-slide' + (idx===0 ? ' active':'');
-      slide.style.backgroundImage = `url('${h.img}')`;
-      slide.innerHTML = `
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
-          <div class="hero-title">${h.title} — ${h.tagline}</div>
-          <button class="hero-btn" onclick="location.href='${h.cta}'">Watch Now</button>
-        </div>`;
-      heroEl.appendChild(slide);
-    });
+    // ===== Helpers =====
+    function normalizeMovie(m) {
+      // Support both Sheet headers (Title etc.) or lower-case keys
+      return {
+        title: m.Title || m.title || "Untitled",
+        year: m.Year || m.year || "",
+        language: m.Language || m.language || "",
+        genre: m.Genre || m.genre || "",
+        rating: m.Rating || m.rating || "",
+        poster: m.Poster || m.poster || "",
+        watch: m.Watch || m.watch || "#"
+      };
+    }
+
+    function createCard(movie, isNew=false) {
+      const card = document.createElement("article");
+      card.className = "card";
+      card.setAttribute("data-title", String(movie.title).toLowerCase());
+      card.setAttribute("data-year", String(movie.year));
+      card.setAttribute("data-language", String(movie.language).toLowerCase());
+      card.setAttribute("data-genre", String(movie.genre).toLowerCase());
+
+      const posterBg = movie.poster ? `background-image:url('${movie.poster}');` : "";
+      card.innerHTML = `
+        ${isNew ? '<div class="badge-new">NEW</div>' : ""}
+        <a href="${movie.watch}" target="_blank" rel="noopener" style="text-decoration:none; color:inherit;">
+          <div class="poster" style="${posterBg}"></div>
+        </a>
+        <div class="card-body">
+          <div class="card-title">${movie.title}</div>
+          <div class="meta">
+            <span>${movie.year}</span>
+            <span>• ${movie.language}</span>
+            <span>• ${movie.genre}</span>
+            <span class="rating">⭐ ${movie.rating}</span>
+          </div>
+        </div>
+        <div class="hover-overlay">
+          <div class="overlay-content">
+            <a class="btn btn-primary" href="${movie.watch}" target="_blank" rel="noopener">Watch</a>
+            <button class="btn btn-ghost" type="button">Details</button>
+          </div>
+        </div>
+      `;
+      return card;
+    }
+
+    // ===== Dynamic data from Google Sheet =====
+    const gridNew = document.getElementById("grid-new");
+    const gridRec = document.getElementById("grid-rec");
+
+    async function loadMoviesFromSheet() {
+      try {
+        const res = await fetch(SHEET_API_URL);
+        if (!res.ok) throw new Error("Failed to fetch sheet data");
+        const raw = await res.json();
+
+        // Some services return {data: [...]}; normalize if needed
+        const list = Array.isArray(raw) ? raw : (Array.isArray(raw.data) ? raw.data : []);
+        const movies = list.map(normalizeMovie);
+
+        // Split: last 5 as "New", rest as "Recommended"
+        const total = movies.length;
+        const lastFiveStart = Math.max(total - 5, 0);
+        const newList = movies.slice(lastFiveStart);
+        const recList = movies.slice(0, lastFiveStart);
+
+        // Render
+        gridNew.innerHTML = "";
+        gridRec.innerHTML = "";
+
+        newList.forEach(m => gridNew.appendChild(createCard(m, true)));
+        recList.forEach(m => gridRec.appendChild(createCard(m, false)));
+      } catch (err) {
+        // Fallback message
+        gridNew.innerHTML = `<div style="color:#ff9aa2">Error loading movies: ${err.message}</div>`;
+      }
+    }
+
+    loadMoviesFromSheet();
+
+    // ===== Search filter (title/year/language/genre) =====
+    const search = document.getElementById("search");
+    function filterCards() {
+      const q = search.value.trim().toLowerCase();
+      const allCards = [...gridNew.children, ...gridRec.children];
+      allCards.forEach(card => {
+        if (!q) { card.style.display = ""; return; }
+        const match =
+          card.getAttribute("data-title").includes(q) ||
+          card.getAttribute("data-year").includes(q) ||
+          card.getAttribute("data-language").includes(q) ||
+          card.getAttribute("data-genre").includes(q);
+        card.style.display = match ? "" : "none";
+      });
+    }
+    search.addEventListener("input", filterCards);
+
+    // ===== Hero auto-rotate every 5s =====
+    const slidesEl = document.getElementById("slides");
     let currentSlide = 0;
-    const slides = () => document.querySelectorAll('.hero-slide');
-    function showSlide(i){ slides().forEach((s,idx)=>s.classList.toggle('active', idx===i)); }
-    setInterval(()=>{ currentSlide = (currentSlide+1)%slides().length; showSlide(currentSlide); }, 5000);
+    function rotateHero() {
+      const total = slidesEl.children.length;
+      currentSlide = (currentSlide + 1) % total;
+      slidesEl.style.transform = `translateX(-${currentSlide * 100}%)`;
+    }
+    setInterval(rotateHero, 5000);
 
-    // =========================
-    // Card builder + render
-    // =========================
-    function cardHTML(m){
-      return `
-        <div class="movie-card" data-title="${m.title}" data-year="${m.year}" data-lang="${m.lang}" data-genre="${m.genre||''}">
-          <a href="${m.link||'#'}" target="_blank">
-            <img class="poster" loading="lazy" src="${m.img}" alt="${m.title} Poster"/>
-            ${m.isNew ? '<div class="badge">NEW</div>' : ''}
-            <div class="overlay">
-              <div class="movie-info">
-                <h4>${m.title}</h4>
-                <p>${m.year} · ${m.lang}</p>
-                <div class="meta">
-                  ${m.genre ? `<span>🎭 ${m.genre}</span>`:''}
-                  ${m.rating ? `<span>⭐ ${m.rating}</span>`:''}
-                </div>
+    // ===== IMDb Poster Fetch using TMDb /find =====
+    const imdbInput = document.getElementById("imdbId");
+    const fetchBtn = document.getElementById("fetchBtn");
+    const results = document.getElementById("results");
+
+    function showSkeleton() {
+      results.innerHTML = `
+        <div class="skeleton">
+          <div class="sk-poster"></div>
+          <div>
+            <div class="sk-line" style="width: 60%;"></div><br/>
+            <div class="sk-line" style="width: 40%;"></div>
+          </div>
+        </div>
+      `;
+    }
+    async function fetchPoster() {
+      const imdbId = imdbInput.value.trim();
+      if (!imdbId) {
+        results.innerHTML = `<span style="color:${getComputedStyle(document.body).getPropertyValue('--muted')}">Enter a valid IMDb ID (e.g., tt3896198)</span>`;
+        return;
+      }
+      showSkeleton();
+
+      try {
+        if (!TMDB_API_KEY || TMDB_API_KEY.includes("PASTE_")) {
+          throw new Error("Missing TMDb API key");
+        }
+        const url = `https://api.themoviedb.org/3/find/${encodeURIComponent(imdbId)}?api_key=${TMDB_API_KEY}&external_source=imdb_id`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("TMDb request failed");
+        const data = await res.json();
+
+        const item =
+          (data.movie_results && data.movie_results[0]) ||
+          (data.tv_results && data.tv_results[0]) ||
+          (data.person_results && data.person_results[0]);
+
+        if (!item) {
+          results.innerHTML = `<span style="color:#ff9aa2">No results found for ${imdbId}.</span>`;
+          return;
+        }
+
+        const posterUrl = item.poster_path
+          ? `https://image.tmdb.org/t/p/w342${item.poster_path}`
+          : "https://via.placeholder.com/240x360/233040/FFFFFF?text=No+Poster";
+
+        const title = item.title || item.name || "Unknown title";
+        const tmdbId = item.id;
+        const isTv = !!item.name && !item.title;
+
+        results.innerHTML = `
+          <div style="display:grid; grid-template-columns: 140px 1fr; gap: 12px; align-items:center;">
+            <img src="${posterUrl}" alt="${title}" style="width:140px; height:auto; border-radius:12px; border:1px solid var(--border);" />
+            <div>
+              <div style="font-weight:800; font-size:16px; margin-bottom:6px;">${title}</div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <a class="btn btn-ghost" href="https://www.imdb.com/title/${imdbId}/" target="_blank" rel="noopener">Open IMDb</a>
+                <a class="btn btn-ghost" href="https://www.themoviedb.org/${isTv ? "tv" : "movie"}/${tmdbId}" target="_blank" rel="noopener">Open TMDb</a>
               </div>
             </div>
-          </a>
-        </div>`;
+          </div>
+        `;
+      } catch (err) {
+        results.innerHTML = `<span style="color:#ff9aa2">Error: ${err.message}. Check your API key or try again.</span>`;
+      }
     }
-    function renderGrid(list, mountId){
-      const mount = document.getElementById(mountId);
-      mount.innerHTML = list.map(cardHTML).join('');
-    }
-    renderGrid(data.new, 'newMovies');
-    renderGrid(data.recommended, 'recommendedMovies');
+    fetchBtn.addEventListener("click", fetchPoster);
+    imdbInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") fetchPoster();
+    });
 
-    // =========================
-    // Search / filter across title, year, language, genre
-    // =========================
-    const searchInput = document.getElementById('searchInput');
-    function filterAll(){
-      const q = (searchInput.value||'').toLowerCase().trim();
-      document.querySelectorAll('.movie-card').forEach(card=>{
-        const title = (card.dataset.title||'').toLowerCase();
-        const year  = (card.dataset.year||'').toLowerCase();
-        const lang  = (card.dataset.lang||'').toLowerCase();
-        const genre = (card.dataset.genre||'').toLowerCase();
-        const match = [title,year,lang,genre].some(v=>v.includes(q));
-        card.style.display = match ? '' : 'none';
-      });
-      showEmptyState();
-    }
-    function showEmptyState(){
-      ['newMovies','recommendedMovies'].forEach(id=>{
-        const grid = document.getElementById(id);
-        const anyVisible = Array.from(grid.children).some(c=>c.style.display!=='none');
-        if(!anyVisible){
-          grid.innerHTML = `<div style="grid-column:1/-1;color:var(--muted);text-align:center;padding:20px;">No results found. Try another title, year, language, or genre.</div>`;
+    // ===== Copy request format with toast (guarded) =====
+    const copyBtn = document.getElementById("copyBtn");
+    const formatBox = document.getElementById("formatBox");
+    const toast = document.getElementById("toast");
+
+    if (copyBtn && formatBox && toast) {
+      copyBtn.addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(formatBox.value);
+          toast.classList.add("show");
+          setTimeout(() => toast.classList.remove("show"), 1800);
+        } catch {
+          formatBox.select();
+          document.execCommand("copy");
+          toast.classList.add("show");
+          setTimeout(() => toast.classList.remove("show"), 1800);
         }
       });
     }
-    searchInput.addEventListener('input', filterAll);
 
-    // =========================
-    // Copy format toast
-    // =========================
-    function copyFormat(){
-      const textarea = document.getElementById("requestFormat");
-      textarea.select();
-      textarea.setSelectionRange(0, 99999);
-      document.execCommand("copy");
-      const toast = document.createElement("div");
-      toast.textContent = "✅ Request format copied!";
-      toast.style.position = "fixed";
-      toast.style.bottom = "20px";
-      toast.style.right = "20px";
-      toast.style.background = "#222";
-      toast.style.color = "#fff";
-      toast.style.padding = "10px 16px";
-      toast.style.borderRadius = "8px";
-      toast.style.boxShadow = "0 4px 12px rgba(0,0,0,0.3)";
-      document.body.appendChild(toast);
-      setTimeout(()=>toast.remove(), 2000);
-    }
+    // ===== Smooth focus visuals =====
+    document.querySelectorAll("button, a, input, textarea").forEach(el => {
+      el.addEventListener("focus", () => el.style.boxShadow = "0 0 0 2px rgba(124,94,255,0.45)");
+      el.addEventListener("blur", () => el.style.boxShadow = "none");
+    });
   </script>
 </body>
 </html>
