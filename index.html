@@ -415,25 +415,42 @@
   </section>
 
   <!-- Request Section -->
-  <section class="section" id="request">
-    <div class="section-header">
-      <div class="section-title">Request a movie</div>
-    </div>
-    <div class="request">
-      <ul class="req-steps">
-        <li>Check if the movie already exists using the search above.</li>
-        <li>Join our Telegram group to submit requests.</li>
-        <li>Copy the format below, fill in details, and send on Telegram.</li>
-      </ul>
-      <div class="req-actions">
-        <a href="https://t.me/your_group_link" target="_blank" rel="noopener" class="btn btn-primary">Join on Telegram</a>
-        <button id="copyBtn" class="btn btn-ghost">Copy format</button>
+    <section id="request" class="section panel">
+      <div class="section-head">
+        <div class="section-title">Request a Movie</div>
+        <div class="chip">Telegram Group</div>
       </div>
-      <textarea id="formatBox" class="format-box" aria-label="Request format">Movie Name:
+
+      <div class="form">
+        <p>To request a movie, please follow these steps:</p>
+        <ol>
+          <li>Join our official <strong>Telegram Request Group</strong>.</li>
+          <li>Copy the request format below.</li>
+          <li>Fill in the details (Movie Name, Language, Year).</li>
+          <li>Send it in the group.</li>
+          <li>Our team will upload your movie within <strong>24 hours</strong>.</li>
+        </ol>
+
+        <a href="https://t.me/YourGroupLink" target="_blank" class="btn-telegram" aria-label="Join Telegram Group">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#fff" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M9.999 15.5l-.5 4.5 2.5-2 4 3 7-18-21 9 5 2 2-1 6-4-5 6z"/>
+          </svg>
+          Join Telegram Group
+        </a>
+
+        <div class="copy-box">
+          <label class="label">Request format</label>
+          <textarea id="requestFormat" readonly>Movie Name:
 Language:
 Year:</textarea>
-    </div>
-  </section>
+          <button onclick="copyFormat()" class="btn-copy">Copy</button>
+        </div>
+
+        <p style="margin-top:16px;font-size:13px;color:var(--muted);">
+          ⭐ Tip: Add this website to your <strong>Bookmarks</strong> so you can easily request movies in the future.
+        </p>
+      </div>
+    </section>
 
   <!-- Footer -->
   <footer>
