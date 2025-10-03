@@ -1,0 +1,29 @@
+[
+  {
+    "title": "Sunray: Fallen Soldier",
+    "year": 2025,
+    "language": "Hindi",
+    "genre": "Action",
+    "rating": 8.2,
+    "poster": "https://via.placeholder.com/320x480/233040/FFFFFF?text=Sunray",
+    "watch": "https://example.com/sunray"
+  },
+  {
+    "title": "Junior 2025",
+    "year": 2025,
+    "language": "Hindi",
+    "genre": "Action",
+    "rating": 8.0,
+    "poster": "https://via.placeholder.com/320x480/233040/FFFFFF?text=Junior+2025",
+    "watch": "https://example.com/junior"
+  },
+  {
+    "title": "Avengers",
+    "year": 2019,
+    "language": "English",
+    "genre": "Superhero",
+    "rating": 8.4,
+    "poster": "https://via.placeholder.com/320x480/233040/FFFFFF?text=Avengers",
+    "watch": "https://example.com/avengers"
+  }
+]
