@@ -566,6 +566,125 @@ Year:</textarea>
   </div>
 </section>
 
+<style>
+/* Panel styling */
+.section.panel {
+  background: #12161d;
+  border: 1px solid #1f2732;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  margin: 20px auto;
+  max-width: 800px;
+}
+
+/* Header */
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-size: 20px;
+  font-weight: 800;
+}
+.chip {
+  background: linear-gradient(90deg, #7b2cff, #4cc9f0);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 20px;
+}
+
+/* Form */
+.form .intro {
+  font-size: 14px;
+  color: #9aa4af;
+}
+.steps {
+  margin: 10px 0;
+  padding-left: 20px;
+  font-size: 14px;
+}
+.steps li { margin-bottom: 6px; }
+
+/* Telegram button */
+.btn-telegram {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(90deg, #0088cc, #00bfff);
+  color: #fff;
+  font-weight: 700;
+  padding: 10px 16px;
+  border-radius: 12px;
+  text-decoration: none;
+  margin: 12px 0;
+  transition: transform 0.2s, opacity 0.2s;
+}
+.btn-telegram:hover { transform: translateY(-2px); opacity: 0.9; }
+
+/* Copy box */
+.copy-box {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+.copy-box .label {
+  font-weight: 700;
+  font-size: 14px;
+}
+.copy-box textarea {
+  background: #141a22;
+  border: 1px solid #1f2732;
+  border-radius: 12px;
+  padding: 10px;
+  color: #e8ecf2;
+  font-size: 14px;
+  resize: none;
+  height: 100px;
+  width: 100%;
+}
+.btn-copy {
+  background: linear-gradient(90deg, #7b2cff, #4cc9f0);
+  color: #fff;
+  font-weight: 700;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s, opacity 0.2s;
+}
+.btn-copy:hover { transform: translateY(-1px); opacity: 0.9; }
+
+/* Tip */
+.tip {
+  font-size: 13px;
+  color: #9aa4af;
+  margin-top: 12px;
+}
+
+/* ✅ Responsive Fixes */
+@media (max-width: 600px) {
+  .section.panel { padding: 16px; }
+  .section-title { font-size: 18px; }
+  .btn-telegram { width: 100%; justify-content: center; }
+  .copy-box textarea { height: 80px; font-size: 13px; }
+}
+</style>
+
+<script>
+function copyFormat() {
+  const format = document.getElementById("requestFormat");
+  format.select();
+  document.execCommand("copy");
+  alert("✅ Request format copied!");
+}
+</script>
+
   <!-- Footer -->
   <footer>
     © 2025 TG Movies — All Rights Reserved.
