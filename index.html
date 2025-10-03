@@ -693,27 +693,6 @@ function copyFormat() {
   <div id="toast" class="toast">✅ Request format copied!</div>
 
   <script>
-
-
-
-
-
-function copyFormat() {
-  const format = document.getElementById("requestFormat");
-  format.select();
-  document.execCommand("copy");
-
-  const toast = document.getElementById("toast");
-  if (toast) {
-    toast.classList.add("show");
-    setTimeout(() => toast.classList.remove("show"), 1800);
-  }
-}
-
-
-
-
-    
     // ===== Config =====
     const TMDB_API_KEY = "83cc5358fefe8b5ffb79b0ba491fd1a3"; // Required for IMDb poster fetch
     const SHEET_API_URL = "https://sheetdb.io/api/v1/8gisuluuwy7j1"; // TODO: replace with your SheetDB/Sheet.best URL
