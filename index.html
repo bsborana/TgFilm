@@ -1,753 +1,737 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>TG Movies</title>
-  <meta name="theme-color" content="#0b0f19" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet" />
+  <title>TG Movies — Premium OTT-Style</title>
+  <meta name="theme-color" content="#0b0f14" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
   <style>
     :root{
-      --bg:#0b0f19;
-      --bg-soft:#131a2b;
-      --card:#161f34;
-      --text:#e6e9ef;
-      --muted:#a8b0c4;
-      --accent:#00c2ff;
-      --accent-2:#ff3366;
-      --shadow:0 10px 30px rgba(0,0,0,.35);
-      --radius:16px;
+      --bg:#0b0f14;
+      --bg-soft:#121821;
+      --text:#e6edf5;
+      --muted:#9fb0c3;
+      --accent:#00aefe; /* neon blue */
+      --accent2:#ff0064; /* neon pink */
+      --card:#131a23;
+      --success:#19c37d;
+      --danger:#ff4d4f;
+      --shadow:0 10px 30px rgba(0,0,0,0.4);
+      --radius:14px;
     }
     *{box-sizing:border-box}
-    html,body{margin:0; padding:0; background:var(--bg); color:var(--text); font-family:Poppins,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,"Noto Sans","Apple Color Emoji","Segoe UI Emoji";}
-    a{color:var(--accent); text-decoration:none}
-    img{display:block; max-width:100%}
-    .container{max-width:1200px; margin:0 auto; padding:0 16px}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background:linear-gradient(180deg,#0b0f14 0%, #0e141b 100%);
+      color:var(--text);
+      font-family:Poppins, Roboto, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+    }
+    a{color:var(--accent);text-decoration:none}
+    img{display:block;max-width:100%}
 
     /* Header */
     header{
-      position:sticky; top:0; z-index:50;
-      background:linear-gradient(180deg, rgba(11,15,25,.85) 0%, rgba(11,15,25,.65) 100%);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 2px 0 rgba(255,255,255,.04);
+      position:sticky;top:0;z-index:50;
+      backdrop-filter: blur(8px);
+      background:linear-gradient(180deg, rgba(10,14,20,0.85) 0%, rgba(10,14,20,0.6) 100%);
+      border-bottom:1px solid rgba(255,255,255,0.06);
     }
-    .header-wrap{display:flex; align-items:center; gap:16px; padding:14px 0}
-    .brand{display:flex; align-items:center; gap:12px; flex:0 0 auto}
-    .logo{
-      width:40px; height:40px; border-radius:10px;
-      background:linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
-      box-shadow: var(--shadow);
+    .header-inner{
+      display:grid;grid-template-columns:1fr 2.2fr 1fr;gap:14px;
+      align-items:center;padding:12px 18px;max-width:1280px;margin:0 auto;
     }
-    .brand-text{line-height:1}
-    .brand-title{font-weight:600; letter-spacing:.4px}
-    .brand-tag{font-size:12px; color:var(--muted)}
-    .search-bar{
-      flex:1; display:flex; align-items:center; gap:10px; position:relative;
+    .brand{
+      display:flex;align-items:center;gap:10px;
     }
-    .search-bar input{
-      width:100%; padding:12px 16px; border-radius:999px; border:1px solid transparent;
-      background:rgba(255,255,255,.06); color:var(--text);
-      outline:none; transition:.25s; box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+    .brand-logo{
+      width:42px;height:42px;border-radius:10px;
+      background:radial-gradient(circle at 30% 20%, #00aefe 0%, #0b0f14 45%), radial-gradient(circle at 70% 80%, #ff0064 0%, #0b0f14 55%);
+      box-shadow:0 0 18px rgba(0,174,255,0.65), 0 0 24px rgba(255,0,100,0.35);
     }
-    .search-bar input::placeholder{color:#9aa3b8}
-    .search-bar input:focus{box-shadow:0 0 0 2px rgba(0,194,255,.35); border-color:transparent}
-    .search-btn{
-      position:absolute; right:6px;
-      padding:10px 16px; border:none; border-radius:999px;
-      background:linear-gradient(135deg, var(--accent) 0%, #4df eff 100%);
-      color:#04131a; font-weight:600; cursor:pointer; transition:.25s;
+    .brand-text{
+      line-height:1.1;
     }
-    .search-btn:hover{transform:translateY(-1px);}
+    .brand-text .title{font-weight:700;letter-spacing:0.4px}
+    .brand-text .tagline{font-size:12px;color:var(--muted)}
+    .header-center{display:flex;justify-content:center}
+    .searchbar{
+      width:100%;max-width:640px;position:relative;
+    }
+    .searchbar input{
+      width:100%;padding:14px 48px;border-radius:999px;border:1px solid rgba(255,255,255,0.14);
+      background:rgba(18,24,33,0.9);color:var(--text);outline:none;
+      box-shadow:inset 0 0 0 1px rgba(255,255,255,0.05);
+      transition:border-color .25s, box-shadow .25s, transform .2s;
+    }
+    .searchbar input:hover{box-shadow:0 0 12px rgba(0,174,255,0.25)}
+    .searchbar input:focus{
+      border-color:rgba(0,174,255,0.7);
+      box-shadow:0 0 18px rgba(0,174,255,0.35), 0 0 22px rgba(255,0,100,0.25);
+      transform:translateZ(0)
+    }
+    .search-icon{
+      position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)
+    }
+    .search-go{
+      position:absolute;right:8px;top:50%;transform:translateY(-50%);
+    }
+    .btn{
+      padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.1);
+      background:linear-gradient(180deg, #18202b 0%, #111821 100%);
+      color:var(--text);cursor:pointer;transition:all .25s;
+    }
+    .btn:hover{
+      box-shadow:0 0 15px rgba(255,0,100,0.8);
+      transform:translateY(-1px);
+    }
+    .header-right{justify-self:end;font-size:13px;color:var(--muted)}
 
-    /* Playback section */
-    #movie-player{
-      display:none; opacity:0; transform:translateY(-8px);
-      transition:opacity .4s ease, transform .4s ease, height .4s ease;
-      background:var(--bg-soft); border-bottom:1px solid rgba(255,255,255,.06);
+    /* Sections */
+    main{max-width:1280px;margin:0 auto;padding:16px}
+    section{margin:22px 0}
+    h2{
+      margin:6px 6px 14px; font-size:20px; font-weight:600; color:#cfe6ff;
+      display:flex; align-items:center; gap:8px;
     }
-    #movie-player.active{display:block; opacity:1; transform:translateY(0);}
-    .player-wrap{max-width:1200px; margin:0 auto; padding:16px}
-    .player-header{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px}
-    .player-meta{display:flex; flex-wrap:wrap; gap:12px; color:var(--muted); font-size:14px}
-    .player-title{font-weight:600; font-size:18px; color:var(--text)}
-    .player-close{
-      background:transparent; border:none; color:var(--muted); font-size:24px; cursor:pointer; transition:.2s;
-    }
-    .player-close:hover{color:#fff}
-    .player-iframe{
-      position:relative; width:100%; aspect-ratio:16/9;
-      border-radius:12px; overflow:hidden; background:#000; box-shadow:var(--shadow)
-    }
-    .player-iframe iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
 
     /* Hero carousel */
     .hero{
-      position:relative; height:46vh; min-height:340px; max-height:560px;
-      border-bottom:1px solid rgba(255,255,255,.06);
-      background:linear-gradient(180deg, #0b0f19 0%, #0d1422 100%);
-      overflow:hidden;
+      position:relative;border-radius:18px;overflow:hidden;background:#0d1219;min-height:300px;
+      box-shadow:var(--shadow);
     }
     .hero-slide{
-      position:absolute; inset:0; opacity:0; transition:opacity .6s ease;
-      background-position:center; background-size:cover;
+      position:absolute;inset:0;display:none;
+      background-position:center;background-size:cover;
+      transition:opacity .6s ease;
     }
-    .hero-slide.active{opacity:1}
+    .hero-slide.active{display:block;opacity:1}
     .hero-overlay{
-      position:absolute; inset:0; background:linear-gradient(180deg, rgba(7,10,18,.5) 0%, rgba(7,10,18,.85) 70%, rgba(7,10,18,1) 100%);
+      position:absolute;inset:0;
+      background:linear-gradient(90deg, rgba(10,14,20,0.9) 0%, rgba(10,14,20,0.5) 45%, rgba(10,14,20,0.2) 100%),
+                 radial-gradient(1200px 300px at 10% 90%, rgba(0,174,255,0.15) 0%, transparent 70%);
     }
     .hero-content{
-      position:absolute; left:50%; bottom:30px; transform:translateX(-50%);
-      width:min(1100px, 92%); display:flex; flex-direction:column; gap:10px;
+      position:absolute;left:24px;bottom:20px;right:24px;
+      display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;
     }
-    .hero-title{font-size:24px; font-weight:600}
-    .hero-tag{color:var(--muted)}
-    .hero-actions{display:flex; gap:12px}
-    .btn{
-      padding:10px 16px; border:none; border-radius:999px; cursor:pointer; font-weight:600;
-      transition:.25s; box-shadow:var(--shadow);
+    .hero-poster{
+      width:160px;min-width:160px;border-radius:12px;overflow:hidden;
+      box-shadow:0 0 22px rgba(0,174,255,0.35);
     }
-    .btn-accent{
-      background:linear-gradient(135deg, var(--accent) 0%, #4dfeff 100%);
-      color:#05131a;
+    .hero-meta{max-width:680px}
+    .hero-title{font-size:24px;font-weight:700;margin:0 0 6px}
+    .hero-tag{color:var(--muted);margin-bottom:12px}
+    .hero-actions{display:flex;gap:10px}
+    .btn-primary{
+      background:linear-gradient(180deg, #008fd3 0%, #056ba3 100%);
+      border-color:rgba(255,255,255,0.18);
     }
-    .btn-outline{
-      background:transparent; color:var(--text); border:1px solid rgba(255,255,255,.18)
+    .btn-primary:hover{
+      box-shadow:0 0 16px rgba(0,174,255,0.8);
     }
-    .btn:hover{transform:translateY(-1px)}
 
-    /* Sections */
-    section{padding:26px 0}
-    .section-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px}
-    .section-title{font-weight:600; font-size:20px}
+    /* Grids */
     .grid{
-      display:grid; gap:16px;
-      grid-template-columns: repeat(6, 1fr);
+      display:grid;gap:14px;
+      grid-template-columns:repeat(6, 1fr);
     }
     /* Responsive rules */
-    @media (max-width:1280px){ .grid{grid-template-columns:repeat(5,1fr)}}
-    @media (max-width:1024px){ .grid{grid-template-columns:repeat(4,1fr)} .hero{height:44vh}}
-    @media (max-width:820px){ .grid{grid-template-columns:repeat(3,1fr)} .hero{height:42vh}}
-    @media (max-width:640px){ .grid{grid-template-columns:repeat(3,1fr)}}
-    @media (max-width:480px){ .grid{grid-template-columns:repeat(2,1fr)} .hero{height:38vh}}
+    @media (max-width:1200px){ .grid{grid-template-columns:repeat(5,1fr)} }
+    @media (max-width:820px){ .grid{grid-template-columns:repeat(3,1fr)} .header-inner{grid-template-columns:1fr} .header-right{display:none} }
+    @media (max-width:640px){ .grid{grid-template-columns:repeat(3,1fr)} }
+    @media (max-width:480px){ .grid{grid-template-columns:repeat(2,1fr)} }
 
-    /* Card */
-    .card{
-      background:linear-gradient(180deg, var(--card) 0%, #12182a 100%);
-      border-radius:14px; overflow:hidden; box-shadow: var(--shadow);
-      transition: transform .25s, box-shadow .25s; position:relative;
+    /* Cards */
+    .movie-card{
+      background:linear-gradient(180deg, #131a23 0%, #0f141b 100%);
+      border:1px solid rgba(255,255,255,0.06);
+      border-radius:var(--radius);overflow:hidden;position:relative;
+      box-shadow:var(--shadow);transition:transform .25s, box-shadow .25s;
     }
-    .card:hover{transform:translateY(-4px)}
+    .movie-card:hover{transform:translateY(-3px);box-shadow:0 18px 36px rgba(0,0,0,0.55)}
     .poster-wrap{position:relative}
-    .poster-wrap img{width:100%; height:240px; object-fit:cover; background:#0a0d16}
+    .poster-wrap img{
+      width:100%;aspect-ratio:2/3;object-fit:cover;
+      transition:transform .3s ease, box-shadow .3s ease;
+    }
+    .poster-wrap img:hover{
+      box-shadow:0 0 20px rgba(0,174,255,0.8);
+      transform:scale(1.03);
+    }
     .badge-new{
-      position:absolute; top:10px; left:10px; padding:6px 10px; border-radius:999px;
-      font-size:12px; font-weight:600; color:#04131a; background:linear-gradient(135deg, var(--accent-2) 0%, #ff6a8e 100%); box-shadow: var(--shadow);
+      position:absolute;top:10px;left:10px;padding:6px 10px;border-radius:999px;
+      font-size:12px;background:rgba(255,0,100,0.9);color:white;box-shadow:0 0 12px rgba(255,0,100,0.7);
     }
-    .card-body{padding:12px}
-    .meta{display:flex; flex-wrap:wrap; gap:8px; color:var(--muted); font-size:12px; margin:8px 0}
-    .title{font-size:15px; font-weight:600}
-    .play-btn{
-      width:100%; margin-top:10px; padding:10px 12px; border:none; border-radius:10px; cursor:pointer; font-weight:600;
-      background:linear-gradient(135deg, var(--accent) 0%, #4dfeff 100%); color:#04131a; transition:.25s;
+    .card-body{padding:10px}
+    .card-title{font-weight:600;margin:4px 0}
+    .card-meta{font-size:12px;color:var(--muted)}
+    .card-actions{padding:10px;display:flex;gap:8px}
+    .btn-glow{
+      background:linear-gradient(180deg, #1a202a 0%, #121821 100%);
+      border-color:rgba(255,255,255,0.1);
     }
-    .play-btn:hover{transform:translateY(-1px)}
+    .btn-glow:hover{box-shadow:0 0 15px rgba(255,0,100,0.8)}
 
-    /* Skeletons */
+    /* Player */
+    #movie-player{
+      display:none;position:relative;margin-top:12px;border-radius:18px;overflow:hidden;
+      background:linear-gradient(180deg, #0c1118 0%, #111821 100%);
+      border:1px solid rgba(255,255,255,0.08);box-shadow:var(--shadow);
+      animation:fadeIn .4s ease forwards;
+    }
+    @keyframes fadeIn{from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none}}
+    .player-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.06)}
+    .player-title{font-weight:600}
+    .player-meta{font-size:12px;color:var(--muted)}
+    .player-close{
+      cursor:pointer;font-size:24px;line-height:1;border:none;background:transparent;color:var(--muted);
+      transition:color .2s, transform .2s;
+    }
+    .player-close:hover{color:#fff;transform:scale(1.08)}
+    .player-wrap{position:relative;padding:10px}
+    .player-iframe{
+      width:100%;aspect-ratio:16/9;border:none;border-radius:12px;background:#000;
+    }
+
+    /* Skeleton loader */
     .skeleton{
-      position:relative; overflow:hidden; background:#12182a; border-radius:12px;
+      background:linear-gradient(90deg, rgba(200,210,220,0.07) 0%, rgba(200,210,220,0.18) 50%, rgba(200,210,220,0.07) 100%);
+      background-size:200% 100%;animation:shimmer 1.2s linear infinite;
     }
-    .skeleton::after{
-      content:""; position:absolute; inset:0;
-      background:linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.08) 50%, rgba(255,255,255,0) 100%);
-      animation: shimmer 1.2s infinite;
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+    /* Toasts */
+    .toast{
+      position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
+      background:#121821;border:1px solid rgba(255,255,255,0.12);color:#cfe6ff;padding:10px 14px;border-radius:999px;
+      box-shadow:0 8px 24px rgba(0,0,0,0.45);z-index:99;display:none;
     }
-    @keyframes shimmer{0%{transform:translateX(-100%)} 100%{transform:translateX(100%)}}
+    .toast.show{display:block;animation:fadeIn .2s ease}
+    .toast.success{border-color:rgba(25,195,125,0.5)}
+    .toast.error{border-color:rgba(255,77,79,0.5)}
 
     /* Request section */
     .request-box{
-      background:var(--bg-soft); border:1px solid rgba(255,255,255,.08);
-      border-radius:14px; padding:16px; display:flex; flex-direction:column; gap:12px;
+      display:grid;grid-template-columns:1.1fr 1.3fr;gap:14px;
+      background:linear-gradient(180deg, #121821 0%, #0f141b 100%);
+      border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:14px;
     }
-    .flex-row{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
-    .textarea{
-      width:100%; min-height:100px; padding:12px; border-radius:12px; border:1px solid rgba(255,255,255,.12);
-      background:#0d1424; color:var(--text); outline:none
+    @media (max-width:820px){ .request-box{grid-template-columns:1fr} }
+    .copy-row{display:flex;gap:8px}
+    textarea{
+      width:100%;min-height:100px;resize:vertical;padding:12px;border-radius:12px;
+      background:#0f141b;color:var(--text);border:1px solid rgba(255,255,255,0.1);
     }
-    .toast{
-      position:fixed; bottom:20px; left:50%; transform:translateX(-50%);
-      background:#0d182b; color:#d8e4ff; padding:10px 14px; border-radius:999px; border:1px solid rgba(255,255,255,.12);
-      box-shadow:var(--shadow); opacity:0; pointer-events:none; transition:.3s;
-    }
-    .toast.show{opacity:1}
+    .highlight{font-weight:600}
 
     /* Popup modal */
     .modal{
-      position:fixed; inset:0; display:none; align-items:center; justify-content:center; z-index:100;
-      background:rgba(0,0,0,.5)
+      position:fixed;inset:0;display:none;place-items:center;z-index:100;
+      background:rgba(0,0,0,0.55);
     }
-    .modal.active{display:flex}
+    .modal.show{display:grid}
     .modal-card{
-      width:min(560px, 92%); background:var(--bg-soft); border:1px solid rgba(255,255,255,.12);
-      border-radius:16px; padding:18px; box-shadow:var(--shadow)
+      width:92%;max-width:520px;background:#0f141b;border-radius:18px;border:1px solid rgba(255,255,255,0.12);
+      box-shadow:0 20px 50px rgba(0,0,0,0.6);padding:16px;
     }
-    .modal-actions{display:flex; gap:10px; margin-top:10px}
-    .modal-note{color:var(--muted); font-size:13px}
-
-    /* Footer */
-    footer{
-      padding:22px 0; text-align:center; color:var(--muted); border-top:1px solid rgba(255,255,255,.08);
-      background:linear-gradient(180deg, #0d1422 0%, #0b0f19 100%);
-    }
-
-    /* Helper badges */
-    .chip{padding:4px 8px; border-radius:999px; font-size:12px; background:#0f172a; border:1px solid rgba(255,255,255,.12); color:#cbd5e1}
+    .modal-header{display:flex;justify-content:space-between;align-items:center}
+    .modal-actions{display:flex;gap:10px;margin-top:12px}
+    .muted{color:var(--muted);font-size:14px}
+    .footer{margin:28px 0 12px;color:var(--muted);font-size:12px;text-align:center}
   </style>
 </head>
 <body>
-
-  <!-- Header -->
   <header>
-    <div class="container header-wrap">
+    <div class="header-inner">
       <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
+        <div class="brand-logo" aria-hidden="true"></div>
         <div class="brand-text">
-          <div class="brand-title">TG Movies</div>
-          <div class="brand-tag">Premium OTT-style experience</div>
+          <div class="title">TG Movies</div>
+          <div class="tagline">Premium OTT-style experience</div>
         </div>
       </div>
-      <div class="search-bar">
-        <input id="globalSearch" type="text" placeholder="Search movies on Doodstream..." aria-label="Search" />
-        <button id="searchBtn" class="search-btn">Search</button>
+
+      <div class="header-center">
+        <form id="global-search" class="searchbar" autocomplete="off">
+          <span class="search-icon" aria-hidden="true">
+            <!-- search icon -->
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M15.5 15.5L20 20" stroke="#9fb0c3" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="11" r="7" stroke="#9fb0c3" stroke-width="2"/></svg>
+          </span>
+          <input id="search-input" type="text" placeholder="Search movies (Doodstream + Poster fetch)" />
+          <button id="search-go" class="btn btn-glow search-go" type="submit">Search</button>
+        </form>
+      </div>
+
+      <div class="header-right">
+        Latest updates auto-sync from Google Sheet
       </div>
     </div>
   </header>
 
-  <!-- Playback Section (hidden by default) -->
-  <section id="movie-player">
-    <div class="player-wrap">
+  <main>
+    <!-- Playback section -->
+    <section id="movie-player">
       <div class="player-header">
         <div>
-          <div class="player-title" id="playerTitle">Playing...</div>
-          <div class="player-meta" id="playerMeta">
-            <span class="chip" id="metaYear"></span>
-            <span class="chip" id="metaLang"></span>
-            <span class="chip" id="metaGenre"></span>
-            <span class="chip" id="metaRating"></span>
-          </div>
+          <div class="player-title" id="player-title">—</div>
+          <div class="player-meta" id="player-meta">—</div>
         </div>
-        <button class="player-close" id="playerClose" title="Close">×</button>
+        <button class="player-close" id="player-close" title="Close">×</button>
       </div>
-      <div class="player-iframe">
-        <iframe id="playerIframe" allow="autoplay; fullscreen" referrerpolicy="no-referrer" allowfullscreen></iframe>
+      <div class="player-wrap">
+        <iframe id="player-iframe" class="player-iframe" allow="autoplay; fullscreen" referrerpolicy="no-referrer" loading="lazy"></iframe>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Hero Carousel -->
-  <section class="hero" id="hero">
-    <!-- Slides injected dynamically -->
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-      <div class="hero-title" id="heroTitle">Discover the latest arrivals</div>
-      <div class="hero-tag">Handpicked, auto-updated from Google Sheet</div>
-      <div class="hero-actions">
-        <button class="btn btn-accent" id="heroPlay">Play</button>
-        <button class="btn btn-outline" id="heroMore">Explore</button>
+    <!-- Hero carousel -->
+    <section>
+      <h2>Hero carousel</h2>
+      <div class="hero" id="hero">
+        <!-- Slides injected here -->
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- New Movies -->
-  <section class="container">
-    <div class="section-head">
-      <div class="section-title">New movies</div>
-      <div class="chip">Latest 5</div>
-    </div>
-    <div id="newGrid" class="grid">
-      <!-- Skeletons -->
-    </div>
-  </section>
-
-  <!-- Recommended Movies -->
-  <section class="container">
-    <div class="section-head">
-      <div class="section-title">Recommended</div>
-      <div class="chip">From your library</div>
-    </div>
-    <div id="recGrid" class="grid">
-      <!-- Skeletons -->
-    </div>
-  </section>
-
-  <!-- IMDb Poster Fetch Tool -->
-  <section class="container">
-    <div class="section-head">
-      <div class="section-title">IMDb poster fetch</div>
-      <div class="chip">via TMDb</div>
-    </div>
-    <div class="request-box">
-      <div class="flex-row">
-        <input id="imdbIdInput" class="textarea" style="min-height:unset" placeholder="Enter IMDb ID (e.g., tt4154796)" />
-        <button id="imdbFetchBtn" class="btn btn-accent">Fetch poster</button>
+    <!-- New movies (latest 5) -->
+    <section>
+      <h2>New movies</h2>
+      <div class="grid" id="new-grid">
+        <!-- Cards injected -->
       </div>
-      <div id="imdbResult" style="display:grid; grid-template-columns: 160px 1fr; gap:14px;">
-        <div id="imdbPoster" class="skeleton" style="height:240px; border-radius:12px;"></div>
-        <div id="imdbInfo">
-          <div id="imdbTitle" class="title"></div>
-          <div style="margin-top:6px">
-            <a id="imdbLink" href="#" target="_blank" class="chip" style="display:inline-block; margin-right:6px; opacity:.0; pointer-events:none">IMDb</a>
-            <a id="tmdbLink" href="#" target="_blank" class="chip" style="display:inline-block; opacity:.0; pointer-events:none">TMDb</a>
+    </section>
+
+    <!-- Recommended (rest beyond latest 5) -->
+    <section>
+      <h2>Recommended</h2>
+      <div class="grid" id="rec-grid">
+        <!-- Cards injected -->
+      </div>
+    </section>
+
+    <!-- Search results (Doodstream + Poster fetch preview) -->
+    <section>
+      <h2>Search results</h2>
+      <div class="grid" id="search-grid"></div>
+      <div id="poster-tool" style="margin-top:14px">
+        <div class="card-body" style="background:#111821;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px">
+          <div class="card-title">Poster fetch (TMDb/OMDb)</div>
+          <div id="poster-result" style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Request section -->
+    <section>
+      <h2>Request</h2>
+      <div class="request-box">
+        <div>
+          <p class="highlight">Bookmark this website to stay updated with the latest movies.</p>
+          <p class="highlight">Submit your request with Movie Name, Language, and Year.</p>
+          <a class="btn btn-primary" id="telegram-btn" href="https://t.me/your_group" target="_blank" rel="noopener">Open Telegram</a>
+        </div>
+        <div>
+          <label for="req-format">Copy format</label>
+          <textarea id="req-format">Request:
+- Movie Name: [Enter]
+- Language: [Enter]
+- Year: [Enter]
+          </textarea>
+          <div class="copy-row">
+            <button class="btn btn-glow" id="copy-request">Copy format</button>
+            <button class="btn" id="clear-request">Clear</button>
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- Request Section -->
-  <section class="container">
-    <div class="section-head">
-      <div class="section-title">Request a movie</div>
-      <div class="chip">Telegram + format</div>
-    </div>
-    <div class="request-box">
-      <div><strong>Instructions:</strong> Fill the details exactly like below and send in Telegram.</div>
-      <textarea id="requestFormat" class="textarea" readonly>Movie Name: 
-Language:
-Year:
-Links (optional):</textarea>
-      <div class="flex-row">
-        <button id="copyFormat" class="btn btn-outline">Copy format</button>
-        <a id="tgBtn" class="btn btn-accent" href="https://t.me/your_group_here" target="_blank" rel="noopener">Open Telegram</a>
-      </div>
-      <div style="margin-top:6px; font-weight:600;">
-        👉 <strong>Is website ko bookmark me add kar lo taaki aap hamesha latest movies dekh sako.</strong>
-      </div>
-    </div>
-  </section>
+    <div class="footer">© 2025 TG Movies — All Rights Reserved</div>
+  </main>
 
-  <!-- Footer -->
-  <footer>
-    © 2025 TG Movies — All Rights Reserved
-  </footer>
+  <!-- Toast -->
+  <div id="toast" class="toast"></div>
 
-  <!-- Popup Modal -->
-  <div id="popupModal" class="modal" role="dialog" aria-modal="true" aria-label="Bookmark prompt">
+  <!-- Popup modal -->
+  <div id="install-modal" class="modal" aria-hidden="true">
     <div class="modal-card">
-      <div class="title" style="margin-bottom:6px">Stay updated</div>
-      <div style="color:var(--muted); margin-bottom:10px;">
-        👉 Is website ko apne Home Screen par add karo ya Bookmark karo taaki aap hamesha latest movies dekh sako.
+      <div class="modal-header">
+        <h3 style="margin:0">Add TG Movies to your Home Screen or Bookmark it!</h3>
+        <button class="player-close" id="modal-close" title="Close">×</button>
       </div>
+      <p class="muted">Get quick access and never miss the latest updates.</p>
       <div class="modal-actions">
-        <button id="installPWA" class="btn btn-accent">Add to Home Screen</button>
-        <button id="bookmarkSite" class="btn btn-outline">Bookmark Website</button>
-        <button id="dismissModal" class="btn btn-outline">Dismiss</button>
+        <button class="btn btn-primary" id="btn-install">Add to Home Screen</button>
+        <button class="btn btn-glow" id="btn-bookmark">Add Bookmark</button>
       </div>
-      <div class="modal-note" style="margin-top:8px">Popup will auto-close in 10s.</div>
     </div>
   </div>
 
-  <!-- Toast -->
-  <div id="toast" class="toast">✅ Request format copied!</div>
-
   <script>
-    /* ====== CONFIG: replace placeholders ====== */
-    const CONFIG = {
-      GOOGLE_SHEET_ID: "{SHEET_ID}", // e.g., 1AbCdEFg... (do NOT include /edit)
-      DOODSTREAM_API_KEY: "{DOODSTREAM_API_KEY}",
-      TMDB_API_KEY: "{83cc5358fefe8b5ffb79b0ba491fd1a3}", // Required for IMDb → TMDb poster
-      TELEGRAM_GROUP_URL: "https://t.me/your_group_here"
-    };
+    /* ====== Config: replace placeholders ====== */
+    const SHEET_ID = "{SHEET_ID}"; // e.g., 1AbCDEFgh... (Google Sheet ID)
+    const DOODSTREAM_API_KEY = "{DOODSTREAM_API_KEY}";
+    const OMDB_API_KEY = "{OMDB_API_KEY}"; // Optional: if using OMDb
+    // If you prefer TMDb, you can add TMDB_API_KEY and adjust fetchPoster()
 
     /* ====== State ====== */
-    const state = {
-      sheetMovies: [],      // raw movies from sheet
-      heroMovies: [],       // latest 10
-      newMovies: [],        // latest 5
-      recMovies: [],        // rest
-      heroIndex: 0,
-      heroTimer: null,
-      deferredPrompt: null  // for PWA install
-    };
+    let sheetMovies = []; // {title, year, language, genre, rating, posterUrl, embedLink, category, timestamp}
+    let heroIndex = 0;
+    let heroTimer = null;
+    let deferredPrompt = null; // for PWA install
 
-    /* ====== Utilities ====== */
-    const qs = (sel, root=document) => root.querySelector(sel);
-    const qsa = (sel, root=document) => Array.from(root.querySelectorAll(sel));
-    const create = (tag, props={}) => Object.assign(document.createElement(tag), props);
-
-    const showToast = (msg="✅ Request format copied!", timeout=2200) => {
-      const toast = qs("#toast");
-      toast.textContent = msg;
-      toast.classList.add("show");
-      setTimeout(()=>toast.classList.remove("show"), timeout);
-    };
-
-    const smoothScrollTop = () => window.scrollTo({top:0, behavior:"smooth"});
-
-    const parseGVizJSON = (text) => {
-      // Remove "google.visualization.Query.setResponse(...)" wrapper
-      const jsonStr = text.replace(/^[^{]+/, "").replace(/;?$/, "");
-      return JSON.parse(jsonStr);
-    };
-
-    const toMovieObj = (row) => {
-      const cells = row.c || [];
-      const val = i => cells[i]?.v ?? "";
-      return {
-        title: String(val(0)).trim(),
-        year: String(val(1)).trim(),
-        language: String(val(2)).trim(),
-        genre: String(val(3)).trim(),
-        rating: String(val(4)).trim(),
-        poster: String(val(5)).trim(),
-        embed: String(val(6)).trim(),
-        category: String(val(7)).trim(),
-        timestamp: String(val(8)).trim()
-      };
-    };
-
-    const buildCard = (movie, isNew=false) => {
-      const card = create("div", {className:"card"});
-      const posterWrap = create("div", {className:"poster-wrap"});
-      const img = create("img", {alt: movie.title || "Poster", loading:"lazy"});
-      img.src = movie.poster || "";
-      posterWrap.appendChild(img);
-      if(isNew){
-        posterWrap.appendChild(create("div", {className:"badge-new", textContent:"NEW"}));
-      }
-      const body = create("div", {className:"card-body"});
-      const title = create("div", {className:"title", textContent: movie.title});
-      const meta = create("div", {className:"meta"});
-      meta.innerHTML = `
-        <span><strong>Year:</strong> ${movie.year || "-"}</span>
-        <span><strong>Language:</strong> ${movie.language || "-"}</span>
-        <span><strong>Genre:</strong> ${movie.genre || "-"}</span>
-        <span><strong>Rating:</strong> ${movie.rating || "-"}</span>
-      `;
-      const playBtn = create("button", {className:"play-btn", textContent:"Play"});
-      playBtn.addEventListener("click", () => playMovie(movie));
-      body.append(title, meta, playBtn);
-      card.append(posterWrap, body);
-      return card;
-    };
-
-    const setPlayer = (movie, embedUrl) => {
-      qs("#playerTitle").textContent = movie?.title || "Playing...";
-      qs("#metaYear").textContent = movie?.year ? `Year: ${movie.year}` : "";
-      qs("#metaLang").textContent = movie?.language ? `Lang: ${movie.language}` : "";
-      qs("#metaGenre").textContent = movie?.genre ? `Genre: ${movie.genre}` : "";
-      qs("#metaRating").textContent = movie?.rating ? `Rating: ${movie.rating}` : "";
-
-      const iframe = qs("#playerIframe");
-      iframe.src = embedUrl || "";
-      const section = qs("#movie-player");
-      section.classList.add("active");
-      smoothScrollTop();
-    };
-
-    const closePlayer = () => {
-      const section = qs("#movie-player");
-      const iframe = qs("#playerIframe");
-      iframe.src = ""; // stop playback
-      section.classList.remove("active");
-    };
+    /* ====== Utils ====== */
+    function showToast(msg, type='info'){
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `toast show ${type==='success'?'success':type==='error'?'error':''}`;
+      setTimeout(()=>{ t.className='toast'; }, 2500);
+    }
+    function fmtMeta(m){
+      return [m.year, m.language, m.genre, (m.rating ? '★ '+m.rating : '')].filter(Boolean).join(' • ');
+    }
+    function smoothScrollToTop(){
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    function isTodayDifferent(key){
+      const last = localStorage.getItem(key);
+      const today = new Date().toDateString();
+      if(last !== today){ localStorage.setItem(key, today); return true; }
+      return false;
+    }
 
     /* ====== Google Sheet Integration ====== */
-    async function fetchSheetMovies(){
-      const url = `https://docs.google.com/spreadsheets/d/${CONFIG.GOOGLE_SHEET_ID}/gviz/tq?tqx=out:json`;
-      const newGrid = qs("#newGrid");
-      const recGrid = qs("#recGrid");
-
-      // Skeletons
-      const skel = () => {
-        const s = create("div", {className:"skeleton"});
-        s.style.height = "300px";
-        return s;
-      };
-      newGrid.innerHTML = ""; recGrid.innerHTML = "";
-      for(let i=0;i<5;i++) newGrid.appendChild(skel());
-      for(let i=0;i<8;i++) recGrid.appendChild(skel());
-
+    async function fetchGoogleSheet(){
+      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
       try{
-        const resp = await fetch(url, {cache:"no-store"});
-        const text = await resp.text();
-        const json = parseGVizJSON(text);
-        const rows = json.table?.rows || [];
-        const movies = rows.map(toMovieObj)
-          .filter(m => m.title && (m.embed || m.poster)); // basic validity
+        const res = await fetch(url);
+        const text = await res.text();
+        const jsonStr = text.match(/(?<=google\.visualization\.Query\.setResponse\().*(?=\);)/s)[0];
+        const data = JSON.parse(jsonStr);
+        const cols = data.table.cols.map(c => c.label.trim());
+        // Expect columns: Title | Year | Language | Genre | Rating | Poster URL | Embed Link | Category | Timestamp
+        sheetMovies = data.table.rows.map(r => {
+          const c = r.c;
+          function val(i){ return c[i] ? (c[i].v ?? c[i].f ?? '') : ''; }
+          return {
+            title: String(val(cols.indexOf('Title')) || '').trim(),
+            year: String(val(cols.indexOf('Year')) || '').trim(),
+            language: String(val(cols.indexOf('Language')) || '').trim(),
+            genre: String(val(cols.indexOf('Genre')) || '').trim(),
+            rating: String(val(cols.indexOf('Rating')) || '').trim(),
+            posterUrl: String(val(cols.indexOf('Poster URL')) || '').trim(),
+            embedLink: String(val(cols.indexOf('Embed Link')) || '').trim(),
+            category: String(val(cols.indexOf('Category')) || '').trim(),
+            timestamp: String(val(cols.indexOf('Timestamp')) || '').trim(),
+          };
+        }).filter(m => m.title);
 
-        // Sort latest first by timestamp or by order (assuming last rows are latest)
-        const sorted = movies.slice().sort((a,b)=>{
-          const ta = Date.parse(a.timestamp) || 0;
-          const tb = Date.parse(b.timestamp) || 0;
-          if(ta && tb) return tb - ta;
-          // fallback: keep original order but reverse (latest last row first)
+        // Sort latest first by Timestamp; fallback to original order
+        sheetMovies.sort((a,b) => {
+          const ta = new Date(a.timestamp).getTime();
+          const tb = new Date(b.timestamp).getTime();
+          if(!isNaN(ta) && !isNaN(tb)) return tb - ta;
           return 0;
         });
 
-        state.sheetMovies = sorted.length ? sorted : movies.reverse();
-
-        // Partition
-        state.newMovies = state.sheetMovies.slice(0,5);
-        state.recMovies = state.sheetMovies.slice(5);
-        state.heroMovies = state.sheetMovies.slice(0,10);
-
-        renderSheetSections();
-        renderHero();
-
+        renderFromSheet();
       }catch(err){
-        console.error("Sheet fetch failed", err);
-        newGrid.innerHTML = `<div class="chip">No results found from Google Sheet.</div>`;
-        recGrid.innerHTML = `<div class="chip">Please check your Sheet ID.</div>`;
+        console.error(err);
+        showToast('Failed to load Google Sheet data', 'error');
       }
     }
 
-    function renderSheetSections(){
-      const newGrid = qs("#newGrid");
-      const recGrid = qs("#recGrid");
-      newGrid.innerHTML = "";
-      recGrid.innerHTML = "";
-
-      state.newMovies.forEach(m => newGrid.appendChild(buildCard(m, true)));
-      state.recMovies.forEach(m => recGrid.appendChild(buildCard(m, false)));
+    function renderFromSheet(){
+      // Latest 10 for hero
+      const latest10 = sheetMovies.slice(0,10);
+      buildHero(latest10);
+      // Latest 5 in New
+      const latest5 = sheetMovies.slice(0,5);
+      buildGrid(latest5, document.getElementById('new-grid'), { markNew:true });
+      // Rest in Recommended
+      const rest = sheetMovies.slice(5);
+      buildGrid(rest, document.getElementById('rec-grid'), { markNew:false });
     }
 
     /* ====== Hero Carousel ====== */
-    function renderHero(){
-      const hero = qs("#hero");
-      // clear existing slides
-      qsa(".hero-slide", hero).forEach(el => el.remove());
-
-      state.heroMovies.forEach((m, idx) => {
-        const slide = create("div", {className:"hero-slide"});
-        const bgImg = m.poster || "";
-        slide.style.backgroundImage = bgImg ? `url('${bgImg}')` : "linear-gradient(180deg,#0b0f19,#0d1422)";
-        slide.dataset.index = String(idx);
+    function buildHero(list){
+      const hero = document.getElementById('hero');
+      hero.innerHTML = '';
+      list.forEach((m, idx) => {
+        const slide = document.createElement('div');
+        slide.className = 'hero-slide' + (idx===0 ? ' active' : '');
+        slide.style.backgroundImage = `url('${m.posterUrl || ''}')`;
+        slide.innerHTML = `
+          <div class="hero-overlay"></div>
+          <div class="hero-content">
+            <div class="hero-poster">
+              <img src="${m.posterUrl || ''}" alt="${m.title}" loading="lazy" />
+            </div>
+            <div class="hero-meta">
+              <h3 class="hero-title">${m.title}</h3>
+              <div class="hero-tag">${fmtMeta(m)}</div>
+              <div class="hero-actions">
+                <button class="btn btn-primary" data-play-idx="${idx}">Play</button>
+              </div>
+            </div>
+          </div>
+        `;
         hero.appendChild(slide);
       });
 
-      state.heroIndex = 0;
-      updateHeroContent();
-      cycleHero();
-    }
+      // Play button listeners
+      hero.querySelectorAll('[data-play-idx]').forEach(btn=>{
+        btn.addEventListener('click', (e)=>{
+          const idx = Number(e.currentTarget.getAttribute('data-play-idx'));
+          playMovie(list[idx]);
+        });
+      });
 
-    function updateHeroContent(){
-      const slides = qsa(".hero-slide", qs("#hero"));
-      slides.forEach(s => s.classList.remove("active"));
-      if(!slides.length) return;
-      const idx = state.heroIndex % slides.length;
-      slides[idx].classList.add("active");
-
-      const movie = state.heroMovies[idx] || {title:"Discover the latest arrivals", tagline:""};
-      qs("#heroTitle").textContent = movie.title || "Discover the latest arrivals";
-
-      // Wire hero play button
-      qs("#heroPlay").onclick = () => playMovie(movie);
-      // "Explore" scrolls to New Movies
-      qs("#heroMore").onclick = () => qs("#newGrid").scrollIntoView({behavior:"smooth", block:"start"});
-    }
-
-    function cycleHero(){
-      if(state.heroTimer) clearInterval(state.heroTimer);
-      state.heroTimer = setInterval(()=>{
-        state.heroIndex = (state.heroIndex + 1) % Math.max(state.heroMovies.length, 1);
-        updateHeroContent();
+      // Auto-rotate every 5s
+      if(heroTimer) clearInterval(heroTimer);
+      heroIndex = 0;
+      heroTimer = setInterval(()=>{
+        const slides = hero.querySelectorAll('.hero-slide');
+        if(slides.length === 0) return;
+        slides[heroIndex].classList.remove('active');
+        heroIndex = (heroIndex + 1) % slides.length;
+        slides[heroIndex].classList.add('active');
       }, 5000);
     }
 
-    /* ====== Playback ====== */
-    function playMovie(movie){
-      // Prefer movie.embed; if empty, no-op
-      let embed = movie.embed || "";
-      // Ensure Doodstream embed uses /e/file_code
-      if(embed && /doodstream\.com/.test(embed) && !/\/e\//.test(embed)){
-        const codeMatch = embed.match(/([a-zA-Z0-9]{6,})$/);
-        if(codeMatch) embed = `https://doodstream.com/e/${codeMatch[1]}`;
-      }
-      setPlayer(movie, embed);
-    }
-    qs("#playerClose").addEventListener("click", closePlayer);
+    /* ====== Cards Grid ====== */
+    function buildGrid(list, container, { markNew=false }={}){
+      container.innerHTML = '';
+      list.forEach((m, idx)=>{
+        const card = document.createElement('div');
+        card.className = 'movie-card';
+        const badge = markNew ? `<span class="badge-new">NEW</span>` : '';
+        card.innerHTML = `
+          <div class="poster-wrap">
+            ${badge}
+            <img src="${m.posterUrl || ''}" alt="${m.title}" loading="lazy">
+          </div>
+          <div class="card-body">
+            <div class="card-title">${m.title}</div>
+            <div class="card-meta">${fmtMeta(m)}</div>
+          </div>
+          <div class="card-actions">
+            <button class="btn btn-glow" data-play="${idx}">Play</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
 
-    /* ====== Doodstream API Search ====== */
-    async function searchDoodstream(query){
-      const gridNew = qs("#newGrid");
-      const gridRec = qs("#recGrid");
-      // show skeleton over recommended grid for search results
-      gridRec.innerHTML = "";
-      for(let i=0;i<8;i++){
-        const s = create("div", {className:"skeleton"}); s.style.height="300px"; gridRec.appendChild(s);
-      }
-
-      try{
-        const url = `https://doodapi.com/api/file/list?key=${encodeURIComponent(CONFIG.DOODSTREAM_API_KEY)}&search=${encodeURIComponent(query)}`;
-        const res = await fetch(url, {cache:"no-store"});
-        const data = await res.json();
-
-        // On failure or empty, fallback to sheet sections
-        if(!data || !Array.isArray(data.result) || !data.result.length){
-          gridRec.innerHTML = `<div class="chip">No results found on Doodstream. Showing recommended from Google Sheet.</div>`;
-          renderSheetSections();
-          return;
-        }
-
-        // Render search as cards in Recommended area; keep newGrid intact
-        gridRec.innerHTML = "";
-        data.result.forEach(item => {
-          const movie = {
-            title: item.title || "Untitled",
-            year: "",
-            language: "",
-            genre: "",
-            rating: "",
-            poster: item.thumbs || item.thumbnail || "",
-            embed: `https://doodstream.com/e/${item.file_code || ""}`
-          };
-          const card = buildCard(movie, false);
-          gridRec.appendChild(card);
+      container.querySelectorAll('[data-play]').forEach(btn=>{
+        btn.addEventListener('click', (e)=>{
+          const i = Number(e.currentTarget.getAttribute('data-play'));
+          playMovie(list[i]);
         });
-
-      }catch(err){
-        console.error("Doodstream search error", err);
-        gridRec.innerHTML = `<div class="chip">Search failed. Showing recommended from Google Sheet.</div>`;
-        renderSheetSections();
-      }
+      });
     }
 
-    qs("#searchBtn").addEventListener("click", ()=>{
-      const q = qs("#globalSearch").value.trim();
-      if(q) searchDoodstream(q);
-    });
-    qs("#globalSearch").addEventListener("keydown", (e)=>{
-      if(e.key === "Enter"){
-        const q = e.target.value.trim();
-        if(q) searchDoodstream(q);
+    /* ====== Playback Section ====== */
+    function playMovie(movie){
+      const player = document.getElementById('movie-player');
+      const titleEl = document.getElementById('player-title');
+      const metaEl = document.getElementById('player-meta');
+      const iframe = document.getElementById('player-iframe');
+
+      titleEl.textContent = movie.title || 'Playing';
+      metaEl.textContent = fmtMeta(movie);
+
+      // Prefer embedLink from Sheet; if it's a Doodstream file code, convert; else use as-is
+      let src = '';
+      if(movie.embedLink){
+        src = movie.embedLink;
+      }else if(movie.file_code){
+        src = `https://doodstream.com/e/${movie.file_code}`;
       }
-    });
 
-    /* ====== IMDb Poster via TMDb ====== */
-    async function fetchPosterByIMDb(imdbIdRaw){
-      const imdbId = imdbIdRaw.trim();
-      const posterBox = qs("#imdbPoster");
-      const titleBox = qs("#imdbTitle");
-      const imdbLink = qs("#imdbLink");
-      const tmdbLink = qs("#tmdbLink");
-
-      // Reset UI to skeleton
-      posterBox.className = "skeleton";
-      posterBox.innerHTML = "";
-      titleBox.textContent = "";
-      imdbLink.style.opacity = ".0"; imdbLink.style.pointerEvents = "none";
-      tmdbLink.style.opacity = ".0"; tmdbLink.style.pointerEvents = "none";
-
-      if(!imdbId || !/^tt\d{5,}$/.test(imdbId)){
-        titleBox.textContent = "Please enter a valid IMDb ID (e.g., tt4154796).";
+      if(!src){
+        showToast('No embed link available for this movie', 'error');
         return;
       }
 
-      try{
-        const url = `https://api.themoviedb.org/3/find/${encodeURIComponent(imdbId)}?api_key=${encodeURIComponent(CONFIG.TMDB_API_KEY)}&external_source=imdb_id`;
-        const res = await fetch(url, {cache:"no-store"});
-        const data = await res.json();
+      iframe.src = src;
+      player.style.display = 'block';
+      smoothScrollToTop();
+      // Autoplay hint: some browsers require user gesture; doodstream should respect it after button click
+    }
 
-        const item = (data.movie_results && data.movie_results[0]) || (data.tv_results && data.tv_results[0]) || null;
-        if(!item){
-          titleBox.textContent = "No TMDb match found for that IMDb ID.";
-          posterBox.className = "skeleton";
+    document.getElementById('player-close').addEventListener('click', ()=>{
+      const player = document.getElementById('movie-player');
+      const iframe = document.getElementById('player-iframe');
+      iframe.src = ''; // stop playback
+      player.style.display = 'none';
+    });
+
+    /* ====== Doodstream API Search ====== */
+    async function searchDoodstream(query){
+      const url = `https://doodapi.com/api/file/list?key=${DOODSTREAM_API_KEY}&search=${encodeURIComponent(query)}`;
+      const grid = document.getElementById('search-grid');
+      grid.innerHTML = buildSkeletonCards(6);
+      try{
+        const res = await fetch(url);
+        const json = await res.json();
+        grid.innerHTML = '';
+
+        if(!json || !Array.isArray(json.result) || json.result.length === 0){
+          grid.innerHTML = '<div class="card-body" style="grid-column:1/-1;background:#111821;border-radius:12px;border:1px solid rgba(255,255,255,0.08)">No results found on Doodstream.</div>';
           return;
         }
-        const posterUrl = item.poster_path ? `https://image.tmdb.org/t/p/w500${item.poster_path}` : "";
-        const img = create("img", {src:posterUrl, alt:item.title || item.name || "Poster", loading:"lazy"});
-        posterBox.className = "";
-        posterBox.appendChild(img);
 
-        const name = item.title || item.name || "Untitled";
-        titleBox.textContent = name;
+        // Map to card-friendly structure
+        const items = json.result.map(it => ({
+          title: it.title,
+          year: '', language: '', genre: '', rating: '',
+          posterUrl: it.thumbnail || '',
+          file_code: it.file_code,
+          embedLink: `https://doodstream.com/e/${it.file_code}`,
+        }));
 
-        imdbLink.href = `https://www.imdb.com/title/${imdbId}/`;
-        tmdbLink.href = `https://www.themoviedb.org/${item.media_type || "movie"}/${item.id}`;
-        imdbLink.style.opacity = "1"; imdbLink.style.pointerEvents = "auto";
-        tmdbLink.style.opacity = "1"; tmdbLink.style.pointerEvents = "auto";
+        buildGrid(items, grid, { markNew:false });
+
+        // Allow play from search
+        grid.querySelectorAll('[data-play]').forEach(btn=>{
+          btn.addEventListener('click', (e)=>{
+            const idx = Number(e.currentTarget.getAttribute('data-play'));
+            playMovie(items[idx]);
+          });
+        });
 
       }catch(err){
-        console.error("TMDb fetch error", err);
-        titleBox.textContent = "Error fetching poster. Please try again.";
-        posterBox.className = "skeleton";
+        console.error(err);
+        showToast('Doodstream search failed', 'error');
+        grid.innerHTML = '';
       }
     }
-    qs("#imdbFetchBtn").addEventListener("click", ()=>{
-      const id = qs("#imdbIdInput").value;
-      fetchPosterByIMDb(id);
-    });
 
-    /* ====== Popup System (once per day) ====== */
-    function shouldShowPopup(){
-      const last = localStorage.getItem("tg_popup_last");
-      if(!last) return true;
+    /* ====== Poster Fetch Tool (OMDb sample) ====== */
+    async function fetchPoster(title){
+      const box = document.getElementById('poster-result');
+      box.innerHTML = `<div class="skeleton" style="width:140px;height:210px;border-radius:12px"></div>
+                       <div class="skeleton" style="width:60%;height:20px;border-radius:8px"></div>`;
+      if(!OMDB_API_KEY || OMDB_API_KEY.includes('{OMDB_API_KEY}')){
+        box.innerHTML = `<div class="muted">Configure OMDB_API_KEY to enable poster fetch.</div>`;
+        return;
+      }
       try{
-        const when = Number(last);
-        const now = Date.now();
-        const oneDay = 24*60*60*1000;
-        return (now - when) > oneDay;
-      }catch{ return true; }
-    }
-    function showPopup(){
-      const modal = qs("#popupModal");
-      modal.classList.add("active");
-      localStorage.setItem("tg_popup_last", String(Date.now()));
-      // Auto-close in 10s
-      const t = setTimeout(()=> hidePopup(), 10000);
-      // Dismiss button
-      qs("#dismissModal").onclick = ()=>{ clearTimeout(t); hidePopup(); };
-    }
-    function hidePopup(){
-      qs("#popupModal").classList.remove("active");
+        const url = `https://www.omdbapi.com/?apikey=${OMDB_API_KEY}&t=${encodeURIComponent(title)}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if(data && data.Poster && data.Poster !== 'N/A'){
+          box.innerHTML = `
+            <img src="${data.Poster}" alt="${data.Title}" style="width:140px;border-radius:12px;box-shadow:0 0 18px rgba(0,174,255,0.35)" loading="lazy">
+            <div>
+              <div class="card-title" style="margin:0 0 6px">${data.Title} (${data.Year || ''})</div>
+              <div class="card-meta">IMDb: <a href="https://www.imdb.com/title/${data.imdbID}" target="_blank" rel="noopener">${data.imdbID}</a></div>
+            </div>
+          `;
+        }else{
+          box.innerHTML = `<div class="muted">No poster found for "${title}".</div>`;
+        }
+      }catch(err){
+        console.error(err);
+        showToast('Poster fetch failed', 'error');
+        box.innerHTML = `<div class="muted">Error fetching poster.</div>`;
+      }
     }
 
-    // Bookmark instructions (programmatic bookmarking isn’t supported reliably)
-    qs("#bookmarkSite").addEventListener("click", ()=>{
-      const isMac = navigator.platform.toUpperCase().includes("MAC");
-      const msg = isMac ? "Press Command + D to bookmark this site." : "Press Ctrl + D to bookmark this site.";
-      showPopup(); // keep modal visible to show message
-      alert(msg);
-      hidePopup();
-    });
+    /* ====== Skeleton cards ====== */
+    function buildSkeletonCards(n=6){
+      let html = '';
+      for(let i=0;i<n;i++){
+        html += `
+          <div class="movie-card">
+            <div class="poster-wrap">
+              <div class="skeleton" style="width:100%;aspect-ratio:2/3"></div>
+            </div>
+            <div class="card-body">
+              <div class="skeleton" style="width:70%;height:18px;border-radius:8px"></div>
+              <div class="skeleton" style="width:50%;height:14px;border-radius:8px;margin-top:8px"></div>
+            </div>
+            <div class="card-actions">
+              <div class="skeleton" style="width:80px;height:34px;border-radius:999px"></div>
+            </div>
+          </div>
+        `;
+      }
+      return html;
+    }
 
-    // PWA install prompt
-    window.addEventListener("beforeinstallprompt", (e)=>{
+    /* ====== Popup System (daily) ====== */
+    const installModal = document.getElementById('install-modal');
+    const modalClose = document.getElementById('modal-close');
+    const btnInstall = document.getElementById('btn-install');
+    const btnBookmark = document.getElementById('btn-bookmark');
+
+    function showInstallModal(){
+      installModal.classList.add('show');
+      setTimeout(()=>installModal.classList.remove('show'), 10000);
+    }
+    modalClose.addEventListener('click', ()=> installModal.classList.remove('show'));
+
+    // PWA install capture
+    window.addEventListener('beforeinstallprompt', (e)=>{
       e.preventDefault();
-      state.deferredPrompt = e;
+      deferredPrompt = e;
     });
-    qs("#installPWA").addEventListener("click", async ()=>{
-      if(state.deferredPrompt){
-        state.deferredPrompt.prompt();
-        const choice = await state.deferredPrompt.userChoice;
-        state.deferredPrompt = null;
+    btnInstall.addEventListener('click', async ()=>{
+      if(deferredPrompt){
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if(outcome === 'accepted') showToast('App installed', 'success');
+        deferredPrompt = null;
       }else{
-        alert("Install prompt not available. Try using Chrome on Android and visit again.");
+        showToast('Install prompt not available', 'error');
+      }
+    });
+
+    // Bookmark handler
+    btnBookmark.addEventListener('click', ()=>{
+      try{
+        // Attempt auto-bookmark (not widely supported). Fallback to instructions.
+        showToast('Press Ctrl+D (Windows) or Cmd+D (Mac) to bookmark', 'success');
+      }catch{
+        showToast('Use Ctrl+D or Cmd+D to bookmark', 'success');
       }
     });
 
     /* ====== Request section actions ====== */
-    qs("#copyFormat").addEventListener("click", async ()=>{
-      const text = qs("#requestFormat").value;
+    document.getElementById('copy-request').addEventListener('click', async ()=>{
+      const ta = document.getElementById('req-format');
       try{
-        await navigator.clipboard.writeText(text);
-        showToast("✅ Request format copied!");
+        await navigator.clipboard.writeText(ta.value);
+        showToast('✅ Request format copied!', 'success');
       }catch{
-        showToast("Copied. If not, please copy manually.");
+        showToast('Copy failed. Select and copy manually.', 'error');
       }
     });
-    qs("#tgBtn").href = CONFIG.TELEGRAM_GROUP_URL;
+    document.getElementById('clear-request').addEventListener('click', ()=>{
+      document.getElementById('req-format').value = '';
+    });
+
+    /* ====== Global search submit ====== */
+    document.getElementById('global-search').addEventListener('submit', async (e)=>{
+      e.preventDefault();
+      const q = document.getElementById('search-input').value.trim();
+      if(!q){ showToast('Type a movie name to search', 'error'); return; }
+      // Search Doodstream and fetch poster in parallel
+      searchDoodstream(q);
+      fetchPoster(q);
+    });
 
     /* ====== Init ====== */
-    window.addEventListener("DOMContentLoaded", ()=>{
-      fetchSheetMovies();
-      if(shouldShowPopup()) showPopup();
-    });
+    (function init(){
+      fetchGoogleSheet();
+      // Daily popup
+      if(isTodayDifferent('tg_popup_day')){
+        setTimeout(showInstallModal, 800);
+      }
+    })();
   </script>
-
-  <!-- Optional: Basic manifest for Add to Home Screen (replace icons with your files) -->
-  <link rel="manifest" href="manifest.json" />
 </body>
 </html>
