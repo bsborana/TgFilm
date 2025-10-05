@@ -1,0 +1,460 @@
+/* CSS Variables for Theme */
+:root {
+    --primary-bg: #0f0f0f;
+    --secondary-bg: #1a1a1a;
+    --accent-color: #00ffff;
+    --accent-glow: 0 0 10px var(--accent-color), 0 0 20px var(--accent-color);
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --card-bg: #2a2a2a;
+    --card-hover: #363636;
+    --transition: all 0.3s ease;
+}
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--primary-bg);
+    color: var(--text-primary);
+    line-height: 1.6;
+}
+
+/* Header Styles */
+.header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background: rgba(15, 15, 15, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.logo h1 {
+    color: var(--accent-color);
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-shadow: var(--accent-glow);
+}
+
+.search-container {
+    display: flex;
+    gap: 0.5rem;
+}
+
+#searchInput {
+    padding: 0.5rem 1rem;
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    background: var(--secondary-bg);
+    color: var(--text-primary);
+    border-radius: 25px;
+    width: 300px;
+    transition: var(--transition);
+}
+
+#searchInput:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: var(--accent-glow);
+}
+
+#searchButton {
+    padding: 0.5rem 1.5rem;
+    background: var(--accent-color);
+    color: var(--primary-bg);
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+#searchButton:hover {
+    box-shadow: var(--accent-glow);
+    transform: translateY(-2px);
+}
+
+.main-nav {
+    display: flex;
+    gap: 2rem;
+}
+
+.main-nav a {
+    color: var(--text-primary);
+    text-decoration: none;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.main-nav a:hover {
+    color: var(--accent-color);
+    text-shadow: var(--accent-glow);
+}
+
+/* Movie Player Styles */
+.movie-player {
+    background: var(--secondary-bg);
+    padding: 2rem;
+    margin-top: 80px;
+}
+
+.movie-player.hidden {
+    display: none;
+}
+
+.player-container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.player-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+#close-player {
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: 2rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+#close-player:hover {
+    color: var(--accent-color);
+}
+
+.video-container {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    margin-bottom: 1rem;
+}
+
+#video-frame {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+}
+
+.movie-meta {
+    display: flex;
+    gap: 2rem;
+}
+
+.meta-item {
+    padding: 0.5rem 1rem;
+    background: var(--card-bg);
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+/* Movies Grid - Responsive Layout */
+.movies-grid {
+    display: grid;
+    gap: 1.5rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Desktop: 4-6 cards/row */
+@media (min-width: 1024px) {
+    .movies-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+/* Tablet ≤820px: 3-4 cards/row */
+@media (max-width: 1023px) and (min-width: 641px) {
+    .movies-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+}
+
+/* Mobile landscape ≤640px: 3 cards/row */
+@media (max-width: 640px) and (min-width: 481px) {
+    .movies-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Mobile portrait ≤480px: 2 cards/row */
+@media (max-width: 480px) {
+    .movies-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        padding: 1rem;
+    }
+}
+
+/* Movie Card Styles */
+.movie-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: var(--transition);
+    cursor: pointer;
+    position: relative;
+}
+
+.movie-card:hover {
+    transform: translateY(-8px);
+    background: var(--card-hover);
+    box-shadow: var(--accent-glow);
+}
+
+.movie-poster {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.movie-card:hover .movie-poster {
+    transform: scale(1.05);
+}
+
+.movie-info {
+    padding: 1rem;
+}
+
+.movie-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.movie-year {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.play-button {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 255, 255, 0.9);
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.movie-card:hover .play-button {
+    opacity: 1;
+}
+
+.play-button::before {
+    content: '▶';
+    color: var(--primary-bg);
+    font-size: 1.5rem;
+}
+
+/* Hero Carousel */
+.hero-section {
+    margin-top: 80px;
+    position: relative;
+}
+
+.hero-carousel {
+    position: relative;
+    overflow: hidden;
+    height: 70vh;
+    min-height: 500px;
+}
+
+.carousel-track {
+    display: flex;
+    transition: transform 0.5s ease;
+    height: 100%;
+}
+
+.hero-item {
+    min-width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.hero-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hero-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+    padding: 2rem;
+    color: white;
+}
+
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+    padding: 0 2rem;
+}
+
+.carousel-nav button {
+    background: rgba(0, 255, 255, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: var(--primary-bg);
+    transition: var(--transition);
+}
+
+.carousel-nav button:hover {
+    box-shadow: var(--accent-glow);
+}
+
+/* Skeleton Loaders */
+.skeleton-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    height: 350px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+/* Modal Styles */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: var(--secondary-bg);
+    padding: 2rem;
+    border-radius: 12px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    border: 1px solid var(--accent-color);
+    box-shadow: var(--accent-glow);
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 1rem;
+    margin: 1.5rem 0;
+    flex-direction: column;
+}
+
+.modal-buttons button {
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+#add-to-home {
+    background: var(--accent-color);
+    color: var(--primary-bg);
+}
+
+#add-bookmark {
+    background: transparent;
+    color: var(--accent-color);
+    border: 1px solid var(--accent-color);
+}
+
+.modal-buttons button:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--accent-glow);
+}
+
+/* Ads Section */
+.ads-section {
+    background: var(--secondary-bg);
+    padding: 1rem;
+    border-top: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+.ads-section.hidden {
+    display: none;
+}
+
+.ads-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.ad-banner {
+    background: var(--card-bg);
+    padding: 2rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+/* Section Titles */
+.section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 2rem 0 1rem 0;
+    text-align: center;
+    color: var(--accent-color);
+    text-shadow: var(--accent-glow);
+}
+
+.movies-section {
+    padding: 2rem 0;
+}
