@@ -1,737 +1,921 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
   <title>TG Movies — Premium OTT-Style</title>
-  <meta name="theme-color" content="#0b0f14" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#0a0f1c" />
+  <meta name="description" content="TG Movies — Watch premium movies with seamless playback and dynamic updates." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
   <style>
-    :root{
-      --bg:#0b0f14;
-      --bg-soft:#121821;
-      --text:#e6edf5;
-      --muted:#9fb0c3;
-      --accent:#00aefe; /* neon blue */
-      --accent2:#ff0064; /* neon pink */
-      --card:#131a23;
-      --success:#19c37d;
-      --danger:#ff4d4f;
-      --shadow:0 10px 30px rgba(0,0,0,0.4);
-      --radius:14px;
+    /* ========== CORE THEME ========== */
+    :root {
+      --bg: #0a0f1c;
+      --bg-soft: #0f1524;
+      --card: #121a2c;
+      --text: #e9eefc;
+      --text-soft: #b8c2e6;
+      --accent: #6ae5ff;
+      --accent-2: #a66bff;
+      --danger: #ff6b6b;
+      --success: #4cd4a0;
+      --shadow: 0 12px 30px rgba(0,0,0,0.35);
+      --radius: 14px;
+      --radius-sm: 10px;
+      --transition: 200ms ease;
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      background:linear-gradient(180deg,#0b0f14 0%, #0e141b 100%);
-      color:var(--text);
-      font-family:Poppins, Roboto, system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+    * { box-sizing: border-box }
+    html, body {
+      background: radial-gradient(1200px 600px at 40% 0%, #0c1323 0%, #080d18 50%, #060913 100%);
+      color: var(--text);
+      font-family: 'Poppins', 'Roboto', system-ui, -apple-system, Segoe UI, Arial, sans-serif;
+      margin: 0;
     }
-    a{color:var(--accent);text-decoration:none}
-    img{display:block;max-width:100%}
+    a { color: var(--accent); text-decoration: none }
+    img { display: block; max-width: 100%; border-radius: var(--radius-sm) }
 
-    /* Header */
-    header{
-      position:sticky;top:0;z-index:50;
-      backdrop-filter: blur(8px);
-      background:linear-gradient(180deg, rgba(10,14,20,0.85) 0%, rgba(10,14,20,0.6) 100%);
-      border-bottom:1px solid rgba(255,255,255,0.06);
+    /* ========== HEADER ========== */
+    header {
+      position: sticky; top: 0; z-index: 20;
+      background: rgba(10,15,28,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #1b2540;
     }
-    .header-inner{
-      display:grid;grid-template-columns:1fr 2.2fr 1fr;gap:14px;
-      align-items:center;padding:12px 18px;max-width:1280px;margin:0 auto;
+    .header-wrap {
+      max-width: 1200px; margin: 0 auto; padding: 14px 18px;
+      display: grid; grid-template-columns: 1fr 2.5fr 1fr; gap: 16px; align-items: center;
     }
-    .brand{
-      display:flex;align-items:center;gap:10px;
+    .brand {
+      display: flex; align-items: center; gap: 12px;
     }
-    .brand-logo{
-      width:42px;height:42px;border-radius:10px;
-      background:radial-gradient(circle at 30% 20%, #00aefe 0%, #0b0f14 45%), radial-gradient(circle at 70% 80%, #ff0064 0%, #0b0f14 55%);
-      box-shadow:0 0 18px rgba(0,174,255,0.65), 0 0 24px rgba(255,0,100,0.35);
+    .logo {
+      width: 42px; height: 42px; border-radius: 10px;
+      background: linear-gradient(135deg, #6ae5ff, #a66bff);
+      box-shadow: 0 0 24px rgba(106,229,255,0.45), inset 0 0 12px rgba(166,107,255,0.35);
     }
-    .brand-text{
-      line-height:1.1;
-    }
-    .brand-text .title{font-weight:700;letter-spacing:0.4px}
-    .brand-text .tagline{font-size:12px;color:var(--muted)}
-    .header-center{display:flex;justify-content:center}
-    .searchbar{
-      width:100%;max-width:640px;position:relative;
-    }
-    .searchbar input{
-      width:100%;padding:14px 48px;border-radius:999px;border:1px solid rgba(255,255,255,0.14);
-      background:rgba(18,24,33,0.9);color:var(--text);outline:none;
-      box-shadow:inset 0 0 0 1px rgba(255,255,255,0.05);
-      transition:border-color .25s, box-shadow .25s, transform .2s;
-    }
-    .searchbar input:hover{box-shadow:0 0 12px rgba(0,174,255,0.25)}
-    .searchbar input:focus{
-      border-color:rgba(0,174,255,0.7);
-      box-shadow:0 0 18px rgba(0,174,255,0.35), 0 0 22px rgba(255,0,100,0.25);
-      transform:translateZ(0)
-    }
-    .search-icon{
-      position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted)
-    }
-    .search-go{
-      position:absolute;right:8px;top:50%;transform:translateY(-50%);
-    }
-    .btn{
-      padding:10px 14px;border-radius:999px;border:1px solid rgba(255,255,255,0.1);
-      background:linear-gradient(180deg, #18202b 0%, #111821 100%);
-      color:var(--text);cursor:pointer;transition:all .25s;
-    }
-    .btn:hover{
-      box-shadow:0 0 15px rgba(255,0,100,0.8);
-      transform:translateY(-1px);
-    }
-    .header-right{justify-self:end;font-size:13px;color:var(--muted)}
-
-    /* Sections */
-    main{max-width:1280px;margin:0 auto;padding:16px}
-    section{margin:22px 0}
-    h2{
-      margin:6px 6px 14px; font-size:20px; font-weight:600; color:#cfe6ff;
-      display:flex; align-items:center; gap:8px;
+    .tagline {
+      font-weight: 600; letter-spacing: 0.2px;
     }
 
-    /* Hero carousel */
-    .hero{
-      position:relative;border-radius:18px;overflow:hidden;background:#0d1219;min-height:300px;
-      box-shadow:var(--shadow);
+    /* Search bar (central, unified: website + Doodstream) */
+    .search {
+      display: flex; position: relative;
     }
-    .hero-slide{
-      position:absolute;inset:0;display:none;
-      background-position:center;background-size:cover;
-      transition:opacity .6s ease;
+    .search input {
+      width: 100%; padding: 12px 16px 12px 46px;
+      border-radius: 999px; border: 1px solid #263156;
+      background: #0e1423; color: var(--text);
+      outline: none; transition: border-color var(--transition), box-shadow var(--transition);
     }
-    .hero-slide.active{display:block;opacity:1}
-    .hero-overlay{
-      position:absolute;inset:0;
-      background:linear-gradient(90deg, rgba(10,14,20,0.9) 0%, rgba(10,14,20,0.5) 45%, rgba(10,14,20,0.2) 100%),
-                 radial-gradient(1200px 300px at 10% 90%, rgba(0,174,255,0.15) 0%, transparent 70%);
+    .search input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 16px rgba(106,229,255,0.35);
     }
-    .hero-content{
-      position:absolute;left:24px;bottom:20px;right:24px;
-      display:flex;gap:16px;align-items:flex-end;flex-wrap:wrap;
-    }
-    .hero-poster{
-      width:160px;min-width:160px;border-radius:12px;overflow:hidden;
-      box-shadow:0 0 22px rgba(0,174,255,0.35);
-    }
-    .hero-meta{max-width:680px}
-    .hero-title{font-size:24px;font-weight:700;margin:0 0 6px}
-    .hero-tag{color:var(--muted);margin-bottom:12px}
-    .hero-actions{display:flex;gap:10px}
-    .btn-primary{
-      background:linear-gradient(180deg, #008fd3 0%, #056ba3 100%);
-      border-color:rgba(255,255,255,0.18);
-    }
-    .btn-primary:hover{
-      box-shadow:0 0 16px rgba(0,174,255,0.8);
+    .search .icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      width: 18px; height: 18px; border-radius: 50%;
+      box-shadow: 0 0 12px rgba(106,229,255,0.6);
+      background: radial-gradient(circle, #6ae5ff 0%, #2ab8d9 60%, transparent 61%);
     }
 
-    /* Grids */
-    .grid{
-      display:grid;gap:14px;
-      grid-template-columns:repeat(6, 1fr);
-    }
-    /* Responsive rules */
-    @media (max-width:1200px){ .grid{grid-template-columns:repeat(5,1fr)} }
-    @media (max-width:820px){ .grid{grid-template-columns:repeat(3,1fr)} .header-inner{grid-template-columns:1fr} .header-right{display:none} }
-    @media (max-width:640px){ .grid{grid-template-columns:repeat(3,1fr)} }
-    @media (max-width:480px){ .grid{grid-template-columns:repeat(2,1fr)} }
+    /* Header right: reserved for future (e.g., Telegram quick action) */
+    .hdr-right { text-align: right; font-size: 14px; color: var(--text-soft) }
 
-    /* Cards */
-    .movie-card{
-      background:linear-gradient(180deg, #131a23 0%, #0f141b 100%);
-      border:1px solid rgba(255,255,255,0.06);
-      border-radius:var(--radius);overflow:hidden;position:relative;
-      box-shadow:var(--shadow);transition:transform .25s, box-shadow .25s;
+    /* ========== HERO ========== */
+    .hero {
+      max-width: 1200px; margin: 18px auto; padding: 0 18px;
     }
-    .movie-card:hover{transform:translateY(-3px);box-shadow:0 18px 36px rgba(0,0,0,0.55)}
-    .poster-wrap{position:relative}
-    .poster-wrap img{
-      width:100%;aspect-ratio:2/3;object-fit:cover;
-      transition:transform .3s ease, box-shadow .3s ease;
+    .hero-slider {
+      position: relative; overflow: hidden; border-radius: var(--radius);
+      background: #0e1423; box-shadow: var(--shadow);
     }
-    .poster-wrap img:hover{
-      box-shadow:0 0 20px rgba(0,174,255,0.8);
-      transform:scale(1.03);
+    .hero-track {
+      display: flex; transition: transform 600ms ease-in-out;
     }
-    .badge-new{
-      position:absolute;top:10px;left:10px;padding:6px 10px;border-radius:999px;
-      font-size:12px;background:rgba(255,0,100,0.9);color:white;box-shadow:0 0 12px rgba(255,0,100,0.7);
+    .hero-item {
+      position: relative; min-width: 100%;
+      height: clamp(220px, 40vw, 480px);
+      background: linear-gradient(180deg, rgba(0,0,0,0.15), rgba(10,15,28,0.85));
     }
-    .card-body{padding:10px}
-    .card-title{font-weight:600;margin:4px 0}
-    .card-meta{font-size:12px;color:var(--muted)}
-    .card-actions{padding:10px;display:flex;gap:8px}
-    .btn-glow{
-      background:linear-gradient(180deg, #1a202a 0%, #121821 100%);
-      border-color:rgba(255,255,255,0.1);
+    .hero-item img {
+      width: 100%; height: 100%; object-fit: cover; filter: saturate(1.1) contrast(1.05) brightness(0.92);
     }
-    .btn-glow:hover{box-shadow:0 0 15px rgba(255,0,100,0.8)}
+    .hero-overlay {
+      position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,9,19,0.0) 40%, rgba(6,9,19,0.86) 100%);
+    }
+    .hero-caption {
+      position: absolute; left: 24px; right: 24px; bottom: 24px;
+      display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: end;
+    }
+    .hero-text h2 { margin: 0 0 6px; font-size: clamp(18px, 2.6vw, 28px) }
+    .hero-text p { margin: 0; color: var(--text-soft); font-size: clamp(12px, 1.8vw, 14px) }
+    .btn-glow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: linear-gradient(135deg, #6ae5ff40, #a66bff40);
+      color: var(--text);
+      border: 1px solid #3a466d;
+      padding: 10px 16px; border-radius: 999px; cursor: pointer;
+      transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    }
+    .btn-glow:hover {
+      transform: translateY(-1px);
+      border-color: var(--accent);
+      box-shadow: 0 0 16px rgba(106,229,255,0.55), 0 0 28px rgba(166,107,255,0.35);
+    }
+    .hero-dots {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      bottom: 12px; display: flex; gap: 8px;
+    }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: #2a3558; transition: background var(--transition), transform var(--transition);
+    }
+    .dot.active { background: var(--accent); transform: scale(1.25) }
 
-    /* Player */
-    #movie-player{
-      display:none;position:relative;margin-top:12px;border-radius:18px;overflow:hidden;
-      background:linear-gradient(180deg, #0c1118 0%, #111821 100%);
-      border:1px solid rgba(255,255,255,0.08);box-shadow:var(--shadow);
-      animation:fadeIn .4s ease forwards;
+    /* ========== SECTIONS ========== */
+    .section {
+      max-width: 1200px; margin: 22px auto; padding: 0 18px;
     }
-    @keyframes fadeIn{from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none}}
-    .player-header{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.06)}
-    .player-title{font-weight:600}
-    .player-meta{font-size:12px;color:var(--muted)}
-    .player-close{
-      cursor:pointer;font-size:24px;line-height:1;border:none;background:transparent;color:var(--muted);
-      transition:color .2s, transform .2s;
+    .section h3 {
+      margin: 0 0 12px; font-size: 18px; font-weight: 600; letter-spacing: 0.3px;
     }
-    .player-close:hover{color:#fff;transform:scale(1.08)}
-    .player-wrap{position:relative;padding:10px}
-    .player-iframe{
-      width:100%;aspect-ratio:16/9;border:none;border-radius:12px;background:#000;
+    .grid {
+      display: grid; gap: 16px;
+      grid-template-columns: repeat(6, 1fr);
     }
+    @media (max-width: 1280px) { .grid { grid-template-columns: repeat(5, 1fr) } }
+    @media (max-width: 1024px) { .grid { grid-template-columns: repeat(4, 1fr) } }
+    @media (max-width: 820px)  { .grid { grid-template-columns: repeat(3, 1fr) } }
+    @media (max-width: 640px)  { .grid { grid-template-columns: repeat(3, 1fr) } }
+    @media (max-width: 480px)  { .grid { grid-template-columns: repeat(2, 1fr) } }
+
+    .card {
+      background: #0f1524; border: 1px solid #202b4c; border-radius: var(--radius-sm);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.25);
+      overflow: hidden; transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+      position: relative;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      box-shadow: 0 0 24px rgba(106,229,255,0.45), 0 0 36px rgba(166,107,255,0.25);
+    }
+    .poster-wrap { position: relative; aspect-ratio: 2/3; overflow: hidden }
+    .poster-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform var(--transition), filter var(--transition) }
+    .card:hover .poster-wrap img { transform: scale(1.03) }
+    .glow-border {
+      position: absolute; inset: 0;
+      box-shadow: inset 0 0 24px rgba(106,229,255,0.25);
+      pointer-events: none;
+    }
+    .badge-new {
+      position: absolute; top: 10px; left: 10px;
+      background: linear-gradient(135deg, #6ae5ff, #a66bff);
+      color: #0a0f1c; font-weight: 600; font-size: 11px; padding: 4px 8px; border-radius: 999px;
+      box-shadow: 0 0 18px rgba(106,229,255,0.55);
+    }
+    .meta { padding: 12px }
+    .meta .title { font-size: 14px; font-weight: 600; margin-bottom: 6px }
+    .meta .info { font-size: 12px; color: var(--text-soft) }
+    .play-wrap { padding: 12px; border-top: 1px solid #202b4c }
+    .btn-play {
+      width: 100%;
+      background: #0e1423; border: 1px solid #2a3558;
+      padding: 10px 12px; color: var(--text); border-radius: 10px;
+      cursor: pointer; transition: box-shadow var(--transition), border-color var(--transition), transform var(--transition);
+    }
+    .btn-play:hover {
+      box-shadow: 0 0 16px rgba(106,229,255,0.45);
+      border-color: var(--accent); transform: translateY(-1px);
+    }
+
+    /* ========== PLAYER ========== */
+    #movie-player {
+      max-width: 1200px; margin: 0 auto; padding: 0 18px; display: none;
+    }
+    .player-card {
+      margin: 18px 0; background: #0f1524; border: 1px solid #202b4c; border-radius: var(--radius);
+      box-shadow: var(--shadow); overflow: hidden; animation: fadeIn 320ms ease;
+    }
+    .player-top {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px; border-bottom: 1px solid #202b4c;
+    }
+    .player-top .title { font-weight: 600 }
+    .btn-close {
+      background: transparent; color: var(--text-soft); border: 0; font-size: 22px; cursor: pointer;
+      transition: color var(--transition), transform var(--transition);
+    }
+    .btn-close:hover { color: var(--danger); transform: rotate(90deg) }
+    .player-meta { padding: 0 16px 12px; color: var(--text-soft); font-size: 13px }
+    .player-frame {
+      position: relative; padding-top: 56.25%; background: #0a0f1c;
+    }
+    .player-frame iframe {
+      position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: 0 0 var(--radius) var(--radius);
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: translateY(0) } }
+
+    /* ========== REQUEST SECTION ========== */
+    .request {
+      background: #0e1423; border: 1px solid #202b4c; border-radius: var(--radius);
+      padding: 16px; box-shadow: var(--shadow);
+    }
+    .request .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px }
+    @media (max-width: 640px) { .request .row { grid-template-columns: 1fr } }
+    .btn-telegram {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, #2aa8e0, #1c88c8);
+      border: 0; color: #fff; padding: 10px 14px; border-radius: 10px; cursor: pointer;
+      box-shadow: 0 10px 22px rgba(42,168,224,0.35);
+    }
+    .copybox {
+      display: grid; grid-template-columns: 1fr auto; gap: 10px;
+    }
+    .copybox textarea {
+      width: 100%; min-height: 90px; padding: 10px; border-radius: 10px; border: 1px solid #2a3558; background: #0a0f1c; color: var(--text);
+    }
+    .btn-copy {
+      background: #0e1423; border: 1px solid #2a3558; color: var(--text); border-radius: 10px; padding: 10px 12px; cursor: pointer;
+    }
+    .highlight { color: #fff; font-weight: 600; background: linear-gradient(90deg, #6ae5ff30, transparent); padding: 2px 6px; border-radius: 6px }
+
+    /* ========== TMDb / IMDb SEARCH ========== */
+    .tmdb {
+      background: #0f1524; border: 1px solid #202b4c; border-radius: var(--radius);
+      padding: 14px; box-shadow: var(--shadow);
+    }
+    .tmdb .bar { display: grid; grid-template-columns: 1fr auto; gap: 10px }
+    .tmdb input {
+      width: 100%; padding: 12px 14px; border-radius: 10px; border: 1px solid #263156; background: #0e1423; color: var(--text);
+    }
+    .tmdb button {
+      background: #0e1423; border: 1px solid #2a3558; color: var(--text); border-radius: 10px; padding: 10px 12px; cursor: pointer;
+    }
+    .tmdb-results { margin-top: 14px; display: grid; gap: 14px; grid-template-columns: repeat(5, 1fr) }
+    @media (max-width: 1024px) { .tmdb-results { grid-template-columns: repeat(4, 1fr) } }
+    @media (max-width: 820px)  { .tmdb-results { grid-template-columns: repeat(3, 1fr) } }
+    @media (max-width: 640px)  { .tmdb-results { grid-template-columns: repeat(2, 1fr) } }
+    @media (max-width: 480px)  { .tmdb-results { grid-template-columns: repeat(2, 1fr) } }
 
     /* Skeleton loader */
-    .skeleton{
-      background:linear-gradient(90deg, rgba(200,210,220,0.07) 0%, rgba(200,210,220,0.18) 50%, rgba(200,210,220,0.07) 100%);
-      background-size:200% 100%;animation:shimmer 1.2s linear infinite;
+    .skeleton {
+      position: relative; overflow: hidden; background: #121a2c;
+      border-radius: var(--radius-sm);
     }
-    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+    .skeleton::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.06) 50%, transparent 100%);
+      animation: shimmer 1200ms infinite;
+    }
+    @keyframes shimmer { 0% { transform: translateX(-100%) } 100% { transform: translateX(100%) } }
 
-    /* Toasts */
-    .toast{
-      position:fixed;bottom:16px;left:50%;transform:translateX(-50%);
-      background:#121821;border:1px solid rgba(255,255,255,0.12);color:#cfe6ff;padding:10px 14px;border-radius:999px;
-      box-shadow:0 8px 24px rgba(0,0,0,0.45);z-index:99;display:none;
+    /* ========== POPUP MODAL ========== */
+    .modal {
+      position: fixed; inset: 0; display: none; align-items: center; justify-content: center; z-index: 50;
+      background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);
     }
-    .toast.show{display:block;animation:fadeIn .2s ease}
-    .toast.success{border-color:rgba(25,195,125,0.5)}
-    .toast.error{border-color:rgba(255,77,79,0.5)}
+    .modal .cardlike {
+      width: min(520px, 92vw);
+      background: #0f1524; border: 1px solid #202b4c; border-radius: var(--radius);
+      box-shadow: var(--shadow); padding: 16px;
+      animation: fadeIn 220ms ease;
+    }
+    .modal h4 { margin: 0 0 8px }
+    .modal p { margin: 0 0 12px; color: var(--text-soft) }
+    .modal-actions { display: flex; gap: 10px; flex-wrap: wrap }
+    .modal .btn {
+      background: #0e1423; border: 1px solid #2a3558; color: var(--text); border-radius: 10px; padding: 10px 12px; cursor: pointer;
+    }
 
-    /* Request section */
-    .request-box{
-      display:grid;grid-template-columns:1.1fr 1.3fr;gap:14px;
-      background:linear-gradient(180deg, #121821 0%, #0f141b 100%);
-      border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:14px;
-    }
-    @media (max-width:820px){ .request-box{grid-template-columns:1fr} }
-    .copy-row{display:flex;gap:8px}
-    textarea{
-      width:100%;min-height:100px;resize:vertical;padding:12px;border-radius:12px;
-      background:#0f141b;color:var(--text);border:1px solid rgba(255,255,255,0.1);
-    }
-    .highlight{font-weight:600}
+    /* ========== FOOTER ========== */
+    footer { margin: 24px auto; max-width: 1200px; padding: 18px; color: var(--text-soft); text-align: center; }
 
-    /* Popup modal */
-    .modal{
-      position:fixed;inset:0;display:none;place-items:center;z-index:100;
-      background:rgba(0,0,0,0.55);
-    }
-    .modal.show{display:grid}
-    .modal-card{
-      width:92%;max-width:520px;background:#0f141b;border-radius:18px;border:1px solid rgba(255,255,255,0.12);
-      box-shadow:0 20px 50px rgba(0,0,0,0.6);padding:16px;
-    }
-    .modal-header{display:flex;justify-content:space-between;align-items:center}
-    .modal-actions{display:flex;gap:10px;margin-top:12px}
-    .muted{color:var(--muted);font-size:14px}
-    .footer{margin:28px 0 12px;color:var(--muted);font-size:12px;text-align:center}
   </style>
 </head>
 <body>
+
+  <!-- Header -->
   <header>
-    <div class="header-inner">
+    <div class="header-wrap">
       <div class="brand">
-        <div class="brand-logo" aria-hidden="true"></div>
-        <div class="brand-text">
-          <div class="title">TG Movies</div>
-          <div class="tagline">Premium OTT-style experience</div>
-        </div>
+        <div class="logo" aria-hidden="true"></div>
+        <div class="tagline">TG Movies — Premium • Fast • Live</div>
       </div>
 
-      <div class="header-center">
-        <form id="global-search" class="searchbar" autocomplete="off">
-          <span class="search-icon" aria-hidden="true">
-            <!-- search icon -->
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M15.5 15.5L20 20" stroke="#9fb0c3" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="11" r="7" stroke="#9fb0c3" stroke-width="2"/></svg>
-          </span>
-          <input id="search-input" type="text" placeholder="Search movies (Doodstream + Poster fetch)" />
-          <button id="search-go" class="btn btn-glow search-go" type="submit">Search</button>
-        </form>
+      <div class="search">
+        <span class="icon" aria-hidden="true"></span>
+        <input id="search-input" type="search" placeholder="Search movies (Website + Doodstream)" autocomplete="off" />
       </div>
 
-      <div class="header-right">
-        Latest updates auto-sync from Google Sheet
+      <div class="hdr-right">
+        <span>Updates auto-sync from Google Sheet</span>
       </div>
     </div>
   </header>
 
-  <main>
-    <!-- Playback section -->
-    <section id="movie-player">
-      <div class="player-header">
+  <!-- Playback: hidden until Play -->
+  <section id="movie-player" aria-live="polite"></section>
+
+  <!-- Hero carousel -->
+  <section class="hero">
+    <div class="hero-slider">
+      <div class="hero-track" id="hero-track"></div>
+      <div class="hero-dots" id="hero-dots"></div>
+    </div>
+  </section>
+
+  <!-- New Movies -->
+  <section class="section">
+    <h3>New movies</h3>
+    <div class="grid" id="grid-new"></div>
+  </section>
+
+  <!-- Recommended -->
+  <section class="section">
+    <h3>Recommended</h3>
+    <div class="grid" id="grid-reco"></div>
+  </section>
+
+  <!-- Search results (main website search) -->
+  <section class="section" id="search-section" style="display:none">
+    <h3>Search results</h3>
+    <div class="grid" id="grid-search"></div>
+  </section>
+
+  <!-- Request -->
+  <section class="section">
+    <h3>Request a movie</h3>
+    <div class="request">
+      <div class="row">
         <div>
-          <div class="player-title" id="player-title">—</div>
-          <div class="player-meta" id="player-meta">—</div>
+          <button class="btn-telegram" id="btn-telegram">
+            <span style="width:18px;height:18px;border-radius:50%;background:#fff;display:inline-block"></span>
+            Open Telegram
+          </button>
+          <p style="margin:10px 0 0">
+            Use the <span class="highlight">English format</span> below for fastest response.
+          </p>
         </div>
-        <button class="player-close" id="player-close" title="Close">×</button>
-      </div>
-      <div class="player-wrap">
-        <iframe id="player-iframe" class="player-iframe" allow="autoplay; fullscreen" referrerpolicy="no-referrer" loading="lazy"></iframe>
-      </div>
-    </section>
+        <div class="copybox">
+          <textarea id="request-format" readonly>Request: Movie Name (Year)
+Language: English/Hindi/Other
+Quality: 1080p preferred
+Notes: Any specific cut or version?
 
-    <!-- Hero carousel -->
-    <section>
-      <h2>Hero carousel</h2>
-      <div class="hero" id="hero">
-        <!-- Slides injected here -->
-      </div>
-    </section>
-
-    <!-- New movies (latest 5) -->
-    <section>
-      <h2>New movies</h2>
-      <div class="grid" id="new-grid">
-        <!-- Cards injected -->
-      </div>
-    </section>
-
-    <!-- Recommended (rest beyond latest 5) -->
-    <section>
-      <h2>Recommended</h2>
-      <div class="grid" id="rec-grid">
-        <!-- Cards injected -->
-      </div>
-    </section>
-
-    <!-- Search results (Doodstream + Poster fetch preview) -->
-    <section>
-      <h2>Search results</h2>
-      <div class="grid" id="search-grid"></div>
-      <div id="poster-tool" style="margin-top:14px">
-        <div class="card-body" style="background:#111821;border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:14px">
-          <div class="card-title">Poster fetch (TMDb/OMDb)</div>
-          <div id="poster-result" style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap"></div>
+Thank you!</textarea>
+          <button class="btn-copy" id="btn-copy">Copy</button>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Request section -->
-    <section>
-      <h2>Request</h2>
-      <div class="request-box">
-        <div>
-          <p class="highlight">Bookmark this website to stay updated with the latest movies.</p>
-          <p class="highlight">Submit your request with Movie Name, Language, and Year.</p>
-          <a class="btn btn-primary" id="telegram-btn" href="https://t.me/your_group" target="_blank" rel="noopener">Open Telegram</a>
-        </div>
-        <div>
-          <label for="req-format">Copy format</label>
-          <textarea id="req-format">Request:
-- Movie Name: [Enter]
-- Language: [Enter]
-- Year: [Enter]
-          </textarea>
-          <div class="copy-row">
-            <button class="btn btn-glow" id="copy-request">Copy format</button>
-            <button class="btn" id="clear-request">Clear</button>
-          </div>
-        </div>
+  <!-- TMDb / IMDb poster lookup -->
+  <section class="section">
+    <h3>Poster lookup (TMDb/IMDb)</h3>
+    <div class="tmdb">
+      <div class="bar">
+        <input id="tmdb-query" type="search" placeholder="Enter movie name for poster" />
+        <button id="tmdb-search">Search Posters</button>
       </div>
-    </section>
+      <div class="tmdb-results" id="tmdb-results"></div>
+    </div>
+  </section>
 
-    <div class="footer">© 2025 TG Movies — All Rights Reserved</div>
-  </main>
+  <!-- Footer -->
+  <footer>© 2025 TG Movies — All Rights Reserved</footer>
 
-  <!-- Toast -->
-  <div id="toast" class="toast"></div>
-
-  <!-- Popup modal -->
-  <div id="install-modal" class="modal" aria-hidden="true">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h3 style="margin:0">Add TG Movies to your Home Screen or Bookmark it!</h3>
-        <button class="player-close" id="modal-close" title="Close">×</button>
-      </div>
-      <p class="muted">Get quick access and never miss the latest updates.</p>
+  <!-- Popup Modal -->
+  <div class="modal" id="modal">
+    <div class="cardlike">
+      <h4>Add TG Movies to your Home Screen or Bookmark it!</h4>
+      <p>Get quick access and never miss the latest updates.</p>
       <div class="modal-actions">
-        <button class="btn btn-primary" id="btn-install">Add to Home Screen</button>
-        <button class="btn btn-glow" id="btn-bookmark">Add Bookmark</button>
+        <button class="btn" id="btn-install">Add to Home Screen</button>
+        <button class="btn" id="btn-bookmark">Add Bookmark</button>
+        <button class="btn" id="btn-dismiss">Dismiss</button>
       </div>
     </div>
   </div>
 
   <script>
-    /* ====== Config: replace placeholders ====== */
-    const SHEET_ID = "{SHEET_ID}"; // e.g., 1AbCDEFgh... (Google Sheet ID)
-    const DOODSTREAM_API_KEY = "{DOODSTREAM_API_KEY}";
-    const OMDB_API_KEY = "{OMDB_API_KEY}"; // Optional: if using OMDb
-    // If you prefer TMDb, you can add TMDB_API_KEY and adjust fetchPoster()
+  // ===================== CONFIG =====================
+  const GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/15UIsZrl3yrfPG_LRStf_2aTENta3kDD6BhmIJ5dPG-4/gviz/tq?tqx=out:json';
+  const DOODSTREAM_KEY = '540740p5z0jhp333rc5m1n';
+  const TMDB_KEY = '83cc5358fefe8b5ffb79b0ba491fd1a3';
 
-    /* ====== State ====== */
-    let sheetMovies = []; // {title, year, language, genre, rating, posterUrl, embedLink, category, timestamp}
-    let heroIndex = 0;
-    let heroTimer = null;
-    let deferredPrompt = null; // for PWA install
+  const TELEGRAM_URL = 'https://t.me/your_channel_here'; // set your Telegram link
+  const DOOD_BASE_EMBED = 'https://dood.wtf/e/'; // common embed host pattern
 
-    /* ====== Utils ====== */
-    function showToast(msg, type='info'){
-      const t = document.getElementById('toast');
-      t.textContent = msg;
-      t.className = `toast show ${type==='success'?'success':type==='error'?'error':''}`;
-      setTimeout(()=>{ t.className='toast'; }, 2500);
-    }
-    function fmtMeta(m){
-      return [m.year, m.language, m.genre, (m.rating ? '★ '+m.rating : '')].filter(Boolean).join(' • ');
-    }
-    function smoothScrollToTop(){
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    function isTodayDifferent(key){
-      const last = localStorage.getItem(key);
-      const today = new Date().toDateString();
-      if(last !== today){ localStorage.setItem(key, today); return true; }
-      return false;
-    }
+  // ===================== STATE =====================
+  const state = {
+    sheetMovies: [],        // normalized from Google Sheet
+    latest10: [],           // for hero
+    new5: [],               // section
+    recommended: [],        // section
+    installPromptEvent: null
+  };
 
-    /* ====== Google Sheet Integration ====== */
-    async function fetchGoogleSheet(){
-      const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
-      try{
-        const res = await fetch(url);
-        const text = await res.text();
-        const jsonStr = text.match(/(?<=google\.visualization\.Query\.setResponse\().*(?=\);)/s)[0];
-        const data = JSON.parse(jsonStr);
-        const cols = data.table.cols.map(c => c.label.trim());
-        // Expect columns: Title | Year | Language | Genre | Rating | Poster URL | Embed Link | Category | Timestamp
-        sheetMovies = data.table.rows.map(r => {
-          const c = r.c;
-          function val(i){ return c[i] ? (c[i].v ?? c[i].f ?? '') : ''; }
-          return {
-            title: String(val(cols.indexOf('Title')) || '').trim(),
-            year: String(val(cols.indexOf('Year')) || '').trim(),
-            language: String(val(cols.indexOf('Language')) || '').trim(),
-            genre: String(val(cols.indexOf('Genre')) || '').trim(),
-            rating: String(val(cols.indexOf('Rating')) || '').trim(),
-            posterUrl: String(val(cols.indexOf('Poster URL')) || '').trim(),
-            embedLink: String(val(cols.indexOf('Embed Link')) || '').trim(),
-            category: String(val(cols.indexOf('Category')) || '').trim(),
-            timestamp: String(val(cols.indexOf('Timestamp')) || '').trim(),
-          };
-        }).filter(m => m.title);
+  // ===================== UTIL =====================
+  const qs = (sel) => document.querySelector(sel);
+  const qsa = (sel) => Array.from(document.querySelectorAll(sel));
+  const clamp = (num, min, max) => Math.min(Math.max(num, min), max);
+  const toYear = (dateStr) => {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    const y = d.getFullYear();
+    return Number.isFinite(y) ? y : (String(dateStr).slice(0,4));
+  };
 
-        // Sort latest first by Timestamp; fallback to original order
-        sheetMovies.sort((a,b) => {
-          const ta = new Date(a.timestamp).getTime();
-          const tb = new Date(b.timestamp).getTime();
-          if(!isNaN(ta) && !isNaN(tb)) return tb - ta;
-          return 0;
-        });
+  function createEl(tag, attrs = {}, children = []) {
+    const el = document.createElement(tag);
+    Object.entries(attrs).forEach(([k,v]) => {
+      if (k === 'class') el.className = v;
+      else if (k === 'style') el.style.cssText = v;
+      else if (k.startsWith('on') && typeof v === 'function') el.addEventListener(k.substring(2), v);
+      else if (v !== undefined && v !== null) el.setAttribute(k, v);
+    });
+    children.forEach(c => {
+      if (typeof c === 'string') el.appendChild(document.createTextNode(c));
+      else if (c) el.appendChild(c);
+    });
+    return el;
+  }
 
-        renderFromSheet();
-      }catch(err){
-        console.error(err);
-        showToast('Failed to load Google Sheet data', 'error');
+  function lazyImg(src, alt = '') {
+    const img = createEl('img', { loading: 'lazy', alt });
+    img.dataset.src = src;
+    return img;
+  }
+
+  // IntersectionObserver for lazy loading
+  const io = new IntersectionObserver((entries, obs) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        const src = img.dataset.src;
+        if (src) { img.src = src; }
+        obs.unobserve(img);
       }
+    });
+  }, { rootMargin: '80px' });
+
+  // ===================== GOOGLE SHEET =====================
+  async function fetchSheetMovies() {
+    try {
+      const res = await fetch(GOOGLE_SHEET_URL, { cache: 'no-store' });
+      const text = await res.text();
+
+      // Strip the gviz wrapper
+      const jsonStr = text.replace(/^.*setResponse\(/, '').replace(/\);\s*$/, '');
+      const data = JSON.parse(jsonStr);
+
+      // Expect first row as headers
+      const cols = data.table.cols.map(c => c.label);
+      const rows = data.table.rows;
+
+      const idx = {};
+      ['Title','Year','Language','Genre','Rating','Poster URL','Embed Link','Category','Timestamp']
+        .forEach(key => { idx[key] = cols.indexOf(key); });
+
+      const normalized = rows.map(r => {
+        const c = r.c;
+        function val(key) {
+          const i = idx[key];
+          return i >= 0 && c[i] ? (c[i].v ?? c[i].f ?? '') : '';
+        }
+        return {
+          title: String(val('Title')).trim(),
+          year: String(val('Year')).trim(),
+          language: String(val('Language')).trim(),
+          genre: String(val('Genre')).trim(),
+          rating: String(val('Rating')).trim(),
+          poster: String(val('Poster URL')).trim(),
+          embed: String(val('Embed Link')).trim(),
+          category: String(val('Category')).trim(),
+          timestamp: String(val('Timestamp')).trim()
+        };
+      }).filter(m => m.title);
+
+      // Sort by timestamp desc
+      normalized.sort((a,b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+      state.sheetMovies = normalized;
+      state.new5 = normalized.slice(0,5);
+      state.recommended = normalized.slice(5);
+      state.latest10 = normalized.slice(0,10);
+
+    } catch (err) {
+      console.error('Sheet fetch error', err);
+      showErrorGrid(qs('#grid-new'), 'Failed to load movies from Google Sheet.');
+      showErrorGrid(qs('#grid-reco'), 'Failed to load movies from Google Sheet.');
     }
+  }
 
-    function renderFromSheet(){
-      // Latest 10 for hero
-      const latest10 = sheetMovies.slice(0,10);
-      buildHero(latest10);
-      // Latest 5 in New
-      const latest5 = sheetMovies.slice(0,5);
-      buildGrid(latest5, document.getElementById('new-grid'), { markNew:true });
-      // Rest in Recommended
-      const rest = sheetMovies.slice(5);
-      buildGrid(rest, document.getElementById('rec-grid'), { markNew:false });
-    }
+  // ===================== HERO CAROUSEL =====================
+  let heroIndex = 0;
+  let heroTimer = null;
 
-    /* ====== Hero Carousel ====== */
-    function buildHero(list){
-      const hero = document.getElementById('hero');
-      hero.innerHTML = '';
-      list.forEach((m, idx) => {
-        const slide = document.createElement('div');
-        slide.className = 'hero-slide' + (idx===0 ? ' active' : '');
-        slide.style.backgroundImage = `url('${m.posterUrl || ''}')`;
-        slide.innerHTML = `
-          <div class="hero-overlay"></div>
-          <div class="hero-content">
-            <div class="hero-poster">
-              <img src="${m.posterUrl || ''}" alt="${m.title}" loading="lazy" />
-            </div>
-            <div class="hero-meta">
-              <h3 class="hero-title">${m.title}</h3>
-              <div class="hero-tag">${fmtMeta(m)}</div>
-              <div class="hero-actions">
-                <button class="btn btn-primary" data-play-idx="${idx}">Play</button>
-              </div>
-            </div>
-          </div>
-        `;
-        hero.appendChild(slide);
-      });
+  function renderHero() {
+    const track = qs('#hero-track');
+    const dots = qs('#hero-dots');
+    track.innerHTML = '';
+    dots.innerHTML = '';
 
-      // Play button listeners
-      hero.querySelectorAll('[data-play-idx]').forEach(btn=>{
-        btn.addEventListener('click', (e)=>{
-          const idx = Number(e.currentTarget.getAttribute('data-play-idx'));
-          playMovie(list[idx]);
-        });
-      });
-
-      // Auto-rotate every 5s
-      if(heroTimer) clearInterval(heroTimer);
-      heroIndex = 0;
-      heroTimer = setInterval(()=>{
-        const slides = hero.querySelectorAll('.hero-slide');
-        if(slides.length === 0) return;
-        slides[heroIndex].classList.remove('active');
-        heroIndex = (heroIndex + 1) % slides.length;
-        slides[heroIndex].classList.add('active');
-      }, 5000);
-    }
-
-    /* ====== Cards Grid ====== */
-    function buildGrid(list, container, { markNew=false }={}){
-      container.innerHTML = '';
-      list.forEach((m, idx)=>{
-        const card = document.createElement('div');
-        card.className = 'movie-card';
-        const badge = markNew ? `<span class="badge-new">NEW</span>` : '';
-        card.innerHTML = `
-          <div class="poster-wrap">
-            ${badge}
-            <img src="${m.posterUrl || ''}" alt="${m.title}" loading="lazy">
-          </div>
-          <div class="card-body">
-            <div class="card-title">${m.title}</div>
-            <div class="card-meta">${fmtMeta(m)}</div>
-          </div>
-          <div class="card-actions">
-            <button class="btn btn-glow" data-play="${idx}">Play</button>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-
-      container.querySelectorAll('[data-play]').forEach(btn=>{
-        btn.addEventListener('click', (e)=>{
-          const i = Number(e.currentTarget.getAttribute('data-play'));
-          playMovie(list[i]);
-        });
-      });
-    }
-
-    /* ====== Playback Section ====== */
-    function playMovie(movie){
-      const player = document.getElementById('movie-player');
-      const titleEl = document.getElementById('player-title');
-      const metaEl = document.getElementById('player-meta');
-      const iframe = document.getElementById('player-iframe');
-
-      titleEl.textContent = movie.title || 'Playing';
-      metaEl.textContent = fmtMeta(movie);
-
-      // Prefer embedLink from Sheet; if it's a Doodstream file code, convert; else use as-is
-      let src = '';
-      if(movie.embedLink){
-        src = movie.embedLink;
-      }else if(movie.file_code){
-        src = `https://doodstream.com/e/${movie.file_code}`;
-      }
-
-      if(!src){
-        showToast('No embed link available for this movie', 'error');
-        return;
-      }
-
-      iframe.src = src;
-      player.style.display = 'block';
-      smoothScrollToTop();
-      // Autoplay hint: some browsers require user gesture; doodstream should respect it after button click
-    }
-
-    document.getElementById('player-close').addEventListener('click', ()=>{
-      const player = document.getElementById('movie-player');
-      const iframe = document.getElementById('player-iframe');
-      iframe.src = ''; // stop playback
-      player.style.display = 'none';
+    state.latest10.forEach((m, i) => {
+      const item = createEl('div', { class: 'hero-item' }, [
+        lazyImg(m.poster || '', m.title),
+        createEl('div', { class: 'hero-overlay' }),
+        createEl('div', { class: 'hero-caption' }, [
+          createEl('div', { class: 'hero-text' }, [
+            createEl('h2', {}, [m.title]),
+            createEl('p', {}, [`${m.year || ''} • ${m.language || ''} • ${m.genre || ''}`])
+          ]),
+          createEl('button', { class: 'btn-glow', onclick: () => playMovie(m) }, ['Play'])
+        ])
+      ]);
+      track.appendChild(item);
+      const dot = createEl('div', { class: 'dot' });
+      dot.addEventListener('click', () => setHero(i));
+      dots.appendChild(dot);
+      // Observe image for lazy
+      const img = item.querySelector('img');
+      if (img) io.observe(img);
     });
 
-    /* ====== Doodstream API Search ====== */
-    async function searchDoodstream(query){
-      const url = `https://doodapi.com/api/file/list?key=${DOODSTREAM_API_KEY}&search=${encodeURIComponent(query)}`;
-      const grid = document.getElementById('search-grid');
-      grid.innerHTML = buildSkeletonCards(6);
-      try{
-        const res = await fetch(url);
-        const json = await res.json();
-        grid.innerHTML = '';
+    setHero(0);
+    startHeroAuto();
+  }
 
-        if(!json || !Array.isArray(json.result) || json.result.length === 0){
-          grid.innerHTML = '<div class="card-body" style="grid-column:1/-1;background:#111821;border-radius:12px;border:1px solid rgba(255,255,255,0.08)">No results found on Doodstream.</div>';
-          return;
-        }
+  function setHero(i) {
+    heroIndex = clamp(i, 0, state.latest10.length - 1);
+    qs('#hero-track').style.transform = `translateX(-${heroIndex * 100}%)`;
+    qsa('.dot').forEach((d, idx) => d.classList.toggle('active', idx === heroIndex));
+  }
 
-        // Map to card-friendly structure
-        const items = json.result.map(it => ({
-          title: it.title,
-          year: '', language: '', genre: '', rating: '',
-          posterUrl: it.thumbnail || '',
-          file_code: it.file_code,
-          embedLink: `https://doodstream.com/e/${it.file_code}`,
+  function startHeroAuto() {
+    stopHeroAuto();
+    heroTimer = setInterval(() => {
+      const next = (heroIndex + 1) % state.latest10.length;
+      setHero(next);
+    }, 5000);
+  }
+  function stopHeroAuto() { if (heroTimer) clearInterval(heroTimer); }
+
+  // ===================== CARDS =====================
+  function createCard(movie, { isNew = false, source = 'sheet', doodCode = null } = {}) {
+    const titleLine = `${movie.title || ''}`;
+    const infoLine = `${movie.year || ''} • ${movie.language || ''} • ${movie.genre || ''} • ★ ${movie.rating || '-'}`;
+
+    const posterImg = lazyImg(movie.poster || '', movie.title);
+
+    const card = createEl('div', { class: 'card' }, [
+      createEl('div', { class: 'poster-wrap' }, [
+        posterImg,
+        createEl('div', { class: 'glow-border' }),
+        isNew ? createEl('div', { class: 'badge-new' }, ['NEW']) : null
+      ]),
+      createEl('div', { class: 'meta' }, [
+        createEl('div', { class: 'title' }, [titleLine]),
+        createEl('div', { class: 'info' }, [infoLine])
+      ]),
+      createEl('div', { class: 'play-wrap' }, [
+        createEl('button', {
+          class: 'btn-play',
+          onclick: () => {
+            const payload = {
+              ...movie,
+              doodCode,
+              source
+            };
+            playMovie(payload);
+          }
+        }, ['Play'])
+      ])
+    ]);
+
+    io.observe(posterImg);
+    return card;
+  }
+
+  function renderSection(el, movies, { markNew = false } = {}) {
+    el.innerHTML = '';
+    if (!movies || !movies.length) {
+      return showErrorGrid(el, 'No movies available.');
+    }
+    movies.forEach((m, idx) => {
+      el.appendChild(createCard(m, { isNew: markNew && idx < 5 }));
+    });
+  }
+
+  function showErrorGrid(el, msg) {
+    el.innerHTML = '';
+    const skeleton = createEl('div', { class: 'skeleton', style: 'height:120px;border-radius:10px' });
+    el.appendChild(skeleton);
+    const p = createEl('p', {}, [msg]);
+    p.style.color = 'var(--text-soft)';
+    p.style.marginTop = '10px';
+    el.parentElement.insertBefore(p, el.nextSibling);
+  }
+
+  // ===================== PLAYBACK =====================
+  function playMovie(m) {
+    const player = qs('#movie-player');
+    const playerHTML = createEl('div', { class: 'player-card' }, [
+      createEl('div', { class: 'player-top' }, [
+        createEl('div', { class: 'title' }, [m.title || '']),
+        createEl('button', { class: 'btn-close', onclick: () => closePlayer() }, ['×'])
+      ]),
+      createEl('div', { class: 'player-meta' }, [
+        document.createTextNode(`${m.year || ''} • ${m.language || ''} • ${m.genre || ''} • ★ ${m.rating || '-'}`)
+      ]),
+      createEl('div', { class: 'player-frame' }, [
+        createEl('iframe', { src: resolveEmbedSrc(m), allow: 'autoplay; encrypted-media' })
+      ])
+    ]);
+
+    player.innerHTML = '';
+    player.appendChild(playerHTML);
+    player.style.display = 'block';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function closePlayer() {
+    const player = qs('#movie-player');
+    player.style.display = 'none';
+    player.innerHTML = '';
+  }
+
+  function resolveEmbedSrc(m) {
+    // Priority: Google Sheet embed, else Doodstream code
+    if (m.embed) {
+      // Ensure autoplay when possible
+      try {
+        const u = new URL(m.embed);
+        if (!u.searchParams.has('autoplay')) u.searchParams.set('autoplay', '1');
+        return u.toString();
+      } catch {
+        // Fallback to raw embed string if not a valid URL
+        return m.embed;
+      }
+    }
+    if (m.source === 'dood' && m.doodCode) {
+      return `${DOOD_BASE_EMBED}${m.doodCode}?autoplay=1`;
+    }
+    // Last resort: empty about:blank
+    return 'about:blank';
+  }
+
+  // ===================== MAIN SEARCH (Website + Doodstream) =====================
+  let searchTimer = null;
+
+  function attachHeaderSearch() {
+    const input = qs('#search-input');
+    input.addEventListener('input', () => {
+      const q = input.value.trim();
+      if (!q) {
+        qs('#search-section').style.display = 'none';
+        return;
+      }
+      if (searchTimer) clearTimeout(searchTimer);
+      searchTimer = setTimeout(() => handleUnifiedSearch(q), 250);
+    });
+  }
+
+  async function handleUnifiedSearch(query) {
+    qs('#search-section').style.display = 'block';
+    const grid = qs('#grid-search');
+    grid.innerHTML = '';
+    // show skeletons
+    for (let i = 0; i < 6; i++) {
+      const sk = createEl('div', { class: 'skeleton', style: 'height:240px' });
+      grid.appendChild(sk);
+    }
+
+    const [localResults, doodResults] = await Promise.all([
+      Promise.resolve(filterLocal(query)),
+      fetchDoodstream(query)
+    ]);
+
+    // Render merged results
+    grid.innerHTML = '';
+
+    localResults.forEach(m => grid.appendChild(createCard(m, { isNew: false, source: 'sheet' })));
+    doodResults.forEach(d => {
+      const pseudoMovie = {
+        title: d.title || d.file_code,
+        year: '',
+        language: '',
+        genre: 'Doodstream',
+        rating: '',
+        poster: d.thumbnail || '',  // dood may provide thumb; if not, leave blank
+        embed: '' // use doodCode route
+      };
+      grid.appendChild(createCard(pseudoMovie, { source: 'dood', doodCode: d.file_code }));
+    });
+
+    if (!localResults.length && !doodResults.length) {
+      showErrorGrid(grid, 'No results found.');
+    }
+  }
+
+  function filterLocal(q) {
+    const needle = q.toLowerCase();
+    return state.sheetMovies.filter(m => {
+      return [
+        m.title, m.year, m.language, m.genre
+      ].some(v => String(v).toLowerCase().includes(needle));
+    });
+  }
+
+  async function fetchDoodstream(query) {
+    try {
+      const url = `https://doodapi.com/api/file/list?key=${DOODSTREAM_KEY}&search=${encodeURIComponent(query)}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      // Expected: { status: 200, result: [ { file_code, title, ... } ] }
+      if (data && Array.isArray(data.result)) {
+        return data.result.map(r => ({
+          file_code: r.file_code,
+          title: r.title,
+          thumbnail: r.single_img || r.img || '' // common fields in dood responses
         }));
-
-        buildGrid(items, grid, { markNew:false });
-
-        // Allow play from search
-        grid.querySelectorAll('[data-play]').forEach(btn=>{
-          btn.addEventListener('click', (e)=>{
-            const idx = Number(e.currentTarget.getAttribute('data-play'));
-            playMovie(items[idx]);
-          });
-        });
-
-      }catch(err){
-        console.error(err);
-        showToast('Doodstream search failed', 'error');
-        grid.innerHTML = '';
       }
+    } catch (e) {
+      console.error('Doodstream error', e);
+    }
+    return [];
+  }
+
+  // ===================== TMDb / IMDb POSTER LOOKUP =====================
+  function attachTmdbSearch() {
+    qs('#tmdb-search').addEventListener('click', () => {
+      const q = qs('#tmdb-query').value.trim();
+      if (!q) return;
+      searchPosters(q);
+    });
+    qs('#tmdb-query').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const q = e.target.value.trim();
+        if (q) searchPosters(q);
+      }
+    });
+  }
+
+  async function searchPosters(query) {
+    const grid = qs('#tmdb-results');
+    grid.innerHTML = '';
+    for (let i = 0; i < 8; i++) {
+      grid.appendChild(createEl('div', { class: 'skeleton', style: 'height:280px' }));
     }
 
-    /* ====== Poster Fetch Tool (OMDb sample) ====== */
-    async function fetchPoster(title){
-      const box = document.getElementById('poster-result');
-      box.innerHTML = `<div class="skeleton" style="width:140px;height:210px;border-radius:12px"></div>
-                       <div class="skeleton" style="width:60%;height:20px;border-radius:8px"></div>`;
-      if(!OMDB_API_KEY || OMDB_API_KEY.includes('{OMDB_API_KEY}')){
-        box.innerHTML = `<div class="muted">Configure OMDB_API_KEY to enable poster fetch.</div>`;
+    try {
+      const res = await fetch(`https://api.themoviedb.org/3/search/movie?api_key=${TMDB_KEY}&query=${encodeURIComponent(query)}`);
+      const data = await res.json();
+      const results = Array.isArray(data.results) ? data.results : [];
+
+      grid.innerHTML = '';
+      if (!results.length) {
+        showErrorGrid(grid, 'No posters found.');
         return;
       }
-      try{
-        const url = `https://www.omdbapi.com/?apikey=${OMDB_API_KEY}&t=${encodeURIComponent(title)}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        if(data && data.Poster && data.Poster !== 'N/A'){
-          box.innerHTML = `
-            <img src="${data.Poster}" alt="${data.Title}" style="width:140px;border-radius:12px;box-shadow:0 0 18px rgba(0,174,255,0.35)" loading="lazy">
-            <div>
-              <div class="card-title" style="margin:0 0 6px">${data.Title} (${data.Year || ''})</div>
-              <div class="card-meta">IMDb: <a href="https://www.imdb.com/title/${data.imdbID}" target="_blank" rel="noopener">${data.imdbID}</a></div>
-            </div>
-          `;
-        }else{
-          box.innerHTML = `<div class="muted">No poster found for "${title}".</div>`;
+
+      for (const r of results) {
+        const poster = r.poster_path ? `https://image.tmdb.org/t/p/w500${r.poster_path}` : '';
+        const year = (r.release_date || '').slice(0,4);
+        const tmdbLink = `https://www.themoviedb.org/movie/${r.id}`;
+        let imdbLink = '';
+
+        // fetch external IDs to get IMDb
+        try {
+          const extRes = await fetch(`https://api.themoviedb.org/3/movie/${r.id}/external_ids?api_key=${TMDB_KEY}`);
+          const ext = await extRes.json();
+          if (ext && ext.imdb_id) {
+            imdbLink = `https://www.imdb.com/title/${ext.imdb_id}/`;
+          }
+        } catch (e) {
+          // ignore failure gracefully
         }
-      }catch(err){
-        console.error(err);
-        showToast('Poster fetch failed', 'error');
-        box.innerHTML = `<div class="muted">Error fetching poster.</div>`;
+
+        const card = createEl('div', { class: 'card' }, [
+          createEl('div', { class: 'poster-wrap' }, [
+            lazyImg(poster, r.title || ''),
+            createEl('div', { class: 'glow-border' })
+          ]),
+          createEl('div', { class: 'meta' }, [
+            createEl('div', { class: 'title' }, [r.title || '']),
+            createEl('div', { class: 'info' }, [year ? `Year: ${year}` : ''])
+          ]),
+          createEl('div', { class: 'play-wrap' }, [
+            createEl('div', {}, [
+              imdbLink ? createEl('a', { href: imdbLink, target: '_blank', rel: 'noopener' }, ['IMDb']) : createEl('span', {}, ['IMDb: N/A']),
+              document.createTextNode(' • '),
+              createEl('a', { href: tmdbLink, target: '_blank', rel: 'noopener' }, ['TMDb'])
+            ])
+          ])
+        ]);
+
+        grid.appendChild(card);
+        const img = card.querySelector('img'); if (img) io.observe(img);
       }
-    }
 
-    /* ====== Skeleton cards ====== */
-    function buildSkeletonCards(n=6){
-      let html = '';
-      for(let i=0;i<n;i++){
-        html += `
-          <div class="movie-card">
-            <div class="poster-wrap">
-              <div class="skeleton" style="width:100%;aspect-ratio:2/3"></div>
-            </div>
-            <div class="card-body">
-              <div class="skeleton" style="width:70%;height:18px;border-radius:8px"></div>
-              <div class="skeleton" style="width:50%;height:14px;border-radius:8px;margin-top:8px"></div>
-            </div>
-            <div class="card-actions">
-              <div class="skeleton" style="width:80px;height:34px;border-radius:999px"></div>
-            </div>
-          </div>
-        `;
+    } catch (err) {
+      console.error('TMDb search error', err);
+      showErrorGrid(grid, 'Failed to search TMDb.');
+    }
+  }
+
+  // ===================== POPUP SYSTEM =====================
+  function setupModal() {
+    const modal = qs('#modal');
+    const btnInstall = qs('#btn-install');
+    const btnBookmark = qs('#btn-bookmark');
+    const btnDismiss = qs('#btn-dismiss');
+
+    btnDismiss.addEventListener('click', () => closeModal());
+    btnInstall.addEventListener('click', async () => {
+      if (state.installPromptEvent) {
+        state.installPromptEvent.prompt();
+        const choice = await state.installPromptEvent.userChoice;
+        state.installPromptEvent = null;
+        closeModal();
+      } else {
+        alert('Install prompt not available. Try bookmarking for quick access.');
       }
-      return html;
+    });
+
+    btnBookmark.addEventListener('click', () => {
+      // Attempt legacy bookmark, otherwise show instructions
+      try {
+        // IE legacy
+        if (window.external && ('AddFavorite' in window.external)) {
+          window.external.AddFavorite(location.href, document.title);
+        } else {
+          throw new Error('No auto bookmark');
+        }
+      } catch {
+        alert('Press Ctrl+D (Windows) or Command+D (Mac) to bookmark this page.');
+      }
+      closeModal();
+    });
+
+    // Show once per day
+    const key = 'tgmovies_modal_last';
+    const last = Number(localStorage.getItem(key) || 0);
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+    if (now - last > oneDay) {
+      openModal();
+      localStorage.setItem(key, String(now));
+      // auto-close after 10s
+      setTimeout(() => closeModal(), 10000);
     }
 
-    /* ====== Popup System (daily) ====== */
-    const installModal = document.getElementById('install-modal');
-    const modalClose = document.getElementById('modal-close');
-    const btnInstall = document.getElementById('btn-install');
-    const btnBookmark = document.getElementById('btn-bookmark');
-
-    function showInstallModal(){
-      installModal.classList.add('show');
-      setTimeout(()=>installModal.classList.remove('show'), 10000);
-    }
-    modalClose.addEventListener('click', ()=> installModal.classList.remove('show'));
-
-    // PWA install capture
-    window.addEventListener('beforeinstallprompt', (e)=>{
+    window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
-      deferredPrompt = e;
-    });
-    btnInstall.addEventListener('click', async ()=>{
-      if(deferredPrompt){
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        if(outcome === 'accepted') showToast('App installed', 'success');
-        deferredPrompt = null;
-      }else{
-        showToast('Install prompt not available', 'error');
-      }
+      state.installPromptEvent = e;
     });
 
-    // Bookmark handler
-    btnBookmark.addEventListener('click', ()=>{
-      try{
-        // Attempt auto-bookmark (not widely supported). Fallback to instructions.
-        showToast('Press Ctrl+D (Windows) or Cmd+D (Mac) to bookmark', 'success');
-      }catch{
-        showToast('Use Ctrl+D or Cmd+D to bookmark', 'success');
-      }
-    });
+    function openModal() { modal.style.display = 'flex' }
+    function closeModal() { modal.style.display = 'none' }
+  }
 
-    /* ====== Request section actions ====== */
-    document.getElementById('copy-request').addEventListener('click', async ()=>{
-      const ta = document.getElementById('req-format');
-      try{
-        await navigator.clipboard.writeText(ta.value);
-        showToast('✅ Request format copied!', 'success');
-      }catch{
-        showToast('Copy failed. Select and copy manually.', 'error');
-      }
+  // ===================== REQUEST SECTION =====================
+  function setupRequest() {
+    qs('#btn-telegram').addEventListener('click', () => {
+      window.open(TELEGRAM_URL, '_blank', 'noopener');
     });
-    document.getElementById('clear-request').addEventListener('click', ()=>{
-      document.getElementById('req-format').value = '';
+    qs('#btn-copy').addEventListener('click', () => {
+      const ta = qs('#request-format');
+      ta.select();
+      document.execCommand('copy');
+      // modern fallback
+      if (navigator.clipboard) navigator.clipboard.writeText(ta.value);
     });
+  }
 
-    /* ====== Global search submit ====== */
-    document.getElementById('global-search').addEventListener('submit', async (e)=>{
-      e.preventDefault();
-      const q = document.getElementById('search-input').value.trim();
-      if(!q){ showToast('Type a movie name to search', 'error'); return; }
-      // Search Doodstream and fetch poster in parallel
-      searchDoodstream(q);
-      fetchPoster(q);
-    });
+  // ===================== INIT =====================
+  async function init() {
+    attachHeaderSearch();
+    attachTmdbSearch();
+    setupModal();
+    setupRequest();
 
-    /* ====== Init ====== */
-    (function init(){
-      fetchGoogleSheet();
-      // Daily popup
-      if(isTodayDifferent('tg_popup_day')){
-        setTimeout(showInstallModal, 800);
-      }
-    })();
+    // Initial skeletons
+    for (let i = 0; i < 5; i++) qs('#grid-new').appendChild(createEl('div', { class: 'skeleton', style: 'height:220px' }));
+    for (let i = 0; i < 8; i++) qs('#grid-reco').appendChild(createEl('div', { class: 'skeleton', style: 'height:220px' }));
+
+    await fetchSheetMovies();
+
+    renderHero();
+    renderSection(qs('#grid-new'), state.new5, { markNew: true });
+    renderSection(qs('#grid-reco'), state.recommended, { markNew: false });
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
   </script>
 </body>
 </html>
